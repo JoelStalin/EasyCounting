@@ -17,6 +17,7 @@ from app.api.enfc_routes import router as enfc_router
 from app.api.router import api_router
 from app.dgii.jobs import start_dispatcher, stop_dispatcher
 from app.routers.admin import router as admin_router
+from app.routers.cliente import router as cliente_router
 from app.db import check_database_connection
 from app.infra.logging import configure_logging
 from app.infra.settings import settings
@@ -80,9 +81,11 @@ def create_app() -> FastAPI:
     app.include_router(portal_auth_router, prefix="/api/v1/auth", tags=["portal-auth"])
     app.include_router(portal_me_router, prefix="/api/v1", tags=["portal-auth"])
     app.include_router(admin_router, prefix="/api/v1")
+    app.include_router(cliente_router, prefix="/api/v1")
 
     # Legacy paths (kept for existing tests/integrations)
     app.include_router(admin_router, prefix="/api")
+    app.include_router(cliente_router, prefix="/api")
 
     app.include_router(api_router, prefix="/api")
     app.include_router(enfc_router)
@@ -120,6 +123,10 @@ def create_app() -> FastAPI:
             await stop_dispatcher()
         except Exception as exc:  # pragma: no cover - defensive
             LOGGER.exception("Failed to stop DGII dispatcher", exc_info=exc)
+
+    @app.get("/health", tags=["infra"], include_in_schema=False)
+    async def health() -> dict[str, str]:
+        return {"status": "ok"}
 
     @app.get("/healthz", tags=["infra"], include_in_schema=False)
     async def healthz() -> dict[str, str]:

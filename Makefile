@@ -1,6 +1,9 @@
-.PHONY: up down logs migrate test lint typecheck build requirements
+.PHONY: up down logs migrate test lint typecheck build requirements sh rebuild check-bins image-build
 
 COMPOSE_FILE ?= docker-compose.yml
+
+build: ## Build docker compose services
+	docker compose -f $(COMPOSE_FILE) build
 
 up: ## Start local stack
 	docker compose -f $(COMPOSE_FILE) up -d
@@ -10,6 +13,15 @@ down: ## Stop local stack
 
 logs: ## Tail application logs
 	docker compose -f $(COMPOSE_FILE) logs -f web
+
+sh: ## Start an interactive shell in the web service
+	docker compose -f $(COMPOSE_FILE) run --rm web sh
+
+rebuild: ## Rebuild the web service without cache and restart it
+	docker compose -f $(COMPOSE_FILE) build --no-cache web && docker compose -f $(COMPOSE_FILE) up -d web
+
+check-bins: ## Verify required binaries and python packages inside the container
+	docker compose -f $(COMPOSE_FILE) run --rm web sh -lc 'which python && which gunicorn && python -c "import fastapi, uvicorn, gunicorn; print(\'OK deps\')"'
 
 migrate: ## Apply database migrations inside the web service
 	docker compose -f $(COMPOSE_FILE) exec web alembic upgrade head
@@ -23,7 +35,7 @@ lint: ## Run Ruff static analysis
 typecheck: ## Run mypy type checks
 	poetry run mypy app
 
-build: ## Build production image
+image-build: ## Build production image
 	docker build -t dgii-ecf-web:latest -f Dockerfile .
 
 requirements: ## Export locked dependencies for Docker builds

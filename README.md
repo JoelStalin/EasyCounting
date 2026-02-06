@@ -49,6 +49,23 @@ Para detener y limpiar:
 make down
 ```
 
+## Desarrollo local
+
+### Rutas de prueba
+
+```bash
+# Cliente
+curl -sS http://localhost:8000/cliente/health | jq
+curl -sS -H "Authorization: Bearer cliente:alice" http://localhost:8000/cliente/me | jq
+curl -sS -H "Authorization: Bearer cliente:alice" http://localhost:8000/cliente/facturas | jq
+
+# Administrador (requiere rol admin)
+curl -sS -H "Authorization: Bearer admin:bob" http://localhost:8000/admin/health | jq
+curl -sS -H "Authorization: Bearer admin:bob" http://localhost:8000/admin/usuarios | jq
+curl -sS -H "Authorization: Bearer admin:bob" -H "Content-Type: application/json" \
+     -d '{"ncf":"E3100000001"}' http://localhost:8000/admin/facturas/aprobar | jq
+```
+
 ## Comandos útiles
 
 | Comando | Descripción |
