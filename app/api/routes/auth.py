@@ -18,7 +18,7 @@ me_router = APIRouter()
 
 
 class _LoginPayload(BaseModel):
-    email: EmailStr
+    email: str
     password: str = Field(min_length=8)
 
 
@@ -39,7 +39,7 @@ class _LoginResponse(BaseModel):
 
 
 class _MFAPayload(BaseModel):
-    email: EmailStr
+    email: str
     code: str = Field(min_length=6, max_length=6)
 
 
@@ -86,12 +86,28 @@ def _issue_tokens(*, user_id: str, tenant_id: int, role: str) -> tuple[str, str]
     return create_jwt(access_payload), create_jwt(refresh_payload, refresh_exp)
 
 
+def _normalize_login_identifier(identifier: str) -> str:
+    ident = (identifier or "").strip()
+    if not ident:
+        return ident
+
+    # Allow short usernames for the bootstrap admin (e.g. "ceo" -> "ceo@getupsoft.local")
+    bootstrap_email = (settings.bootstrap_admin_email or "").strip()
+    if bootstrap_email:
+        localpart = bootstrap_email.split("@", 1)[0]
+        if "@" not in ident and ident.lower() == localpart.lower():
+            return bootstrap_email
+    return ident
+
+
 @router.post("/login", response_model=_LoginResponse)
 async def login(payload: _LoginPayload, service: AuthService = Depends(get_service)) -> _LoginResponse:
-    if payload.email.lower() == "admin@getupsoft.local":
+    email = _normalize_login_identifier(payload.email)
+
+    if email.lower() == settings.bootstrap_admin_email.lower():
         service.bootstrap_admin(None)
 
-    user, tokens = service.authenticate(payload.email, payload.password)
+    user, tokens = service.authenticate(email, payload.password)
     mfa_required = settings.mfa_enabled and bool(user.mfa_secret)
     scope_value: Literal["PLATFORM", "TENANT"] = "PLATFORM" if _is_platform_role(user.role) else "TENANT"
     permissions = _permissions_for(user.role)

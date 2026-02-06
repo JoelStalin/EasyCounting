@@ -29,6 +29,23 @@ class Settings(BaseSettings):
     refresh_token_exp_minutes: int = Field(default=60 * 24 * 7, validation_alias=AliasChoices("REFRESH_TOKEN_EXP_MINUTES", "JWT_REFRESH_EXP_MINUTES"))
     mfa_enabled: bool = Field(default=False, validation_alias=AliasChoices("MFA_ENABLED"))
 
+    bootstrap_admin_email: str = Field(
+        default="admin@getupsoft.local",
+        validation_alias=AliasChoices("BOOTSTRAP_ADMIN_EMAIL"),
+    )
+    bootstrap_admin_password: str = Field(
+        default="ChangeMe123!",
+        validation_alias=AliasChoices("BOOTSTRAP_ADMIN_PASSWORD"),
+    )
+    bootstrap_admin_role: str = Field(
+        default="platform_admin",
+        validation_alias=AliasChoices("BOOTSTRAP_ADMIN_ROLE"),
+    )
+    bootstrap_admin_phone: str = Field(
+        default="0000000000",
+        validation_alias=AliasChoices("BOOTSTRAP_ADMIN_PHONE"),
+    )
+
     database_url: str = Field(
         default="postgresql+asyncpg://postgres:postgres@localhost:5432/dgii",
         validation_alias=AliasChoices("DATABASE_URL", "POSTGRES_DSN"),

@@ -1,0 +1,261 @@
+{
+  "info": {
+    "name": "DGII ENFC + Admin + Cliente (Local)",
+    "_postman_id": "b7a0e7fd-4e6e-4b69-9b8c-9d487a9a3f01",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8080" },
+    { "key": "access_token", "value": "" },
+    { "key": "refresh_token", "value": "" },
+    { "key": "enfc_token", "value": "" },
+    { "key": "track_id", "value": "" },
+    { "key": "admin_email", "value": "ceo" },
+    { "key": "admin_password", "value": "CHANGE_ME" },
+    { "key": "cliente_user_id", "value": "local-user" },
+    { "key": "semilla_signed_xml", "value": "<?xml version=\"1.0\" encoding=\"utf-8\"?><SemillaModel xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><valor>REEMPLAZAR</valor><fecha>2026-01-01T00:00:00+00:00</fecha></SemillaModel>" },
+    { "key": "ecf_xml", "value": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><eCF><Encabezado><ENCF>E310000000000</ENCF><TipoECF>E31</TipoECF><RNCEmisor>101010101</RNCEmisor><RNCComprador>202020202</RNCComprador><FechaEmision>2026-01-01</FechaEmision><MontoTotal>100.00</MontoTotal></Encabezado></eCF>" },
+    { "key": "acecf_xml", "value": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ACECF><RNCReceptor>101010101</RNCReceptor><Comentario>OK</Comentario></ACECF>" }
+  ],
+  "item": [
+    {
+      "name": "Portal Auth",
+      "item": [
+        {
+          "name": "Login (Admin/Cliente)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('status 200', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "if (json && json.access_token) {",
+                  "  pm.collectionVariables.set('access_token', json.access_token);",
+                  "  pm.collectionVariables.set('refresh_token', json.refresh_token || '');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me (JWT)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Portal API",
+      "item": [
+        {
+          "name": "List Tenants",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/tenants",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "tenants"]
+            }
+          }
+        },
+        {
+          "name": "Dashboard KPIs",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/dashboard/kpis",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "dashboard", "kpis"]
+            }
+          }
+        },
+        {
+          "name": "List Invoices",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{access_token}}" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/invoices?page=1&size=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "admin", "invoices"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cliente Portal API (DEV stub)",
+      "item": [
+        {
+          "name": "Cliente Health",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/api/v1/cliente/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "cliente", "health"]
+            }
+          }
+        },
+        {
+          "name": "Cliente Me",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "{{cliente_user_id}}" },
+              { "key": "X-User-Role", "value": "cliente" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/cliente/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "cliente", "me"]
+            }
+          }
+        },
+        {
+          "name": "Cliente Facturas",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id", "value": "{{cliente_user_id}}" },
+              { "key": "X-User-Role", "value": "cliente" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/cliente/facturas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "cliente", "facturas"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "DGII ENFC",
+      "item": [
+        {
+          "name": "Semilla (GET)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Accept", "value": "application/json" }],
+            "url": {
+              "raw": "{{base_url}}/fe/autenticacion/api/semilla",
+              "host": ["{{base_url}}"],
+              "path": ["fe", "autenticacion", "api", "semilla"]
+            }
+          }
+        },
+        {
+          "name": "Validacion Certificado (XML firmado => token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/xml" },
+              { "key": "Accept", "value": "application/json" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fe/autenticacion/api/validacioncertificado",
+              "host": ["{{base_url}}"],
+              "path": ["fe", "autenticacion", "api", "validacioncertificado"]
+            },
+            "body": { "mode": "raw", "raw": "{{semilla_signed_xml}}" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.token) { pm.collectionVariables.set('enfc_token', json.token); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Recepcion e-CF",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/xml" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{enfc_token}}" },
+              { "key": "Idempotency-Key", "value": "demo-1" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fe/recepcion/api/ecf",
+              "host": ["{{base_url}}"],
+              "path": ["fe", "recepcion", "api", "ecf"]
+            },
+            "body": { "mode": "raw", "raw": "{{ecf_xml}}" }
+          }
+        },
+        {
+          "name": "Aprobacion Comercial (ACECF)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/xml" },
+              { "key": "Accept", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{enfc_token}}" },
+              { "key": "Idempotency-Key", "value": "demo-2" }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fe/aprobacioncomercial/api/ecf",
+              "host": ["{{base_url}}"],
+              "path": ["fe", "aprobacioncomercial", "api", "ecf"]
+            },
+            "body": { "mode": "raw", "raw": "{{acecf_xml}}" }
+          }
+        }
+      ]
+    }
+  ]
+}
