@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: getupnet-common
+  name: getupsoft-common
   labels:
-    app.kubernetes.io/name: getupnet
+    app.kubernetes.io/name: getupsoft
     app.kubernetes.io/component: config
     app.kubernetes.io/managed-by: kustomize
   annotations:
-    getupnet.io/config-purpose: "shared-environment"
+    getupsoft.io/config-purpose: "shared-environment"
 data:
   LOG_LEVEL: "INFO"
   DGII_API_BASE_URL: "https://api.dgii.gov.do"

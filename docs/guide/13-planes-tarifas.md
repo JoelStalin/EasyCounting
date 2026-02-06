@@ -1,6 +1,6 @@
 # 13. Modelado y Cálculo de Planes Tarifarios
 
-Este capítulo describe cómo GetUpNet implementa la monetización multi-tenant a través de planes tarifarios flexibles, alineados con los lineamientos de la sección 4 del prompt maestro. Se incluyen los modelos de datos, fórmulas de cálculo, estrategias de auditoría y recomendaciones para pruebas automatizadas.
+Este capítulo describe cómo getupsoft implementa la monetización multi-tenant a través de planes tarifarios flexibles, alineados con los lineamientos de la sección 4 del prompt maestro. Se incluyen los modelos de datos, fórmulas de cálculo, estrategias de auditoría y recomendaciones para pruebas automatizadas.
 
 ## 13.1 Objetivos de diseño
 
@@ -104,4 +104,4 @@ charge = max(base, plan.minimum or Decimal("0"))
 
 - Motor de reglas personalizadas por tenant.
 - Integración con pasarelas de pago para debitar automáticamente los cargos calculados.
-- Visualizaciones dinámicas en Grafana (panel `GetUpNet/Plans`) con alertas por consumo atípico.
+- Visualizaciones dinámicas en Grafana (panel `getupsoft/Plans`) con alertas por consumo atípico.

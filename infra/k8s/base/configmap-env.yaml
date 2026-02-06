@@ -3,10 +3,10 @@ kind: ConfigMap
 metadata:
   name: api-settings
   labels:
-    app.kubernetes.io/name: getupnet-api
+    app.kubernetes.io/name: getupsoft-api
     app.kubernetes.io/component: configuration
-    app.kubernetes.io/part-of: getupnet
-    compliance.getupnet.io/pci: "true"
+    app.kubernetes.io/part-of: getupsoft
+    compliance.getupsoft.io/pci: "true"
   annotations:
     config.kubernetes.io/managed-by: kustomize
 

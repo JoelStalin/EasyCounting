@@ -18,7 +18,7 @@ jobs:
         uses: zaproxy/action-baseline@v0.12.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          target: ${{ github.event.inputs.target_url || secrets.ZAP_BASE_URL || 'https://staging.getupnet.do' }}
+          target: ${{ github.event.inputs.target_url || secrets.ZAP_BASE_URL || 'https://staging.getupsoft.do' }}
           cmd_options: "-a -j --ignore-rule 10096"
       - name: Publicar reporte
         if: always()

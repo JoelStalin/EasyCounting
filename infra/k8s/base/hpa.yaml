@@ -1,14 +1,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: getupnet-api
+  name: getupsoft-api
   labels:
-    app.kubernetes.io/name: getupnet-api
+    app.kubernetes.io/name: getupsoft-api
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: getupnet-api
+    name: getupsoft-api
   minReplicas: 2
   maxReplicas: 6
   metrics:

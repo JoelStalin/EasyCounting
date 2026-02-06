@@ -4,8 +4,8 @@ metadata:
   name: auth-service
   labels:
     app.kubernetes.io/name: auth-service
-    app.kubernetes.io/part-of: getupnet
-    getupnet.io/trusted: "true"
+    app.kubernetes.io/part-of: getupsoft
+    getupsoft.io/trusted: "true"
 spec:
   replicas: 2
   selector:
@@ -15,13 +15,13 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: auth-service
-        app.kubernetes.io/part-of: getupnet
-        getupnet.io/trusted: "true"
+        app.kubernetes.io/part-of: getupsoft
+        getupsoft.io/trusted: "true"
     spec:
       serviceAccountName: auth-service
       containers:
         - name: auth
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/auth-service:latest
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/auth-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -33,9 +33,9 @@ spec:
               value: "2"
           envFrom:
             - configMapRef:
-                name: getupnet-common
+                name: getupsoft-common
             - secretRef:
-                name: getupnet-secrets
+                name: getupsoft-secrets
           resources:
             requests:
               cpu: 200m
@@ -60,7 +60,7 @@ spec:
         runAsUser: 10001
         runAsGroup: 10001
       nodeSelector:
-        getupnet.io/workload: api
+        getupsoft.io/workload: api
       tolerations:
         - key: "dedicated"
           operator: "Equal"

@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/auth-service:release
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/auth-service:release
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: billing
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/billing-service:release
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/billing-service:release
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -29,7 +29,7 @@ spec:
     spec:
       containers:
         - name: client
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/client-service:release
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/client-service:release
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -40,4 +40,4 @@ spec:
     spec:
       containers:
         - name: sign
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/sign-service:release
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/sign-service:release

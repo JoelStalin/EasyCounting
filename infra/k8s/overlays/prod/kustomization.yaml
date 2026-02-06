@@ -8,8 +8,8 @@ configMapGenerator:
     behavior: merge
     literals:
       - LOG_LEVEL=info
-      - FRONTEND_ADMIN_URL=https://admin.getupnet.do
-      - FRONTEND_CLIENT_URL=https://app.getupnet.do
+      - FRONTEND_ADMIN_URL=https://admin.getupsoft.do
+      - FRONTEND_CLIENT_URL=https://app.getupsoft.do
 patches:
   - path: patch-deployment.yaml
   - path: patch-ingress.yaml

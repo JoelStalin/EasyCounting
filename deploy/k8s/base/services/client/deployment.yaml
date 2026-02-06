@@ -4,8 +4,8 @@ metadata:
   name: client-service
   labels:
     app.kubernetes.io/name: client-service
-    app.kubernetes.io/part-of: getupnet
-    getupnet.io/trusted: "true"
+    app.kubernetes.io/part-of: getupsoft
+    getupsoft.io/trusted: "true"
 spec:
   replicas: 3
   selector:
@@ -15,13 +15,13 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: client-service
-        app.kubernetes.io/part-of: getupnet
-        getupnet.io/trusted: "true"
+        app.kubernetes.io/part-of: getupsoft
+        getupsoft.io/trusted: "true"
     spec:
       serviceAccountName: client-service
       containers:
         - name: client
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/client-service:latest
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/client-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -33,9 +33,9 @@ spec:
               value: "true"
           envFrom:
             - configMapRef:
-                name: getupnet-common
+                name: getupsoft-common
             - secretRef:
-                name: getupnet-secrets
+                name: getupsoft-secrets
           resources:
             requests:
               cpu: 300m
@@ -60,4 +60,4 @@ spec:
         runAsUser: 10001
         runAsGroup: 10001
       nodeSelector:
-        getupnet.io/workload: api
+        getupsoft.io/workload: api

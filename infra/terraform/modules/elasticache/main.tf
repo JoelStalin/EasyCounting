@@ -16,7 +16,7 @@ resource "aws_elasticache_subnet_group" "this" {
 
 resource "aws_elasticache_replication_group" "this" {
   replication_group_id          = var.name
-  replication_group_description = "Redis para GetUpNet"
+  replication_group_description = "Redis para getupsoft"
   node_type                     = var.node_type
   number_cache_clusters         = var.node_count
   automatic_failover_enabled    = true

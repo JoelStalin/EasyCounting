@@ -1,6 +1,6 @@
 # 15 — Guía paso a paso de implementación en AWS
 
-Esta guía describe un recorrido detallado para desplegar la plataforma GetUpNet en AWS cumpliendo los requisitos de seguridad, disponibilidad y cumplimiento (ISO/IEC 25010, PCI DSS 4.0, OWASP 2025). Cada sección presenta los pasos recomendados, herramientas y puntos de control antes de avanzar al siguiente hito.
+Esta guía describe un recorrido detallado para desplegar la plataforma getupsoft en AWS cumpliendo los requisitos de seguridad, disponibilidad y cumplimiento (ISO/IEC 25010, PCI DSS 4.0, OWASP 2025). Cada sección presenta los pasos recomendados, herramientas y puntos de control antes de avanzar al siguiente hito.
 
 ## 1. Preparación de la cuenta y gobierno
 1. **Crear la organización y cuentas dedicadas**: utilice AWS Organizations con al menos tres cuentas (producción, staging, herramientas). Aplique Service Control Policies (SCP) para restringir servicios no requeridos.
@@ -23,7 +23,7 @@ Esta guía describe un recorrido detallado para desplegar la plataforma GetUpNet
 
 ## 4. Almacenamiento de archivos y WORM
 1. **S3 buckets**:
-   - `getupnet-ri` (RI PDF) y `getupnet-xml` (XML e-CF/RFCE/ANECF) con cifrado SSE-KMS.
+   - `getupsoft-ri` (RI PDF) y `getupsoft-xml` (XML e-CF/RFCE/ANECF) con cifrado SSE-KMS.
    - Habilitar Versioning + Object Lock (modo compliance) para cumplimiento WORM.
 2. **Políticas IAM**: permitir acceso únicamente a roles del backend mediante `aws:PrincipalTag=tenant_id` para aislar tenants si se usa separación lógica.
 3. **Lifecycle policies**: mover objetos a Glacier Deep Archive según retención legal.
@@ -34,7 +34,7 @@ Esta guía describe un recorrido detallado para desplegar la plataforma GetUpNet
 3. **Backups**: políticas automáticas diarias con retención ≥ 30 días y snapshots manuales previos a releases.
 
 ## 6. Contenedores y registros
-1. **Amazon ECR**: crear repositorios `getupnet/api`, `getupnet/nginx`, `getupnet/admin-portal`, `getupnet/client-portal`.
+1. **Amazon ECR**: crear repositorios `getupsoft/api`, `getupsoft/nginx`, `getupsoft/admin-portal`, `getupsoft/client-portal`.
 2. **Políticas de escaneo**: activar escaneo con Amazon Inspector y rechazar despliegues con vulnerabilidades críticas.
 3. **Pipeline de imagen**: GitHub Actions publica imágenes con tags `main-{sha}`, `release-{semver}` y configura expiración de imágenes obsoletas.
 
@@ -50,7 +50,7 @@ Seleccione la opción acorde a la madurez del equipo:
 ### Opción B — Amazon EKS
 1. Aprovisionar clúster con eksctl o Terraform, habilitando IRSA.
 2. Instalar add-ons: AWS Load Balancer Controller, Cluster Autoscaler, Prometheus Operator, Fluent Bit.
-3. Definir `Namespace` `getupnet`, despliegues `api`, `worker`, `receiver`, `odoo-integration`.
+3. Definir `Namespace` `getupsoft`, despliegues `api`, `worker`, `receiver`, `odoo-integration`.
 4. Configurar ingress con ALB + ACM y políticas de red con Calico/OPA Gatekeeper.
 
 ## 8. Despliegue de backend
@@ -99,4 +99,4 @@ Seleccione la opción acorde a la madurez del equipo:
 3. Auditar accesos IAM trimestralmente.
 4. Actualizar documentación (docs/guide) con cambios de arquitectura o nuevos servicios.
 
-> **Resultado esperado**: una plataforma GetUpNet desplegada en AWS con infraestructura reproducible, observabilidad completa y controles de seguridad alineados a las normas exigidas.
+> **Resultado esperado**: una plataforma getupsoft desplegada en AWS con infraestructura reproducible, observabilidad completa y controles de seguridad alineados a las normas exigidas.

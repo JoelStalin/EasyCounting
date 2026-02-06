@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Spinner } from "@getupnet/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Spinner } from "@getupsoft/ui";
 import { api } from "../api/client";
 import { useAuth } from "../auth/use-auth";
 import type { AuthSession } from "../store/auth-store";

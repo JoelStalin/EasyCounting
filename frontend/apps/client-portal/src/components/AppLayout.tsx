@@ -18,7 +18,7 @@ export function AppLayout() {
     <div className="flex min-h-screen bg-slate-950 text-slate-100">
       <aside className="hidden w-64 border-r border-slate-900 bg-slate-950/80 p-6 md:block">
         <div className="mb-8 space-y-1">
-          <h2 className="text-xl font-semibold text-white">GetUpNet Cliente</h2>
+          <h2 className="text-xl font-semibold text-white">getupsoft Cliente</h2>
           <p className="text-xs text-slate-400">Gestión de comprobantes y flujos DGII.</p>
         </div>
         <nav className="space-y-2 text-sm">

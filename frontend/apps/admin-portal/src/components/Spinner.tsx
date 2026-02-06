@@ -1,1 +1,1 @@
-export { Spinner } from "@getupnet/ui";
+export { Spinner } from "@getupsoft/ui";

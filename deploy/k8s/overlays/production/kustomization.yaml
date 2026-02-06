@@ -1,6 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: getupnet-app
+namespace: getupsoft-app
 
 resources:
   - ../../base
@@ -11,7 +11,7 @@ patchesStrategicMerge:
   - patch-images.yaml
 
 configMapGenerator:
-  - name: getupnet-common-overrides
+  - name: getupsoft-common-overrides
     behavior: merge
     literals:
       - LOG_LEVEL=INFO

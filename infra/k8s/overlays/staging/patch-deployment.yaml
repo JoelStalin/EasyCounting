@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: getupnet-api
+  name: getupsoft-api
 spec:
   replicas: 2
   template:
     spec:
       containers:
         - name: api
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet-api:staging
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft-api:staging
           env:
             - name: ENVIRONMENT
               value: staging

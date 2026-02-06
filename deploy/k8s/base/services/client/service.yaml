@@ -4,7 +4,7 @@ metadata:
   name: client-service
   labels:
     app.kubernetes.io/name: client-service
-    app.kubernetes.io/part-of: getupnet
+    app.kubernetes.io/part-of: getupsoft
 spec:
   selector:
     app.kubernetes.io/name: client-service

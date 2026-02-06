@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Spinner } from "@getupnet/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Spinner } from "@getupsoft/ui";
 import { useLoginMutation } from "../api/auth";
 import { useAuth } from "../auth/use-auth";
 
@@ -37,7 +37,7 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-2 text-center">
-          <CardTitle>GetUpNet Cliente</CardTitle>
+          <CardTitle>getupsoft Cliente</CardTitle>
           <p className="text-sm text-slate-300">Portal para emisión y seguimiento de comprobantes electrónicos.</p>
         </CardHeader>
         <CardContent>

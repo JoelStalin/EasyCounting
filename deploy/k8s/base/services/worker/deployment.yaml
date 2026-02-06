@@ -4,8 +4,8 @@ metadata:
   name: worker-service
   labels:
     app.kubernetes.io/name: worker-service
-    app.kubernetes.io/part-of: getupnet
-    getupnet.io/trusted: "true"
+    app.kubernetes.io/part-of: getupsoft
+    getupsoft.io/trusted: "true"
 spec:
   replicas: 2
   selector:
@@ -15,25 +15,25 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: worker-service
-        app.kubernetes.io/part-of: getupnet
-        getupnet.io/trusted: "true"
+        app.kubernetes.io/part-of: getupsoft
+        getupsoft.io/trusted: "true"
     spec:
       serviceAccountName: worker-service
       containers:
         - name: worker
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/worker-service:latest
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/worker-service:latest
           imagePullPolicy: IfNotPresent
           command: ["dramatiq", "app.shared.worker:broker", "--processes", "2", "--threads", "4"]
           env:
             - name: SERVICE_NAME
               value: worker-service
             - name: DRAMATIQ_BROKER
-              value: redis://elasticache.getupnet:6379/0
+              value: redis://elasticache.getupsoft:6379/0
           envFrom:
             - configMapRef:
-                name: getupnet-common
+                name: getupsoft-common
             - secretRef:
-                name: getupnet-secrets
+                name: getupsoft-secrets
           resources:
             requests:
               cpu: 300m
@@ -43,12 +43,12 @@ spec:
               memory: 1024Mi
           readinessProbe:
             exec:
-              command: ["/bin/sh", "-c", "dramatiqctl ping redis://elasticache.getupnet:6379/0"]
+              command: ["/bin/sh", "-c", "dramatiqctl ping redis://elasticache.getupsoft:6379/0"]
             initialDelaySeconds: 15
             periodSeconds: 20
           livenessProbe:
             exec:
-              command: ["/bin/sh", "-c", "dramatiqctl ping redis://elasticache.getupnet:6379/0"]
+              command: ["/bin/sh", "-c", "dramatiqctl ping redis://elasticache.getupsoft:6379/0"]
             initialDelaySeconds: 30
             periodSeconds: 60
       securityContext:
@@ -56,4 +56,4 @@ spec:
         runAsUser: 10001
         runAsGroup: 10001
       nodeSelector:
-        getupnet.io/workload: worker
+        getupsoft.io/workload: worker

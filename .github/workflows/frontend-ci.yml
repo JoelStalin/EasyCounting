@@ -34,10 +34,10 @@ jobs:
         run: pnpm lint
       - name: Build admin portal
         working-directory: frontend
-        run: pnpm --filter @getupnet/admin-portal build
+        run: pnpm --filter @getupsoft/admin-portal build
       - name: Build client portal
         working-directory: frontend
-        run: pnpm --filter @getupnet/client-portal build
+        run: pnpm --filter @getupsoft/client-portal build
       - name: Upload dist artifacts
         uses: actions/upload-artifact@v4
         with:

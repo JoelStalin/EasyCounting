@@ -1,1 +1,1 @@
-Dashboards personalizados para GetUpNet. Importar paneles desde `prometheus`.
+Dashboards personalizados para getupsoft. Importar paneles desde `prometheus`.

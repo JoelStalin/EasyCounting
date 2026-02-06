@@ -1,12 +1,12 @@
 # 16 — Arquitectura de Microservicios y Plan de Despliegue en AWS EKS
 
-Este documento describe en detalle la arquitectura de referencia de GetUpNet y el plan de despliegue sobre Amazon Elastic Kubernetes Service (EKS). El objetivo es proveer una guía accionable que cumpla con los requisitos de multi-tenancy, seguridad (ISO/IEC 25010, PCI DSS 4.0, OWASP Top 10 2025) y las exigencias normativas de la DGII para el manejo de Comprobantes Fiscales Electrónicos (e-CF).
+Este documento describe en detalle la arquitectura de referencia de getupsoft y el plan de despliegue sobre Amazon Elastic Kubernetes Service (EKS). El objetivo es proveer una guía accionable que cumpla con los requisitos de multi-tenancy, seguridad (ISO/IEC 25010, PCI DSS 4.0, OWASP Top 10 2025) y las exigencias normativas de la DGII para el manejo de Comprobantes Fiscales Electrónicos (e-CF).
 
 ---
 
 ## 1. Visión general
 
-GetUpNet se compone de microservicios Python/FastAPI y procesos asíncronos que corren en contenedores. Cada servicio expone API REST protegidas con JWT, MFA TOTP y RBAC multi-tenant. Los artefactos se empaquetan como imágenes OCI y se orquestan en Kubernetes. Los portales web (Admin y Client) se entregan como aplicaciones SPA servidas desde S3/CloudFront y consumen la API vía un Ingress TLS 1.3.
+getupsoft se compone de microservicios Python/FastAPI y procesos asíncronos que corren en contenedores. Cada servicio expone API REST protegidas con JWT, MFA TOTP y RBAC multi-tenant. Los artefactos se empaquetan como imágenes OCI y se orquestan en Kubernetes. Los portales web (Admin y Client) se entregan como aplicaciones SPA servidas desde S3/CloudFront y consumen la API vía un Ingress TLS 1.3.
 
 La plataforma se alinea a los principios de:
 
@@ -71,11 +71,11 @@ Cada servicio expone `/healthz`, `/readyz` y `/metrics`. Los contenedores usan `
 
 1. **Cluster**: `eksctl`/Terraform crea clúster con versión >=1.29, dos node groups (general purpose y compute intensivo para sign_service). Nodes con Bottlerocket OS.
 2. **Namespaces**:
-   - `getupnet-system`: controladores (ingress, cert-manager, external-secrets).
-   - `getupnet-app`: microservicios productivos.
-   - `getupnet-observability`: Prometheus, Grafana, Loki, Tempo.
+   - `getupsoft-system`: controladores (ingress, cert-manager, external-secrets).
+   - `getupsoft-app`: microservicios productivos.
+   - `getupsoft-observability`: Prometheus, Grafana, Loki, Tempo.
 3. **Networking**: CNI Calico con políticas de red `deny-all` y reglas específicas por servicio. Service Mesh opcional (AWS App Mesh o Istio) para mTLS interno.
-4. **IRSA**: cada Deployment cuenta con ServiceAccount asociado a un rol IAM mínimo (por ejemplo `getupnet-sign-secrets` con permiso `secretsmanager:GetSecretValue`).
+4. **IRSA**: cada Deployment cuenta con ServiceAccount asociado a un rol IAM mínimo (por ejemplo `getupsoft-sign-secrets` con permiso `secretsmanager:GetSecretValue`).
 5. **Storage**: EFS CSI para compartir plantillas RI, EBS para bases de datos estadoful (si aplica). Preferible RDS/Aurora externo.
 6. **Escalado**: HPA configurado por CPU (60%), latencia (Prometheus Adapter) y `QueueDepth` (Dramatiq). Cluster Autoscaler habilitado.
 
@@ -83,7 +83,7 @@ Cada servicio expone `/healthz`, `/readyz` y `/metrics`. Los contenedores usan `
 
 ## 7. Proceso de aprovisionamiento (Terraform)
 
-1. **Estado remoto**: bucket S3 `getupnet-terraform-state` cifrado + DynamoDB `terraform-lock`.
+1. **Estado remoto**: bucket S3 `getupsoft-terraform-state` cifrado + DynamoDB `terraform-lock`.
 2. **Módulos**:
    - `network`: VPC / subredes / NAT / route tables.
    - `eks`: cluster, node groups, addons.
@@ -154,7 +154,7 @@ deploy/k8s/
 
 1. Terraform plan sin cambios pendientes.
 2. Certificados TLS (ACM) cargados y validados.
-3. Secrets Manager poblado (`/getupnet/{env}/database`, `/getupnet/{env}/redis`, `/getupnet/{tenant}/p12`).
+3. Secrets Manager poblado (`/getupsoft/{env}/database`, `/getupsoft/{env}/redis`, `/getupsoft/{tenant}/p12`).
 4. Reglas de Firewall/NetworkPolicy verificadas (pods solo comunican lo necesario).
 5. Dashboards Grafana publicados y alertas en SNS/Slack activas.
 6. Plan de rollback documentado (imágenes previas + snapshot DB/Redis + backups S3).

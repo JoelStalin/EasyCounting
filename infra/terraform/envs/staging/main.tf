@@ -133,15 +133,15 @@ module "alb" {
 
 module "ecr" {
   source       = "../../modules/ecr"
-  repositories = ["getupnet-api", "getupnet-nginx"]
+  repositories = ["getupsoft-api", "getupsoft-nginx"]
   tags         = var.tags
 }
 
 module "rds" {
   source              = "../../modules/rds"
   identifier          = "${var.name_prefix}-aurora"
-  database_name       = "getupnet"
-  master_username     = "getupnet"
+  database_name       = "getupsoft"
+  master_username     = "getupsoft"
   master_password     = var.db_master_password
   subnet_ids          = module.vpc.private_subnet_ids
   security_group_ids  = [aws_security_group.db.id]
@@ -163,9 +163,9 @@ module "secrets" {
   secrets = {
     api = {
       name        = "${var.name_prefix}/api"
-      description = "Credenciales API GetUpNet"
+      description = "Credenciales API getupsoft"
       value = {
-        DB_URL             = "postgresql+psycopg://getupnet:${var.db_master_password}@${module.rds.cluster_endpoint}:5432/getupnet"
+        DB_URL             = "postgresql+psycopg://getupsoft:${var.db_master_password}@${module.rds.cluster_endpoint}:5432/getupsoft"
         REDIS_URL          = "rediss://${module.elasticache.primary_endpoint}:6379/0"
         JWT_SECRET         = "changeme"
         HMAC_SERVICE_SECRET = "changeme"
@@ -177,7 +177,7 @@ module "secrets" {
 locals {
   api_container = [{
     name      = "api"
-    image     = "${module.ecr.repository_urls["getupnet-api"]}:latest"
+    image     = "${module.ecr.repository_urls["getupsoft-api"]}:latest"
     essential = true
     portMappings = [{
       containerPort = 8080

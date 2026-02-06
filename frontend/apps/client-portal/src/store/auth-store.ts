@@ -28,7 +28,7 @@ interface AuthState {
   clearSession: () => void;
 }
 
-const STORAGE_KEY = "getupnet-client-auth";
+const STORAGE_KEY = "getupsoft-client-auth";
 
 function readSession(): AuthSession | null {
   if (typeof window === "undefined") {

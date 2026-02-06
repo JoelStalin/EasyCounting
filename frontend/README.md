@@ -1,6 +1,6 @@
 # Frontend Monorepo (Admin & Client Portals)
 
-Este directorio contiene los frontends en React + Vite + Tailwind para el ecosistema GetUpNet.
+Este directorio contiene los frontends en React + Vite + Tailwind para el ecosistema getupsoft.
 
 ## Estructura
 
@@ -13,8 +13,8 @@ El workspace se orquesta con `pnpm`:
 
 ```bash
 pnpm install
-pnpm --filter @getupnet/admin-portal dev
-pnpm --filter @getupnet/client-portal dev
+pnpm --filter @getupsoft/admin-portal dev
+pnpm --filter @getupsoft/client-portal dev
 
 # Compilación de ambas apps
 pnpm build

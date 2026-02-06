@@ -4,7 +4,7 @@ metadata:
   name: logger-service
   labels:
     app.kubernetes.io/name: logger-service
-    app.kubernetes.io/part-of: getupnet
+    app.kubernetes.io/part-of: getupsoft
 spec:
   selector:
     app.kubernetes.io/name: logger-service

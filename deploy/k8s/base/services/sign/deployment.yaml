@@ -4,8 +4,8 @@ metadata:
   name: sign-service
   labels:
     app.kubernetes.io/name: sign-service
-    app.kubernetes.io/part-of: getupnet
-    getupnet.io/trusted: "true"
+    app.kubernetes.io/part-of: getupsoft
+    getupsoft.io/trusted: "true"
 spec:
   replicas: 2
   selector:
@@ -15,13 +15,13 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: sign-service
-        app.kubernetes.io/part-of: getupnet
-        getupnet.io/trusted: "true"
+        app.kubernetes.io/part-of: getupsoft
+        getupsoft.io/trusted: "true"
     spec:
       serviceAccountName: sign-service
       containers:
         - name: sign
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/sign-service:latest
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/sign-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -33,9 +33,9 @@ spec:
               value: "2"
           envFrom:
             - configMapRef:
-                name: getupnet-common
+                name: getupsoft-common
             - secretRef:
-                name: getupnet-secrets
+                name: getupsoft-secrets
           resources:
             requests:
               cpu: 500m
@@ -69,7 +69,7 @@ spec:
             medium: Memory
             sizeLimit: 64Mi
       nodeSelector:
-        getupnet.io/workload: crypto
+        getupsoft.io/workload: crypto
       tolerations:
         - key: "dedicated"
           operator: "Equal"

@@ -63,7 +63,7 @@ jobs:
           context: .
           file: deploy/Dockerfile.api
           push: false
-          tags: getupnet/api:test
+          tags: getupsoft/api:test
 
   security-audit:
     needs: lint-and-test

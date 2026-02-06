@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Script de despliegue automatizado para GetUpNet.
+# Script de despliegue automatizado para getupsoft.
 # Se encarga de construir las imágenes, ejecutar migraciones y levantar
 # los servicios definidos en deploy/docker-compose.yml.
 
@@ -11,7 +11,7 @@ ENV_FILE="$PROJECT_ROOT/.env.development"
 
 print_step() {
   echo
-  echo "[GetUpNet] $1"
+  echo "[getupsoft] $1"
 }
 
 require_command() {

@@ -38,7 +38,7 @@ def certificate_bundle(tmp_path_factory: pytest.TempPathFactory) -> Tuple[Path, 
         [
             x509.NameAttribute(NameOID.COUNTRY_NAME, "DO"),
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Test Company"),
-            x509.NameAttribute(NameOID.COMMON_NAME, "test.getupnet.local"),
+            x509.NameAttribute(NameOID.COMMON_NAME, "test.getupsoft.local"),
         ]
     )
     cert = (

@@ -1,5 +1,5 @@
 {
-  "name": "@getupnet/admin-portal",
+  "name": "@getupsoft/admin-portal",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@getupnet/api-client": "workspace:*",
-    "@getupnet/ui": "workspace:*",
+    "@getupsoft/api-client": "workspace:*",
+    "@getupsoft/ui": "workspace:*",
     "@tanstack/react-query": "^5.37.1",
     "axios": "^1.6.8",
     "class-variance-authority": "^0.7.0",

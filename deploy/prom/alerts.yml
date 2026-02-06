@@ -1,5 +1,5 @@
 groups:
-  - name: getupnet
+  - name: getupsoft
     rules:
       - alert: ApiDown
         expr: up{job="api"} == 0

@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket         = "getupnet-terraform"
+    bucket         = "getupsoft-terraform"
     key            = "prod/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "getupnet-terraform-locks"
+    dynamodb_table = "getupsoft-terraform-locks"
     encrypt        = true
   }
 }

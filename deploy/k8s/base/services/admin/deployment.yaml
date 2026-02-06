@@ -4,8 +4,8 @@ metadata:
   name: admin-service
   labels:
     app.kubernetes.io/name: admin-service
-    app.kubernetes.io/part-of: getupnet
-    getupnet.io/trusted: "true"
+    app.kubernetes.io/part-of: getupsoft
+    getupsoft.io/trusted: "true"
 spec:
   replicas: 2
   selector:
@@ -15,13 +15,13 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: admin-service
-        app.kubernetes.io/part-of: getupnet
-        getupnet.io/trusted: "true"
+        app.kubernetes.io/part-of: getupsoft
+        getupsoft.io/trusted: "true"
     spec:
       serviceAccountName: admin-service
       containers:
         - name: admin
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/admin-service:latest
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/admin-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -33,9 +33,9 @@ spec:
               value: plans,tenants,audit
           envFrom:
             - configMapRef:
-                name: getupnet-common
+                name: getupsoft-common
             - secretRef:
-                name: getupnet-secrets
+                name: getupsoft-secrets
           resources:
             requests:
               cpu: 200m
@@ -60,4 +60,4 @@ spec:
         runAsUser: 10001
         runAsGroup: 10001
       nodeSelector:
-        getupnet.io/workload: api
+        getupsoft.io/workload: api

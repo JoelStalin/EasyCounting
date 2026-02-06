@@ -1,5 +1,5 @@
 {
-  "name": "@getupnet/api-client",
+  "name": "@getupsoft/api-client",
   "version": "0.1.0",
   "type": "module",
   "main": "src/index.ts",

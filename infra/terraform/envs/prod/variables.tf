@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "name_prefix" {
   description = "Prefijo común"
   type        = string
-  default     = "getupnet-prod"
+  default     = "getupsoft-prod"
 }
 
 variable "domain_name" {
@@ -35,7 +35,7 @@ variable "tags" {
   description = "Etiquetas globales"
   type        = map(string)
   default = {
-    Project     = "GetUpNet"
+    Project     = "getupsoft"
     Environment = "production"
   }
 }

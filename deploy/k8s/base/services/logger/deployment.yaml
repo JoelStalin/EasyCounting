@@ -4,8 +4,8 @@ metadata:
   name: logger-service
   labels:
     app.kubernetes.io/name: logger-service
-    app.kubernetes.io/part-of: getupnet
-    getupnet.io/trusted: "true"
+    app.kubernetes.io/part-of: getupsoft
+    getupsoft.io/trusted: "true"
 spec:
   replicas: 2
   selector:
@@ -15,13 +15,13 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: logger-service
-        app.kubernetes.io/part-of: getupnet
-        getupnet.io/trusted: "true"
+        app.kubernetes.io/part-of: getupsoft
+        getupsoft.io/trusted: "true"
     spec:
       serviceAccountName: logger-service
       containers:
         - name: logger
-          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupnet/logger-service:latest
+          image: 123456789012.dkr.ecr.us-east-1.amazonaws.com/getupsoft/logger-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -30,12 +30,12 @@ spec:
             - name: SERVICE_NAME
               value: logger-service
             - name: AUDIT_BUCKET
-              value: getupnet-audit
+              value: getupsoft-audit
           envFrom:
             - configMapRef:
-                name: getupnet-common
+                name: getupsoft-common
             - secretRef:
-                name: getupnet-secrets
+                name: getupsoft-secrets
           resources:
             requests:
               cpu: 200m
@@ -60,4 +60,4 @@ spec:
         runAsUser: 10001
         runAsGroup: 10001
       nodeSelector:
-        getupnet.io/workload: api
+        getupsoft.io/workload: api

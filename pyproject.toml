@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "getupnet"
+name = "getupsoft"
 version = "0.1.0"
 description = "Plataforma DGII e-CF"
 authors = ["GetUpSoft <info@getupsoft.com.do>"]

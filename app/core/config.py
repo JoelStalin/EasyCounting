@@ -29,7 +29,7 @@ class Settings(BaseSettings):
     )
 
     # General application configuration
-    app_name: str = Field("GetUpNet API", description="Nombre expuesto en OpenAPI")
+    app_name: str = Field("getupsoft API", description="Nombre expuesto en OpenAPI")
     environment: str = Field("development", description="Entorno de despliegue actual")
     secret_key: str = Field("dev-secret", env="JWT_SECRET", description="Secreto para firmar JWT")
     hmac_service_secret: str = Field("dev-hmac", env="HMAC_SERVICE_SECRET", description="Secreto compartido entre microservicios")
@@ -45,7 +45,7 @@ class Settings(BaseSettings):
     metrics_enabled: bool = Field(True, description="Habilita la exposición de métricas Prometheus")
     sentry_dsn: Optional[str] = Field(None, env="SENTRY_DSN", description="DSN de Sentry opcional")
     storage_bucket: str = Field("local", description="Bucket/espacio para almacenamiento WORM")
-    storage_base_path: Path = Field(Path("/var/getupnet/storage"), description="Ruta por defecto para almacenamiento local")
+    storage_base_path: Path = Field(Path("/var/getupsoft/storage"), description="Ruta por defecto para almacenamiento local")
 
     # DGII specific configuration
     env: DGIIEnvironment = Field(DGIIEnvironment.PRECERT, alias="ENV", description="Ambiente DGII activo")

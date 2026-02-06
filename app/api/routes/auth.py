@@ -88,7 +88,7 @@ def _issue_tokens(*, user_id: str, tenant_id: int, role: str) -> tuple[str, str]
 
 @router.post("/login", response_model=_LoginResponse)
 async def login(payload: _LoginPayload, service: AuthService = Depends(get_service)) -> _LoginResponse:
-    if payload.email.lower() == "admin@getupnet.local":
+    if payload.email.lower() == "admin@getupsoft.local":
         service.bootstrap_admin(None)
 
     user, tokens = service.authenticate(payload.email, payload.password)

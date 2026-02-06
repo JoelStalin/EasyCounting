@@ -1,11 +1,11 @@
 {
-  "name": "@getupnet/frontend-workspace",
+  "name": "@getupsoft/frontend-workspace",
   "private": true,
   "version": "0.1.0",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
     "build": "pnpm -r run build",
     "lint": "pnpm -r exec tsc --noEmit",
-    "dev": "pnpm --filter @getupnet/admin-portal dev"
+    "dev": "pnpm --filter @getupsoft/admin-portal dev"
   }
 }

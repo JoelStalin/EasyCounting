@@ -1,6 +1,6 @@
 # Manifiestos Kubernetes (Amazon EKS)
 
-Este directorio contiene la estructura base de Kustomize para desplegar la plataforma GetUpNet en Amazon Elastic Kubernetes Service (EKS). Los manifiestos siguen las recomendaciones de seguridad (TLS 1.3, RBAC, IRSA, NetworkPolicies) y soportan los entornos `staging` y `production`.
+Este directorio contiene la estructura base de Kustomize para desplegar la plataforma getupsoft en Amazon Elastic Kubernetes Service (EKS). Los manifiestos siguen las recomendaciones de seguridad (TLS 1.3, RBAC, IRSA, NetworkPolicies) y soportan los entornos `staging` y `production`.
 
 ## Estructura
 
@@ -22,38 +22,38 @@ overlays/
 
 ## Variables y secretos
 
-Los Deployments consumen `ConfigMap` y un `Secret` denominado `getupnet-secrets`. En producción se recomienda gestionar los secretos mediante **External Secrets Operator** apuntando a **AWS Secrets Manager**. Ejemplo:
+Los Deployments consumen `ConfigMap` y un `Secret` denominado `getupsoft-secrets`. En producción se recomienda gestionar los secretos mediante **External Secrets Operator** apuntando a **AWS Secrets Manager**. Ejemplo:
 
 ```yaml
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: getupnet-secrets
+  name: getupsoft-secrets
 spec:
   refreshInterval: 1h
   secretStoreRef:
-    name: getupnet-secrets-store
+    name: getupsoft-secrets-store
     kind: ClusterSecretStore
   target:
-    name: getupnet-secrets
+    name: getupsoft-secrets
     creationPolicy: Merge
   data:
     - secretKey: DATABASE_URL
       remoteRef:
-        key: /getupnet/production/database
+        key: /getupsoft/production/database
     - secretKey: REDIS_URL
       remoteRef:
-        key: /getupnet/production/redis
+        key: /getupsoft/production/redis
     - secretKey: JWT_PRIVATE_KEY
       remoteRef:
-        key: /getupnet/security/jwt
+        key: /getupsoft/security/jwt
 ```
 
 ## Uso
 
 1. Autenticar contra AWS y obtener credenciales del clúster:
    ```bash
-   aws eks update-kubeconfig --name getupnet-prod --region us-east-1
+   aws eks update-kubeconfig --name getupsoft-prod --region us-east-1
    ```
 2. Aplicar la infraestructura base (cert-manager, external-secrets, ingress) según `docs/guide/16-arquitectura-eks.md`.
 3. Desplegar el entorno deseado:
@@ -64,14 +64,14 @@ spec:
    ```
 4. Verificar estado:
    ```bash
-   kubectl get pods -n getupnet-app
-   kubectl get hpa -n getupnet-app
+   kubectl get pods -n getupsoft-app
+   kubectl get hpa -n getupsoft-app
    ```
 
 ## Buenas prácticas
 
 - Actualiza las imágenes con tags firmados (`cosign`) antes de aplicar los parches.
-- Configura `PodSecurityStandards` en modo `baseline` como mínimo para el namespace `getupnet-app`.
+- Configura `PodSecurityStandards` en modo `baseline` como mínimo para el namespace `getupsoft-app`.
 - Ajusta `resources.requests/limits` según observaciones de Prometheus.
 - Añade `Ingress` y certificados TLS mediante `kustomize` o `Helm` complementario (nginx-ingress / AWS Load Balancer Controller).
 

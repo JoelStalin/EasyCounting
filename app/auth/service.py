@@ -41,7 +41,7 @@ class AuthService:
     def bootstrap_admin(self, db) -> User:
         """Crea un usuario administrador si no existen usuarios."""
 
-        existing = self.repository.get_by_email("admin@getupnet.local")
+        existing = self.repository.get_by_email("admin@getupsoft.local")
         if existing:
             return existing
 
@@ -60,7 +60,7 @@ class AuthService:
         mfa_secret = pyotp.random_base32() if settings.mfa_enabled else ""
         admin = User(
             tenant_id=tenant.id,
-            email="admin@getupnet.local",
+            email="admin@getupsoft.local",
             phone="0000000000",
             password_hash=hash_password("ChangeMe123!"),
             mfa_secret=mfa_secret,

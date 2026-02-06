@@ -3,8 +3,8 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@getupnet/ui": ["../../packages/ui/src"],
-      "@getupnet/api-client": ["../../packages/api-client/src"]
+      "@getupsoft/ui": ["../../packages/ui/src"],
+      "@getupsoft/api-client": ["../../packages/api-client/src"]
     }
   },
   "include": ["src"],
