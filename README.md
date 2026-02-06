@@ -69,7 +69,7 @@ make down
 | `ENVIRONMENT` | Entorno actual (`development`, `staging`, `production`). | `development` |
 | `DATABASE_URL` | URL SQLAlchemy async (`postgresql+asyncpg://`). | `postgresql+asyncpg://dgii:dgii@db:5432/dgii` |
 | `REDIS_URL` | URL Redis para rate limit / colas. | `redis://redis:6379/0` |
-| `CORS_ALLOW_ORIGINS` | Orígenes permitidos (lista separada por comas). | `https://api.dgii.getupsoft.do,https://staging.dgii.getupsoft.do` |
+| `CORS_ALLOW_ORIGINS` | Orígenes permitidos (lista separada por comas). | `https://api.dgii.getupsoft.com.do,https://staging.dgii.getupsoft.com.do` |
 | `RATE_LIMIT_PER_MINUTE` | Límite global por IP. | `100` |
 | `SENTRY_DSN` | DSN de Sentry (opcional). | — |
 | `SENTRY_TRACES` | Ratio de muestreo para APM. | `0.0` |

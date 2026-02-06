@@ -11,8 +11,12 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
 
+from app.api.routes.auth import me_router as portal_me_router
+from app.api.routes.auth import router as portal_auth_router
 from app.api.enfc_routes import router as enfc_router
 from app.api.router import api_router
+from app.dgii.jobs import start_dispatcher, stop_dispatcher
+from app.routers.admin import router as admin_router
 from app.db import check_database_connection
 from app.infra.logging import configure_logging
 from app.infra.settings import settings
@@ -68,6 +72,18 @@ def create_app() -> FastAPI:
     setup_security(app, allowed_origins=settings.cors_allow_origins)
     configure_rate_limiter(app, rate_limit_per_minute=settings.rate_limit_per_minute)
 
+    # Portal endpoints (used by React admin/client portals)
+    app.include_router(portal_auth_router, prefix="/auth", tags=["portal-auth"])
+    app.include_router(portal_me_router, tags=["portal-auth"])
+
+    # Versioned API (future stable contract)
+    app.include_router(portal_auth_router, prefix="/api/v1/auth", tags=["portal-auth"])
+    app.include_router(portal_me_router, prefix="/api/v1", tags=["portal-auth"])
+    app.include_router(admin_router, prefix="/api/v1")
+
+    # Legacy paths (kept for existing tests/integrations)
+    app.include_router(admin_router, prefix="/api")
+
     app.include_router(api_router, prefix="/api")
     app.include_router(enfc_router)
 
@@ -92,9 +108,18 @@ def create_app() -> FastAPI:
             LOGGER.exception("Failed to initialise rate limiter", extra={"redis_url": settings.redis_url})
             raise RuntimeError("Redis connection failed during startup") from exc
 
+        try:
+            await start_dispatcher()
+        except Exception as exc:  # pragma: no cover - defensive
+            LOGGER.exception("Failed to start DGII dispatcher", exc_info=exc)
+
     @app.on_event("shutdown")
     async def on_shutdown() -> None:
         await shutdown_rate_limiter(app)
+        try:
+            await stop_dispatcher()
+        except Exception as exc:  # pragma: no cover - defensive
+            LOGGER.exception("Failed to stop DGII dispatcher", exc_info=exc)
 
     @app.get("/healthz", tags=["infra"], include_in_schema=False)
     async def healthz() -> dict[str, str]:

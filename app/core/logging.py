@@ -58,7 +58,7 @@ def _sanitize_context(context: Dict[str, Any]) -> Dict[str, Any]:
 
     sanitized: Dict[str, Any] = {}
     for key, value in context.items():
-        if key.lower() in {"token", "password", "secret", "cert_password"}:
+        if key.lower() in {"token", "password", "secret", "cert_password", "track_id", "trackid"}:
             sanitized[key] = "***"
         else:
             sanitized[key] = value

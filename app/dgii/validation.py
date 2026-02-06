@@ -1,7 +1,10 @@
-from lxml import etree
+from __future__ import annotations
+
 from pathlib import Path
+from lxml import etree
 
 XSD_DIR = Path(__file__).parent.parent.parent / "xsd"
+
 
 class XSDValidator:
     def __init__(self, xsd_file: str):
@@ -33,6 +36,22 @@ class XSDValidator:
             return False
         except etree.XMLSyntaxError:
             return False
+
+
+def validate_xml(xml_content: bytes, xsd_file: str, *, raise_on_error: bool = True) -> bool:
+    """Validate an XML document against a known DGII XSD.
+
+    The repository stores official DGII schemas under the top-level `xsd/` folder.
+    """
+
+    validator = XSDValidator(xsd_file)
+    is_valid = validator.validate_xml(xml_content)
+    if is_valid:
+        return True
+    if raise_on_error:
+        raise ValueError(f"XML inválido contra XSD: {xsd_file}")
+    return False
+
 
 def get_validator_for(e_cf_type: str) -> XSDValidator:
     """

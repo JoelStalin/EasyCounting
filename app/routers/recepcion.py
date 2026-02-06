@@ -1,7 +1,11 @@
 """Recepción de e-CF y consulta de estado."""
 from __future__ import annotations
 
+import hashlib
+
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from app.billing.services import BillingError, BillingService, get_billing_service
 from app.core.config import settings
@@ -11,7 +15,10 @@ from app.dgii.jobs import dispatcher
 from app.dgii.schemas import ECFSubmission, StatusResponse, SubmissionResponse
 from app.dgii.signing import sign_ecf
 from app.dgii.validation import validate_xml
+from app.models.invoice import Invoice
+from app.models.tenant import Tenant
 from app.routers.dependencies import BearerToken, DGIIClientDep, bind_request_headers
+from app.shared.database import get_db
 
 router = APIRouter(prefix="/dgii/recepcion", tags=["DGII Recepción"])
 
@@ -22,6 +29,7 @@ async def enviar_ecf(
     token: str = BearerToken,
     client: DGIIClient = DGIIClientDep,
     billing_service: BillingService = Depends(get_billing_service),
+    db: Session = Depends(get_db),
     _trace = Depends(bind_request_headers),
 ) -> SubmissionResponse:
     document = payload.to_model()
@@ -29,19 +37,39 @@ async def enviar_ecf(
     validate_xml(xml, "ECF.xsd")
     signed_xml = sign_ecf(xml, str(settings.dgii_cert_p12_path), settings.dgii_cert_p12_password)
     bind_request_context(tipo_ecf=document.tipo_ecf, encf=document.encf)
-    async def _usage_callback(result: dict) -> None:
-        track_id = _extract_first(result, ["track_id", "trackId", "track"])
-        try:
-            billing_service.record_usage_for_rnc(
-                rnc=payload.rnc_emisor,
-                ecf_type=payload.tipo_ecf,
-                track_id=track_id,
-            )
-        except BillingError as exc:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
-
-    result = await client.send_ecf(signed_xml, token, usage_callback=_usage_callback)
+    result = await client.send_ecf(signed_xml, token)
     response = _build_submission_response(result)
+
+    tenant = db.scalar(select(Tenant).where(Tenant.rnc == payload.rnc_emisor))
+    if not tenant:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tenant no encontrado para el RNC emisor")
+
+    xml_hash = hashlib.sha256(signed_xml).hexdigest()
+    invoice = Invoice(
+        tenant_id=tenant.id,
+        encf=payload.encf,
+        tipo_ecf=payload.tipo_ecf[:3],
+        xml_path=f"xml/{payload.encf}.xml",
+        xml_hash=xml_hash,
+        estado_dgii=str(response.status),
+        track_id=response.track_id,
+        codigo_seguridad=None,
+        total=float(payload.monto_total),
+        fecha_emision=payload.fecha_emision,
+    )
+    db.add(invoice)
+    db.flush()
+
+    try:
+        billing_service.record_usage_for_rnc(
+            rnc=payload.rnc_emisor,
+            ecf_type=payload.tipo_ecf,
+            track_id=response.track_id,
+            invoice_id=invoice.id,
+        )
+    except BillingError as exc:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+
     await dispatcher.enqueue_status_check(response.track_id, token)
     return response
 

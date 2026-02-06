@@ -4,9 +4,10 @@ services:
       context: .
       dockerfile: Dockerfile
     image: dgii-ecf-web:latest
-    env_file: ${ENV_FILE:-.env.example}
+    env_file: ${ENV_FILE:-.env}
     environment:
       DATABASE_URL: postgresql+asyncpg://dgii:dgii@db:5432/dgii
+      DB_URL: postgresql+asyncpg://dgii:dgii@db:5432/dgii
       REDIS_URL: redis://redis:6379/0
       SENTRY_DSN: ${SENTRY_DSN-}
     depends_on:
@@ -36,6 +37,8 @@ services:
       POSTGRES_DB: dgii
       POSTGRES_USER: dgii
       POSTGRES_PASSWORD: dgii
+    ports:
+      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U dgii -d dgii"]
       interval: 10s
@@ -48,6 +51,8 @@ services:
   redis:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "no"]
+    ports:
+      - "6379:6379"
     restart: unless-stopped
 
 volumes:

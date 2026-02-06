@@ -38,7 +38,7 @@ Este documento establece las políticas mínimas de seguridad operativa para la 
 
 ## 6. Canales de soporte
 
-- Mesa de ayuda primaria: soporte@getupsoft.do
+- Mesa de ayuda primaria: soporte@getupsoft.com.do
 - Canal urgente: +1 (809) XXX-XXXX (24/7)
 - Escalamiento DGII: enlaces oficiales según ambiente (`PRECERT`, `CERT`, `PROD`).
 

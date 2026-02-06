@@ -8,10 +8,11 @@ from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
 from app.main import app
+from app.db import get_sync_session
 from app.models.invoice import Invoice
 from app.models.tenant import Tenant
 from app.models.accounting import InvoiceLedgerEntry, TenantSettings
-from app.shared.database import SessionLocal
+from app.shared.security import create_jwt
 
 
 def _create_tenant(session: Session, name: str, rnc: str) -> Tenant:
@@ -28,15 +29,19 @@ def _create_tenant(session: Session, name: str, rnc: str) -> Tenant:
 
 
 def _clear_tables() -> None:
-    with SessionLocal() as session:
+    with get_sync_session() as session:
         for model in (InvoiceLedgerEntry, TenantSettings, Invoice, Tenant):
             session.execute(delete(model))
-        session.commit()
+
+
+def _admin_headers() -> dict[str, str]:
+    token = create_jwt({"sub": "1", "tenant_id": 1, "role": "platform_admin"})
+    return {"Authorization": f"Bearer {token}"}
 
 
 def test_accounting_summary_returns_totals() -> None:
     _clear_tables()
-    with SessionLocal() as session:
+    with get_sync_session() as session:
         tenant = _create_tenant(session, "Empresa Demo", "12345678901")
         invoices = [
             Invoice(tenant_id=tenant.id, encf="E3100001", tipo_ecf="E31", xml_path="/tmp/a.xml", xml_hash="hash1", estado_dgii="ACEPTADO", total=Decimal("1000.00"), contabilizado=True, accounted_at=datetime.utcnow(), asiento_referencia="AS-001"),
@@ -47,7 +52,10 @@ def test_accounting_summary_returns_totals() -> None:
         session.commit()
 
     client = TestClient(app)
-    response = client.get(f"/api/admin/tenants/{tenant.id}/accounting/summary")
+    response = client.get(
+        f"/api/admin/tenants/{tenant.id}/accounting/summary",
+        headers=_admin_headers(),
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["totales"]["total_emitidos"] == 3
@@ -57,7 +65,7 @@ def test_accounting_summary_returns_totals() -> None:
 
 def test_create_ledger_entry_marks_invoice() -> None:
     _clear_tables()
-    with SessionLocal() as session:
+    with get_sync_session() as session:
         tenant = _create_tenant(session, "Empresa Ledger", "10987654321")
         invoice = Invoice(
             tenant_id=tenant.id,
@@ -81,13 +89,17 @@ def test_create_ledger_entry_marks_invoice() -> None:
         "credit": "750.00",
         "fecha": datetime.utcnow().isoformat(),
     }
-    response = client.post(f"/api/admin/tenants/{tenant.id}/accounting/ledger", json=payload)
+    response = client.post(
+        f"/api/admin/tenants/{tenant.id}/accounting/ledger",
+        json=payload,
+        headers=_admin_headers(),
+    )
     assert response.status_code == 201
     body = response.json()
     assert body["invoiceId"] == invoice.id
     assert body["referencia"] == "AS-2024-001"
 
-    with SessionLocal() as session:
+    with get_sync_session() as session:
         updated_invoice = session.get(Invoice, invoice.id)
         assert updated_invoice is not None
         assert updated_invoice.contabilizado is True
@@ -96,9 +108,8 @@ def test_create_ledger_entry_marks_invoice() -> None:
 
 def test_update_tenant_settings_roundtrip() -> None:
     _clear_tables()
-    with SessionLocal() as session:
+    with get_sync_session() as session:
         tenant = _create_tenant(session, "Empresa Config", "10293847561")
-        session.commit()
 
     client = TestClient(app)
     payload = {
@@ -111,13 +122,20 @@ def test_update_tenant_settings_roundtrip() -> None:
         "telefono_contacto": "+1-809-555-0000",
         "notas": "Config inicial",
     }
-    response = client.put(f"/api/admin/tenants/{tenant.id}/settings", json=payload)
+    response = client.put(
+        f"/api/admin/tenants/{tenant.id}/settings",
+        json=payload,
+        headers=_admin_headers(),
+    )
     assert response.status_code == 200
     data = response.json()
     assert data["moneda"] == "USD"
     assert data["cuenta_ingresos"] == "701-VENT"
 
-    get_response = client.get(f"/api/admin/tenants/{tenant.id}/settings")
+    get_response = client.get(
+        f"/api/admin/tenants/{tenant.id}/settings",
+        headers=_admin_headers(),
+    )
     assert get_response.status_code == 200
     fetched = get_response.json()
     assert fetched["correo_facturacion"] == "facturas@empresa.do"

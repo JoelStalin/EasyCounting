@@ -5,9 +5,13 @@ import asyncio
 from contextlib import suppress
 from typing import Tuple
 
+from sqlalchemy import select
+
 from app.core.config import Settings, settings
 from app.core.logging import bind_request_context
 from app.dgii.clients import DGIIClient
+from app.models.invoice import Invoice
+from app.shared.database import session_scope
 
 
 class DGIIJobDispatcher:
@@ -60,9 +64,21 @@ class DGIIJobDispatcher:
             result = await client.get_status(track_id, token)
             estado = result.get("estado") or result.get("status")
             bind_request_context(estado=estado or "desconocido").info("Estado DGII consultado")
+            if estado:
+                await asyncio.to_thread(_persist_invoice_status, track_id, str(estado))
 
 
 dispatcher = DGIIJobDispatcher()
+
+
+def _persist_invoice_status(track_id: str, estado: str) -> None:
+    with session_scope() as session:
+        invoices = session.scalars(select(Invoice).where(Invoice.track_id == track_id)).all()
+        if not invoices:
+            return
+        for invoice in invoices:
+            invoice.estado_dgii = estado
+        session.flush()
 
 
 async def start_dispatcher() -> None:

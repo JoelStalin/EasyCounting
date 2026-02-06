@@ -5,7 +5,7 @@ import ipaddress
 import socket
 import time
 from collections import defaultdict
-from typing import Dict
+from typing import Any, Dict, Optional
 
 import httpx
 from tenacity import AsyncRetrying, RetryError, retry_if_exception_type, stop_after_attempt, wait_exponential_jitter
@@ -77,9 +77,19 @@ async def post_xml(url: str, data: bytes, headers: dict[str, str]) -> httpx.Resp
         raise RuntimeError("DGII service unavailable") from exc
 
 
-async def get_json(url: str, headers: dict[str, str]) -> httpx.Response:
+async def post_multipart(url: str, *, files: dict[str, Any], headers: dict[str, str]) -> httpx.Response:
     try:
-        return await _request("GET", url, headers=headers)
+        return await _request("POST", url, files=files, headers=headers)
+    except RetryError as exc:
+        circuit = _circuit_breaker[httpx.URL(url).host]
+        circuit["failures"] += 1
+        circuit["opened_at"] = time.time()
+        raise RuntimeError("DGII service unavailable") from exc
+
+
+async def get_json(url: str, headers: dict[str, str], *, params: Optional[dict[str, Any]] = None) -> httpx.Response:
+    try:
+        return await _request("GET", url, headers=headers, params=params)
     except RetryError as exc:
         circuit = _circuit_breaker[httpx.URL(url).host]
         circuit["failures"] += 1

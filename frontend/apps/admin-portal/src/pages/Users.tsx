@@ -1,17 +1,22 @@
 import { DataTable } from "../components/DataTable";
+import { type PlatformUserItem, usePlatformUsers } from "../api/platform-users";
 
 interface PlatformUser {
+  id: number;
   email: string;
   role: string;
   scope: string;
 }
 
-const USERS: PlatformUser[] = [
-  { email: "super@getupnet.do", role: "super_admin", scope: "PLATFORM" },
-  { email: "ops@getupnet.do", role: "platform_admin", scope: "PLATFORM" },
-];
-
 export function PlatformUsersPage() {
+  const usersQuery = usePlatformUsers();
+  const rows: PlatformUser[] = (usersQuery.data ?? []).map((user: PlatformUserItem) => ({
+    id: user.id,
+    email: user.email,
+    role: user.role,
+    scope: user.scope,
+  }));
+
   return (
     <div className="space-y-6">
       <header className="flex items-center justify-between">
@@ -23,13 +28,19 @@ export function PlatformUsersPage() {
           Invitar usuario
         </button>
       </header>
+      {usersQuery.isError ? (
+        <div className="rounded-xl border border-rose-900/60 bg-rose-950/30 p-4 text-sm text-rose-200">
+          No se pudo cargar el listado de usuarios.
+        </div>
+      ) : null}
       <DataTable
-        data={USERS}
+        data={rows}
         columns={[
           { header: "Correo", cell: (row) => <span className="text-sm text-slate-200">{row.email}</span> },
           { header: "Rol", cell: (row) => <span className="text-sm text-slate-300">{row.role}</span> },
           { header: "Scope", cell: (row) => <span className="text-sm text-slate-300">{row.scope}</span> },
         ]}
+        emptyMessage={usersQuery.isLoading ? "Cargando usuarios…" : usersQuery.isError ? "Error cargando usuarios" : "Sin usuarios"}
       />
     </div>
   );

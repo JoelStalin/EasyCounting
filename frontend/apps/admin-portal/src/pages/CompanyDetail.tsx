@@ -1,6 +1,9 @@
-import { type PropsWithChildren, FormEvent, useEffect, useState } from "react";
+import { type ChangeEvent, type PropsWithChildren, FormEvent, useEffect, useState } from "react";
 import { NavLink, Outlet, useParams } from "react-router-dom";
 import { useAccountingSummary, useCreateLedgerEntry, useLedgerEntries, useTenantSettings, useUpdateTenantSettings } from "../api/accounting";
+import { useAdminInvoices } from "../api/dashboard";
+import { useAssignTenantPlan, useTenant, useTenantPlan } from "../api/tenants";
+import { type Plan, usePlans } from "../api/plans";
 
 const TABS = [
   { to: "overview", label: "Resumen" },
@@ -14,19 +17,28 @@ const TABS = [
 
 export function CompanyDetailLayout() {
   const { id } = useParams();
+  const tenantQuery = useTenant(id);
+  const tenant = tenantQuery.data;
 
   return (
     <div className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-2xl font-semibold text-white">Detalle de compañía #{id}</h1>
+        <h1 className="text-2xl font-semibold text-white">
+          {tenantQuery.isLoading ? "Cargando compañía…" : tenant ? `Compañía: ${tenant.name}` : `Detalle de compañía #${id}`}
+        </h1>
         <p className="text-sm text-slate-300">Consulta comprobantes, planes tarifarios y equipos delegados.</p>
       </header>
+      {tenantQuery.isError ? (
+        <div className="rounded-xl border border-rose-900/60 bg-rose-950/30 p-4 text-sm text-rose-200">
+          No se pudo cargar el detalle de la compañía.
+        </div>
+      ) : null}
       <nav className="flex flex-wrap gap-3">
         {TABS.map((tab) => (
           <NavLink
             key={tab.to}
             to={tab.to}
-            className={({ isActive }) =>
+            className={({ isActive }: { isActive: boolean }) =>
               `rounded-full border px-4 py-1 text-sm transition ${isActive ? "border-primary bg-primary/20 text-primary" : "border-slate-700 text-slate-300 hover:border-primary hover:text-primary"}`
             }
           >
@@ -42,19 +54,177 @@ export function CompanyDetailLayout() {
 }
 
 export function CompanyOverviewTab() {
+  const { id } = useParams();
+  const tenantQuery = useTenant(id);
+  const tenant = tenantQuery.data;
+
   return (
     <div className="space-y-4 text-sm text-slate-300">
-      <p>RNC emisor: <span className="font-mono text-slate-100">131093457</span></p>
-      <p>Ambiente actual: <span className="font-semibold text-primary">certecf</span></p>
+      <p>
+        RNC emisor: <span className="font-mono text-slate-100">{tenantQuery.isLoading ? "…" : tenant?.rnc ?? "—"}</span>
+      </p>
+      <p>
+        Ambiente actual: <span className="font-semibold text-primary">{tenantQuery.isLoading ? "…" : tenant?.env ?? "—"}</span>
+      </p>
       <p>Última sincronización DGII: hace 12 minutos.</p>
     </div>
   );
 }
 
 export function CompanyInvoicesTab() {
+  const { id } = useParams();
+  const tenantId = id ? Number(id) : undefined;
+  const [estado, setEstado] = useState<string>("");
+  const [dateFrom, setDateFrom] = useState<string>("");
+  const [dateTo, setDateTo] = useState<string>("");
+  const [page, setPage] = useState(1);
+
+  const invoicesQuery = useAdminInvoices({
+    tenantId,
+    page,
+    size: 20,
+    estado: estado || undefined,
+    dateFrom: dateFrom ? `${dateFrom}T00:00:00` : undefined,
+    dateTo: dateTo ? `${dateTo}T00:00:00` : undefined,
+  });
+  const invoices = invoicesQuery.data;
+
   return (
-    <div className="space-y-4 text-sm text-slate-300">
-      <p>Listado de comprobantes con filtros avanzados estará disponible en futuras iteraciones.</p>
+    <div className="space-y-5">
+      <div className="grid gap-3 md:grid-cols-4">
+        <div className="space-y-1">
+          <label className="text-xs uppercase tracking-wide text-slate-400">Estado DGII</label>
+          <select
+            value={estado}
+            onChange={(event: ChangeEvent<HTMLSelectElement>) => {
+              setEstado(event.target.value);
+              setPage(1);
+            }}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          >
+            <option value="">Todos</option>
+            <option value="ACEPTADO">ACEPTADO</option>
+            <option value="RECHAZADO">RECHAZADO</option>
+            <option value="pendiente">pendiente</option>
+          </select>
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs uppercase tracking-wide text-slate-400">Desde</label>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setDateFrom(event.target.value);
+              setPage(1);
+            }}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs uppercase tracking-wide text-slate-400">Hasta</label>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setDateTo(event.target.value);
+              setPage(1);
+            }}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </div>
+        <div className="flex items-end justify-end">
+          <button
+            type="button"
+            onClick={() => {
+              setEstado("");
+              setDateFrom("");
+              setDateTo("");
+              setPage(1);
+            }}
+            className="rounded-md border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-200 hover:border-primary hover:text-primary"
+          >
+            Limpiar filtros
+          </button>
+        </div>
+      </div>
+
+      {invoicesQuery.isError ? (
+        <div className="rounded-xl border border-rose-900/60 bg-rose-950/30 p-4 text-sm text-rose-200">
+          No se pudo cargar el listado de comprobantes.
+        </div>
+      ) : null}
+
+      <div className="overflow-x-auto rounded-xl border border-slate-800">
+        <table className="min-w-full divide-y divide-slate-800 text-sm text-slate-300">
+          <thead className="bg-slate-900/60 text-xs uppercase tracking-wide text-slate-400">
+            <tr>
+              <th className="px-3 py-2 text-left">Fecha</th>
+              <th className="px-3 py-2 text-left">ENCF</th>
+              <th className="px-3 py-2 text-left">Tipo</th>
+              <th className="px-3 py-2 text-left">TrackID</th>
+              <th className="px-3 py-2 text-left">Estado DGII</th>
+              <th className="px-3 py-2 text-right">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {invoices?.items.map((item) => (
+              <tr key={item.id} className="border-b border-slate-800/80 hover:bg-slate-900/40">
+                <td className="px-3 py-2">{new Date(item.fecha_emision).toLocaleString()}</td>
+                <td className="px-3 py-2 font-mono text-xs text-slate-400">{item.encf}</td>
+                <td className="px-3 py-2">{item.tipo_ecf}</td>
+                <td className="px-3 py-2 font-mono text-xs text-slate-400">{item.track_id ?? "—"}</td>
+                <td className="px-3 py-2">{item.estado_dgii}</td>
+                <td className="px-3 py-2 text-right">
+                  {Number(item.total).toLocaleString("es-DO", {
+                    style: "currency",
+                    currency: "DOP",
+                  })}
+                </td>
+              </tr>
+            ))}
+
+            {invoicesQuery.isLoading ? (
+              <tr>
+                <td className="px-3 py-6 text-center text-sm text-slate-500" colSpan={6}>
+                  Cargando comprobantes…
+                </td>
+              </tr>
+            ) : null}
+
+            {invoices && invoices.items.length === 0 && !invoicesQuery.isLoading ? (
+              <tr>
+                <td className="px-3 py-6 text-center text-sm text-slate-500" colSpan={6}>
+                  No hay comprobantes para los filtros actuales.
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex items-center justify-between text-xs text-slate-400">
+        <span>
+          Página {invoices?.page ?? page} · Total {invoices?.total ?? 0}
+        </span>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="rounded-md border border-slate-700 px-3 py-1.5 font-semibold text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Anterior
+          </button>
+          <button
+            type="button"
+            onClick={() => setPage((p) => p + 1)}
+            disabled={Boolean(invoices) && invoices.items.length < 20}
+            className="rounded-md border border-slate-700 px-3 py-1.5 font-semibold text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -74,7 +244,7 @@ export function CompanyAccountingTab() {
     fecha: new Date().toISOString().slice(0, 16),
   });
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
@@ -227,15 +397,60 @@ export function CompanyAccountingTab() {
 }
 
 export function CompanyPlansTab() {
+  const { id } = useParams();
+  const plansQuery = usePlans();
+  const tenantPlanQuery = useTenantPlan(id);
+  const assignPlan = useAssignTenantPlan(id);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
+
+  useEffect(() => {
+    const current = tenantPlanQuery.data?.plan?.id;
+    setSelectedPlanId(current ? String(current) : "");
+  }, [tenantPlanQuery.data?.plan?.id]);
+
+  const currentPlanName = tenantPlanQuery.data?.plan?.name ?? "Sin plan asignado";
+
   return (
     <div className="space-y-4 text-sm text-slate-300">
       <p>
-        Plan vigente: <span className="font-semibold text-primary">Plan Mixto Pro</span>
+        Plan vigente: <span className="font-semibold text-primary">{tenantPlanQuery.isLoading ? "Cargando…" : currentPlanName}</span>
       </p>
-      <p>Overrides: +RD$150 fijo por comprobante de contingencia.</p>
-      <button className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
-        Asignar nuevo plan
-      </button>
+
+      {plansQuery.isError || tenantPlanQuery.isError ? (
+        <div className="rounded-xl border border-rose-900/60 bg-rose-950/30 p-4 text-sm text-rose-200">
+          No se pudo cargar la información de planes.
+        </div>
+      ) : null}
+
+      <div className="grid gap-3 rounded-xl border border-slate-800 bg-slate-900/40 p-4 md:grid-cols-3">
+        <label className="space-y-1 text-sm text-slate-200 md:col-span-2">
+          Asignar plan
+          <select
+            value={selectedPlanId}
+            onChange={(e: ChangeEvent<HTMLSelectElement>) => setSelectedPlanId(e.target.value)}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+            disabled={plansQuery.isLoading || tenantPlanQuery.isLoading}
+          >
+            <option value="">Sin plan</option>
+            {(plansQuery.data ?? []).map((plan: Plan) => (
+              <option key={plan.id} value={String(plan.id)}>
+                {plan.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <div className="flex items-end justify-end">
+          <button
+            className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-slate-700"
+            disabled={assignPlan.isPending}
+            onClick={() => assignPlan.mutate(selectedPlanId ? Number(selectedPlanId) : null)}
+            type="button"
+          >
+            {assignPlan.isPending ? "Guardando…" : "Guardar"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -292,7 +507,7 @@ export function CompanySettingsTab() {
     }
   }, [settingsQuery.data]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: name === "dias_credito" ? Number(value) : value }));
   };

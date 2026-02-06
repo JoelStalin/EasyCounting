@@ -34,7 +34,12 @@ def create_jwt(payload: Dict[str, Any], expires_delta: dt.timedelta | None = Non
     now = dt.datetime.utcnow()
     if expires_delta is None:
         expires_delta = dt.timedelta(minutes=settings.access_token_exp_minutes)
-    payload = {**payload, "iat": now, "exp": now + expires_delta}
+    exp = now + expires_delta
+    payload = {
+        **payload,
+        "iat": int(now.timestamp()),
+        "exp": int(exp.timestamp()),
+    }
     return jwt.encode(payload, settings.secret_key, algorithm="HS256")
 
 

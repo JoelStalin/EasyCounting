@@ -9,6 +9,7 @@ from fastapi import HTTPException, status
 
 from app.auth.repository import AuthRepository
 from app.auth.schemas import LoginResponse
+from app.models.tenant import Tenant
 from app.models.user import User
 from app.shared.security import create_jwt, hash_password, verify_password
 from app.shared.settings import settings
@@ -43,13 +44,27 @@ class AuthService:
         existing = self.repository.get_by_email("admin@getupnet.local")
         if existing:
             return existing
+
+        tenant = self.repository.db.query(Tenant).order_by(Tenant.id.asc()).first()
+        if not tenant:
+            tenant = Tenant(
+                name="Platform",
+                rnc="00000000000",
+                env="PRECERT",
+                dgii_base_ecf="",
+                dgii_base_fc="",
+            )
+            self.repository.db.add(tenant)
+            self.repository.db.flush()
+
+        mfa_secret = pyotp.random_base32() if settings.mfa_enabled else ""
         admin = User(
-            tenant_id=1,
+            tenant_id=tenant.id,
             email="admin@getupnet.local",
             phone="0000000000",
             password_hash=hash_password("ChangeMe123!"),
-            mfa_secret=pyotp.random_base32(),
-            role="tenant_admin",
+            mfa_secret=mfa_secret,
+            role="platform_admin",
             status="activo",
         )
         return self.repository.create_user(admin)

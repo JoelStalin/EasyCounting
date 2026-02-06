@@ -2,7 +2,7 @@
 name = "getupnet"
 version = "0.1.0"
 description = "Plataforma DGII e-CF"
-authors = ["GetUpSoft <info@getupsoft.do>"]
+authors = ["GetUpSoft <info@getupsoft.com.do>"]
 license = "MIT"
 
 [tool.poetry.dependencies]

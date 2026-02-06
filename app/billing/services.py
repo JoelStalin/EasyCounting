@@ -95,8 +95,15 @@ class BillingService:
         self.db.flush()
         return record
 
-    def record_usage_for_rnc(self, *, rnc: str, ecf_type: str, track_id: str | None = None) -> UsageRecord:
-        return self.record_usage(rnc=rnc, ecf_type=ecf_type, track_id=track_id)
+    def record_usage_for_rnc(
+        self,
+        *,
+        rnc: str,
+        ecf_type: str,
+        track_id: str | None = None,
+        invoice_id: int | None = None,
+    ) -> UsageRecord:
+        return self.record_usage(rnc=rnc, ecf_type=ecf_type, track_id=track_id, invoice_id=invoice_id)
 
 
 def get_billing_service(db: Session = Depends(get_db)) -> BillingService:

@@ -1,4 +1,30 @@
+import { FormEvent, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useCreatePlan } from "../api/plans";
+
 export function PlanEditorPage() {
+  const navigate = useNavigate();
+  const createPlan = useCreatePlan();
+  const [form, setForm] = useState({
+    name: "",
+    precio_mensual: "0.00",
+    precio_por_documento: "0.0000",
+    documentos_incluidos: 0,
+    descripcion: "",
+  });
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    await createPlan.mutateAsync({
+      name: form.name,
+      precio_mensual: form.precio_mensual,
+      precio_por_documento: form.precio_por_documento,
+      documentos_incluidos: Number(form.documentos_incluidos) || 0,
+      descripcion: form.descripcion ? form.descripcion : null,
+    });
+    navigate("/plans");
+  };
+
   return (
     <div className="space-y-6">
       <header className="space-y-1">
@@ -7,49 +33,68 @@ export function PlanEditorPage() {
           Configura valores fijos, porcentajes y tramos escalonados siguiendo las fórmulas descritas en la guía 13.
         </p>
       </header>
-      <form className="space-y-4">
+      {createPlan.isError ? (
+        <div className="rounded-xl border border-rose-900/60 bg-rose-950/30 p-4 text-sm text-rose-200">
+          No se pudo guardar el plan.
+        </div>
+      ) : null}
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="space-y-2 text-sm text-slate-300">
             Nombre del plan
-            <input className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2" placeholder="Plan Mixto Pro" />
+            <input
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+              placeholder="Plan Mixto Pro"
+              value={form.name}
+              onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+            />
           </label>
           <label className="space-y-2 text-sm text-slate-300">
-            Tipo
-            <select className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2">
-              <option value="FIJO">FIJO</option>
-              <option value="PORCENTAJE">PORCENTAJE</option>
-              <option value="MIXTO">MIXTO</option>
-              <option value="ESCALONADO">ESCALONADO</option>
-            </select>
+            Incluidos
+            <input
+              type="number"
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+              value={form.documentos_incluidos}
+              onChange={(e) => setForm((prev) => ({ ...prev, documentos_incluidos: Number(e.target.value) }))}
+            />
           </label>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           <label className="space-y-2 text-sm text-slate-300">
-            Valor fijo (RD$)
-            <input type="number" className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2" />
+            Precio mensual
+            <input
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+              value={form.precio_mensual}
+              onChange={(e) => setForm((prev) => ({ ...prev, precio_mensual: e.target.value }))}
+            />
           </label>
           <label className="space-y-2 text-sm text-slate-300">
-            Porcentaje (%)
-            <input type="number" className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2" />
+            Precio por documento
+            <input
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+              value={form.precio_por_documento}
+              onChange={(e) => setForm((prev) => ({ ...prev, precio_por_documento: e.target.value }))}
+            />
           </label>
           <label className="space-y-2 text-sm text-slate-300">
-            Mínimo (RD$)
-            <input type="number" className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2" />
+            Descripción
+            <input
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+              value={form.descripcion}
+              onChange={(e) => setForm((prev) => ({ ...prev, descripcion: e.target.value }))}
+            />
           </label>
-        </div>
-        <div className="space-y-2 text-sm text-slate-300">
-          Tramos escalonados (JSON)
-          <textarea
-            className="h-40 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 font-mono text-xs"
-            placeholder='[{"from": 0, "to": 250000, "percent": 0.85}]'
-          />
         </div>
         <div className="flex justify-end gap-2">
           <button type="button" className="rounded-md border border-slate-700 px-4 py-2 text-sm text-slate-200">
             Cancelar
           </button>
-          <button type="submit" className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-            Guardar plan
+          <button
+            type="submit"
+            disabled={createPlan.isPending || !form.name}
+            className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:bg-slate-700"
+          >
+            {createPlan.isPending ? "Guardando…" : "Guardar plan"}
           </button>
         </div>
       </form>

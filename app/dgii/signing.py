@@ -1,13 +1,17 @@
+from __future__ import annotations
+
+from typing import Optional
+
+from cryptography.hazmat.primitives.serialization import Encoding, pkcs12
 from lxml import etree
 from signxml import (
+    CanonicalizationMethod,
+    DigestAlgorithm,
+    SignatureConstructionMethod,
+    SignatureMethod,
     XMLSigner,
     XMLVerifier,
-    SignatureMethod,
-    DigestAlgorithm,
-    CanonicalizationMethod,
-    SignatureConstructionMethod,
 )
-from cryptography.hazmat.primitives.serialization import pkcs12
 
 class XMLSigningService:
     def __init__(self, p12_path: str, p12_password: str):
@@ -42,11 +46,24 @@ class XMLSigningService:
         signed_root = signer.sign(
             root,
             key=self.private_key,
-            cert=self.certificate.public_bytes(pkcs12.Encoding.PEM),
+            cert=self.certificate.public_bytes(Encoding.PEM),
             reference_uri="",
         )
 
         return etree.tostring(signed_root, encoding="utf-8")
+
+
+def sign_ecf(xml_content: bytes, p12_path: str, p12_password: Optional[str]) -> bytes:
+    """Sign an XML document using a PKCS#12 bundle.
+
+    This is the canonical signing helper used by DGII flows (Semilla, e-CF, RFCE, etc.).
+    """
+
+    service = XMLSigningService(p12_path, p12_password or "")
+    signed = service.sign_xml(xml_content)
+    if not signed:
+        raise ValueError("El XML firmado está vacío")
+    return signed
 
 def verify_xml_signature(signed_xml_content: bytes, certificate: bytes) -> bool:
     """
