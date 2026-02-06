@@ -24,12 +24,6 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 
-def pytest_addoption(parser: pytest.Parser) -> None:
-    parser.addoption("--cov", action="append", default=[])
-    parser.addoption("--cov-report", action="append", default=[])
-    parser.addoption("--cov-fail-under", action="store", default=None)
-
-
 @pytest.fixture(scope="session")
 def certificate_bundle(tmp_path_factory: pytest.TempPathFactory) -> Tuple[Path, bytes, rsa.RSAPrivateKey, x509.Certificate]:
     cert_dir = tmp_path_factory.mktemp("certs")

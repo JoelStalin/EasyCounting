@@ -15,3 +15,8 @@ async def sign_xml(tenant: str, payload: SignXMLRequest) -> SignXMLResponse:
     """Firma un XML utilizando el certificado del tenant."""
 
     return service.sign(payload)
+
+
+@router.post("/sign/xml", response_model=SignXMLResponse)
+async def sign_xml_default(payload: SignXMLRequest) -> SignXMLResponse:
+    return service.sign(payload)

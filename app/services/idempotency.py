@@ -25,10 +25,19 @@ class IdempotencyStore:
 
     def __init__(self) -> None:
         self._records: Dict[str, IdempotencyRecord] = {}
-        self._lock = asyncio.Lock()
+        self._locks: Dict[int, asyncio.Lock] = {}
+
+    def _lock_for_loop(self) -> asyncio.Lock:
+        loop = asyncio.get_running_loop()
+        key = id(loop)
+        lock = self._locks.get(key)
+        if lock is None:
+            lock = asyncio.Lock()
+            self._locks[key] = lock
+        return lock
 
     async def get(self, key: str, payload_hash: str) -> Optional[IdempotencyRecord]:
-        async with self._lock:
+        async with self._lock_for_loop():
             record = self._records.get(key)
             if not record:
                 return None
@@ -48,7 +57,7 @@ class IdempotencyStore:
         body: Any,
         headers: Optional[Dict[str, str]] = None,
     ) -> None:
-        async with self._lock:
+        async with self._lock_for_loop():
             self._records[key] = IdempotencyRecord(
                 payload_hash=payload_hash,
                 status_code=status_code,
@@ -58,7 +67,7 @@ class IdempotencyStore:
             )
 
     async def clear(self) -> None:
-        async with self._lock:
+        async with self._lock_for_loop():
             self._records.clear()
 
 

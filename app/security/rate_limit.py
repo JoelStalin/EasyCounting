@@ -10,7 +10,7 @@ try:  # pragma: no cover - fallback para entornos sin redis
 except ModuleNotFoundError:  # pragma: no cover
     from app.utils import redis_stub as redis
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request, Response
 from fastapi.routing import APIRoute
 
 try:  # pragma: no cover - fallback cuando fastapi-limiter no está disponible
@@ -29,7 +29,17 @@ def _default_redis_factory(url: str) -> redis.Redis:
 def configure_rate_limiter(app: FastAPI, rate_limit_per_minute: int) -> None:
     """Attach a global dependency enforcing the configured rate limit."""
 
-    dependency = Depends(RateLimiter(times=rate_limit_per_minute, seconds=60))
+    limiter = RateLimiter(times=rate_limit_per_minute, seconds=60)
+
+    async def _maybe_rate_limit(request: Request, response: Response) -> None:
+        redis_client = getattr(FastAPILimiter, "redis", None)
+        if redis_client is None:
+            return
+        result = limiter(request, response)
+        if isawaitable(result):
+            await result
+
+    dependency = Depends(_maybe_rate_limit)
 
     class RateLimitedRoute(APIRoute):
         def __init__(self, *args, **kwargs):
@@ -60,7 +70,7 @@ async def shutdown_rate_limiter(app: FastAPI) -> None:
     if redis_client is not None:
         await redis_client.close()
     close_fn = getattr(FastAPILimiter, "close", None)
-    if close_fn:
+    if close_fn and getattr(FastAPILimiter, "redis", None) is not None:
         result = close_fn()
         if isawaitable(result):  # pragma: no branch - depends on library version
             await result

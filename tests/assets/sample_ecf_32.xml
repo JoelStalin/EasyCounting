@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <eCF>
   <Encabezado>
+    <ENCF>E3200000001</ENCF>
+    <TipoECF>32</TipoECF>
     <RNCEmisor>101234567</RNCEmisor>
     <RNCComprador>102345678</RNCComprador>
-    <TipoECF>32</TipoECF>
-    <ENCF>E3200000001</ENCF>
+    <FechaEmision>2024-05-01T10:00:00Z</FechaEmision>
     <MontoTotal>1000.00</MontoTotal>
   </Encabezado>
   <Detalle>
-    <Descripcion>Servicio</Descripcion>
-    <Cantidad>1.00</Cantidad>
-    <PrecioUnitario>1000.00</PrecioUnitario>
-    <Total>1000.00</Total>
+    <Item>
+      <Descripcion>Servicio</Descripcion>
+      <Cantidad>1.00</Cantidad>
+      <PrecioUnitario>1000.00</PrecioUnitario>
+      <Total>1000.00</Total>
+    </Item>
   </Detalle>
 </eCF>

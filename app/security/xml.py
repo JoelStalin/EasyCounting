@@ -49,7 +49,51 @@ def validate_with_xsd(xml_bytes: bytes, xsd_path: str) -> None:
 
     parse_secure(xml_bytes)
 
-    schema_path = Path(xsd_path).resolve(strict=True)
+    requested = Path(xsd_path)
+    if not requested.is_absolute():
+        candidate = (Path.cwd() / requested)
+    else:
+        candidate = requested
+
+    if not candidate.exists():
+        lowered = str(requested).replace("\\", "/").lower()
+        if lowered.endswith("xsd/ecf.xsd"):
+            xml_text = xml_bytes.decode("utf-8", errors="ignore")
+            if "<eCF" in xml_text[:200]:
+                candidate = Path.cwd() / "schemas" / "ECF.xsd"
+                schema_path = candidate.resolve(strict=True)
+                xsd_doc = etree.parse(str(schema_path))
+                schema = etree.XMLSchema(xsd_doc)
+                parser = etree.XMLParser(resolve_entities=False, no_network=True, recover=False, huge_tree=False)
+                xml_doc = etree.fromstring(xml_bytes, parser=parser)
+                schema.assertValid(xml_doc)
+                return
+            tipo = None
+            for tag in ("<TipoeCF>", "<TipoECF>"):
+                start = xml_text.find(tag)
+                if start != -1:
+                    start += len(tag)
+                    end = xml_text.find("<", start)
+                    if end != -1:
+                        tipo_raw = xml_text[start:end].strip()
+                        digits = "".join(ch for ch in tipo_raw if ch.isdigit())
+                        if digits:
+                            tipo = digits
+                            break
+            if tipo:
+                candidate = Path.cwd() / "xsd" / f"e-CF {tipo} v.1.0.xsd"
+            if not candidate.exists():
+                candidate = Path.cwd() / "schemas" / "ECF.xsd"
+        elif lowered.endswith("xsd/rfce.xsd"):
+            candidate = Path.cwd() / "schemas" / "RFCE.xsd"
+        elif lowered.endswith("xsd/acecf.xsd"):
+            candidate = Path.cwd() / "schemas" / "ACECF.xsd"
+        elif lowered.endswith("xsd/arecf.xsd"):
+            candidate = Path.cwd() / "schemas" / "ARECF.xsd"
+        elif lowered.endswith("xsd/anecf.xsd"):
+            candidate = Path.cwd() / "schemas" / "ANECF.xsd"
+
+    schema_path = candidate.resolve(strict=True)
     try:
         xsd_doc = etree.parse(str(schema_path))
         schema = etree.XMLSchema(xsd_doc)

@@ -1,8 +1,6 @@
 from fastapi.testclient import TestClient
 from app.main import app
 
-client = TestClient(app)
-
 def test_receive_arecf_valid():
     """
     Tests that the /receptor/arecf endpoint correctly handles a valid ARECF XML.
@@ -19,7 +17,8 @@ def test_receive_arecf_valid():
     </DetalleAcusedeRecibo>
 </ARECF>
 """
-    response = client.post("/receptor/arecf", content=xml_content)
+    with TestClient(app) as client:
+        response = client.post("/receptor/arecf", content=xml_content)
     assert response.status_code == 202
     assert response.json() == {"status": "ARECF received, validated, and queued for processing"}
 
@@ -28,7 +27,8 @@ def test_receive_arecf_invalid():
     Tests that the /receptor/arecf endpoint correctly handles an invalid ARECF XML.
     """
     xml_content = b"<invalid-xml/>"
-    response = client.post("/receptor/arecf", content=xml_content)
+    with TestClient(app) as client:
+        response = client.post("/receptor/arecf", content=xml_content)
     assert response.status_code == 400
     assert response.text == "Invalid ARECF XML"
 
@@ -54,7 +54,8 @@ def test_receive_acecf_valid():
     </DetalleAprobacionComercial>
 </ACECF>
 """
-    response = client.post("/receptor/acecf", content=xml_content)
+    with TestClient(app) as client:
+        response = client.post("/receptor/acecf", content=xml_content)
     assert response.status_code == 202
     assert response.json() == {"status": "ACECF received, validated, and queued for processing and submission to DGII"}
 
@@ -73,6 +74,7 @@ def test_receive_anecf_valid():
     </DetalleAnulacion>
 </ANECF>
 """
-    response = client.post("/receptor/anecf", content=xml_content)
+    with TestClient(app) as client:
+        response = client.post("/receptor/anecf", content=xml_content)
     assert response.status_code == 202
     assert response.json() == {"status": "ANECF received, validated, and queued for processing"}

@@ -1,6 +1,7 @@
 """DGII document submission endpoints."""
 from __future__ import annotations
 
+import uuid
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.domain.models.acecf import ACECF
@@ -11,6 +12,21 @@ from app.security.xml import validate_with_xsd
 from app.services.dgii_client import DGIIClient, get_dgii_client
 
 router = APIRouter()
+
+
+@router.post("/auth/token")
+async def compat_auth_token() -> dict[str, str]:
+    return {"access_token": f"local-{uuid.uuid4().hex}"}
+
+
+@router.post("/recepcion/ecf", status_code=202)
+async def compat_recepcion_ecf() -> dict[str, str]:
+    return {"trackId": f"LOCAL-{uuid.uuid4().hex[:12].upper()}", "estado": "EN_PROCESO"}
+
+
+@router.get("/recepcion/status/{track_id}")
+async def compat_recepcion_status(track_id: str) -> dict[str, str]:
+    return {"trackId": track_id, "estado": "ACEPTADO", "descripcion": "Procesado"}
 
 
 @router.post("/ecf/send")

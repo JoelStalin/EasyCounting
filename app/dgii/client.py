@@ -93,27 +93,50 @@ class _ConfigAdapter:
 
     @property
     def dgii_auth_base_url(self) -> str:
-        if hasattr(self.raw, "dgii_auth_base_url"):
+        try:
             return str(self.raw.dgii_auth_base_url)
-        return str(self.raw.url_for("auth"))
+        except AttributeError:
+            env = getattr(self.raw, "dgii_env", "PRECERT")
+            if env == "CERT":
+                return str(getattr(self.raw, "dgii_auth_base_url_cert", ""))
+            if env == "PROD":
+                return str(getattr(self.raw, "dgii_auth_base_url_prod", ""))
+            return str(getattr(self.raw, "dgii_auth_base_url_precert", ""))
 
     @property
     def dgii_recepcion_base_url(self) -> str:
-        if hasattr(self.raw, "dgii_recepcion_base_url"):
+        try:
             return str(self.raw.dgii_recepcion_base_url)
-        return str(self.raw.url_for("recepcion"))
+        except AttributeError:
+            env = getattr(self.raw, "dgii_env", "PRECERT")
+            if env == "CERT":
+                return str(getattr(self.raw, "dgii_recepcion_base_url_cert", ""))
+            if env == "PROD":
+                return str(getattr(self.raw, "dgii_recepcion_base_url_prod", ""))
+            return str(getattr(self.raw, "dgii_recepcion_base_url_precert", ""))
 
     @property
     def dgii_recepcion_fc_base_url(self) -> str:
-        if hasattr(self.raw, "dgii_recepcion_fc_base_url"):
+        try:
             return str(self.raw.dgii_recepcion_fc_base_url)
-        return str(self.raw.url_for("recepcion_fc"))
+        except AttributeError:
+            env = getattr(self.raw, "dgii_env", "PRECERT")
+            if env == "CERT":
+                return str(getattr(self.raw, "dgii_recepcion_fc_base_url_cert", ""))
+            if env == "PROD":
+                return str(getattr(self.raw, "dgii_recepcion_fc_base_url_prod", ""))
+            return str(getattr(self.raw, "dgii_recepcion_fc_base_url_precert", ""))
 
     @property
     def dgii_directorio_base_url(self) -> str:
         if hasattr(self.raw, "dgii_directorio_base_url"):
             return str(self.raw.dgii_directorio_base_url)
-        return str(self.raw.url_for("directorio"))
+        env = getattr(self.raw, "dgii_env", "PRECERT")
+        if env == "CERT":
+            return str(getattr(self.raw, "dgii_consulta_directorio_base_url_cert", getattr(self.raw, "dgii_consulta_directorio_base_url_precert", "")))
+        if env == "PROD":
+            return str(getattr(self.raw, "dgii_consulta_directorio_base_url_prod", getattr(self.raw, "dgii_consulta_directorio_base_url_precert", "")))
+        return str(getattr(self.raw, "dgii_consulta_directorio_base_url_precert", ""))
 
 
 class DGIIClient:

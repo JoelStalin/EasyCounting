@@ -17,13 +17,14 @@ from app.shared.database import session_scope
 class DGIIJobDispatcher:
     def __init__(self, config: Settings | None = None) -> None:
         self.config = config or settings
-        self._queue: asyncio.Queue[Tuple[str, str]] = asyncio.Queue()
+        self._queue: asyncio.Queue[Tuple[str, str]] | None = None
         self._worker: asyncio.Task[None] | None = None
         self._running = False
 
     async def start(self) -> None:
         if not self.config.jobs_enabled or self._running:
             return
+        self._queue = asyncio.Queue()
         self._running = True
         self._worker = asyncio.create_task(self._consume())
 
@@ -34,19 +35,26 @@ class DGIIJobDispatcher:
             with suppress(asyncio.CancelledError):
                 await self._worker
             self._worker = None
+        if self._queue is None:
+            return
         while not self._queue.empty():
             try:
                 self._queue.get_nowait()
                 self._queue.task_done()
             except asyncio.QueueEmpty:  # pragma: no cover - race guard
                 break
+        self._queue = None
 
     async def enqueue_status_check(self, track_id: str, token: str) -> None:
         if not self.config.jobs_enabled:
             return
+        if self._queue is None:
+            return
         await self._queue.put((track_id, token))
 
     async def _consume(self) -> None:
+        if self._queue is None:
+            return
         while True:
             try:
                 track_id, token = await self._queue.get()

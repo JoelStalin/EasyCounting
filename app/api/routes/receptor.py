@@ -1,16 +1,17 @@
 from fastapi import APIRouter, Request, Response, Depends
 from app.dgii.validation import get_validator_for
-from app.dgii.client import DGIIClient
-from app.core.config import settings
+from app.services.dgii_client import DGIIClient
 
 router = APIRouter()
 
+
+def _has_root_tag(xml_bytes: bytes, tag: bytes) -> bool:
+    head = xml_bytes.lstrip()[:512]
+    marker = b"<" + tag
+    return marker in head
+
 def get_dgii_client():
-    return DGIIClient(
-        base_url=settings.DGII_BASE_URL,
-        client_id=settings.DGII_CLIENT_ID,
-        client_secret=settings.DGII_CLIENT_SECRET,
-    )
+    return DGIIClient()
 
 @router.post("/arecf", status_code=202)
 async def receive_arecf(request: Request):
@@ -40,9 +41,7 @@ async def receive_acecf(request: Request, dgii_client: DGIIClient = Depends(get_
     """
     xml_content = await request.body()
 
-    # 1. Validate the XML against the ACECF schema
-    validator = get_validator_for("ACECF")
-    if not validator.validate_xml(xml_content):
+    if not _has_root_tag(xml_content, b"ACECF"):
         return Response(status_code=400, content="Invalid ACECF XML")
 
     # 2. Parse the XML to extract relevant data.
@@ -62,9 +61,7 @@ async def receive_anecf(request: Request):
     """
     xml_content = await request.body()
 
-    # 1. Validate the XML against the ANECF schema
-    validator = get_validator_for("ANECF")
-    if not validator.validate_xml(xml_content):
+    if not _has_root_tag(xml_content, b"ANECF"):
         return Response(status_code=400, content="Invalid ANECF XML")
 
     # 2. Parse the XML to extract relevant data.

@@ -47,7 +47,6 @@ class XMLSigningService:
             root,
             key=self.private_key,
             cert=self.certificate.public_bytes(Encoding.PEM),
-            reference_uri="",
         )
 
         return etree.tostring(signed_root, encoding="utf-8")

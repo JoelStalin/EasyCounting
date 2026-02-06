@@ -243,16 +243,16 @@ async def aprobacion_ecf(
     return _xml_response(root)  # type: ignore[return-value]
 
 
-@router.get("/autenticacion/api/semilla")
-async def obtener_semilla(request: Request) -> Response | Dict[str, Any]:
+@router.get("/autenticacion/api/semilla", response_model=None)
+async def obtener_semilla(request: Request) -> Any:
     semilla = emitir_semilla()
     if _accepts_json(request):
         return semilla
     return _semilla_to_xml(semilla)
 
 
-@router.post("/autenticacion/api/validacioncertificado")
-async def validacion_certificado(request: Request) -> Response | Dict[str, Any]:
+@router.post("/autenticacion/api/validacioncertificado", response_model=None)
+async def validacion_certificado(request: Request) -> Any:
     content_type = _normalize_content_type(request.headers.get("content-type"))
     if content_type == "application/json":
         req_json = await request.json()

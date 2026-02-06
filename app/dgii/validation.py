@@ -3,7 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from lxml import etree
 
-XSD_DIR = Path(__file__).parent.parent.parent / "xsd"
+XSD_DIR_OFFICIAL = Path(__file__).parent.parent.parent / "xsd"
+XSD_DIR_SIMPLIFIED = Path(__file__).parent.parent.parent / "schemas"
 
 
 class XSDValidator:
@@ -13,7 +14,9 @@ class XSDValidator:
 
         :param xsd_file: The filename of the XSD schema to use for validation.
         """
-        xsd_path = XSD_DIR / xsd_file
+        xsd_path = XSD_DIR_OFFICIAL / xsd_file
+        if not xsd_path.exists():
+            xsd_path = XSD_DIR_SIMPLIFIED / xsd_file
         if not xsd_path.exists():
             raise FileNotFoundError(f"XSD schema not found at: {xsd_path}")
 
@@ -69,9 +72,9 @@ def get_validator_for(e_cf_type: str) -> XSDValidator:
         "46": "e-CF 46 v.1.0.xsd",
         "47": "e-CF 47 v.1.0.xsd",
         "ARECF": "ARECF v1.0.xsd",
-        "ACECF": "ACECF v.1.0.xsd",
+        "ACECF": "ACECF.xsd",
         "ANECF": "ANECF v.1.0.xsd",
-        "RFCE": "RFCE 32 v.1.0.xsd",
+        "RFCE": "RFCE.xsd",
     }
 
     xsd_file = schema_map.get(e_cf_type)

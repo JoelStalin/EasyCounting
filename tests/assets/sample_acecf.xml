@@ -2,8 +2,7 @@
 <ACECF>
   <ENCF>E3200000001</ENCF>
   <RNCEmisor>101234567</RNCEmisor>
-  <RNCComprador>102345678</RNCComprador>
-  <Estado>A</Estado>
-  <Motivo>Aprobado</Motivo>
+  <RNCReceptor>102345678</RNCReceptor>
   <FechaAprobacion>2024-05-01T10:00:00</FechaAprobacion>
+  <Comentario>Aprobado</Comentario>
 </ACECF>

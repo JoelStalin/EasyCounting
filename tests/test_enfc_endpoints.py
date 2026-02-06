@@ -71,7 +71,7 @@ async def test_recepcion_ecf_no_idempotency_header(monkeypatch):
         "ecf_xml_b64": base64.b64encode(ECF_SAMPLE).decode(),
     }
     monkeypatch.setattr("app.services.recepcion_service.verify_xml_signature", lambda _xml: True)
-    monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("app.services.recepcion_service.validate_with_xsd", lambda *_args, **_kwargs: None)
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post("/fe/recepcion/api/ecf", json=payload, headers={"Accept": "application/json"})
     assert response.status_code == 200
@@ -80,7 +80,7 @@ async def test_recepcion_ecf_no_idempotency_header(monkeypatch):
 @pytest.mark.asyncio
 async def test_recepcion_ecf_success(monkeypatch):
     monkeypatch.setattr("app.services.recepcion_service.verify_xml_signature", lambda _xml: True)
-    monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("app.services.recepcion_service.validate_with_xsd", lambda *_args, **_kwargs: None)
     payload = {
         "formato": "XML",
         "ecf_xml_b64": base64.b64encode(ECF_SAMPLE).decode(),
@@ -107,7 +107,7 @@ async def test_recepcion_ecf_success(monkeypatch):
 @pytest.mark.asyncio
 async def test_recepcion_ecf_invalid_signature(monkeypatch):
     monkeypatch.setattr("app.services.recepcion_service.verify_xml_signature", lambda _xml: False)
-    monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("app.services.recepcion_service.validate_with_xsd", lambda *_args, **_kwargs: None)
     payload = {
         "formato": "XML",
         "ecf_xml_b64": base64.b64encode(ECF_SAMPLE).decode(),
@@ -125,7 +125,7 @@ async def test_recepcion_ecf_invalid_signature(monkeypatch):
 
 @pytest.mark.asyncio
 async def test_aprobacion_ecf_success(monkeypatch):
-    monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("app.services.aprobacion_service.validate_with_xsd", lambda *_args, **_kwargs: None)
     monkeypatch.setattr("app.services.aprobacion_service.verify_xml_signature", lambda _xml: True)
     payload = {
         "aprobacion_xml_b64": base64.b64encode(APROBACION_SAMPLE).decode(),
@@ -160,7 +160,7 @@ async def test_aprobacion_content_type_invalido():
 @pytest.mark.asyncio
 async def test_recepcion_multipart_xml(monkeypatch):
     monkeypatch.setattr("app.services.recepcion_service.verify_xml_signature", lambda _xml: True)
-    monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("app.services.recepcion_service.validate_with_xsd", lambda *_args, **_kwargs: None)
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post(
             "/fe/recepcion/api/ecf",

@@ -13,6 +13,8 @@ from prometheus_fastapi_instrumentator import Instrumentator
 
 from app.api.routes.auth import me_router as portal_me_router
 from app.api.routes.auth import router as portal_auth_router
+from app.api.routes.receptor import router as receptor_router
+from app.api.routes.ri import router as ri_router
 from app.api.enfc_routes import router as enfc_router
 from app.api.router import api_router
 from app.dgii.jobs import start_dispatcher, stop_dispatcher
@@ -28,7 +30,7 @@ LOGGER = logging.getLogger(__name__)
 INSTRUMENTATOR = Instrumentator(
     should_group_status_codes=True,
     should_ignore_untemplated=True,
-    should_respect_env_var=True,
+    should_respect_env_var=False,
     excluded_handlers={"/livez", "/readyz"},
 )
 
@@ -66,12 +68,17 @@ def create_app() -> FastAPI:
 
     app = FastAPI(title=settings.app_name, version="2.0.0", openapi_tags=[ENFC_TAG_METADATA])
 
+    if not getattr(app.state, "metrics_configured", False):
+        INSTRUMENTATOR.instrument(app).expose(app, include_in_schema=False, endpoint="/metrics")
+        app.state.metrics_configured = True
+
     app.add_middleware(GZipMiddleware, minimum_size=1024)
     trusted_hosts = sorted({*settings.dgii_allowed_hosts, "localhost", "127.0.0.1", "testserver", "test"})
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=trusted_hosts)
 
     setup_security(app, allowed_origins=settings.cors_allow_origins)
-    configure_rate_limiter(app, rate_limit_per_minute=settings.rate_limit_per_minute)
+    if settings.environment.lower() in {"production", "prod"}:
+        configure_rate_limiter(app, rate_limit_per_minute=settings.rate_limit_per_minute)
 
     # Portal endpoints (used by React admin/client portals)
     app.include_router(portal_auth_router, prefix="/auth", tags=["portal-auth"])
@@ -88,7 +95,10 @@ def create_app() -> FastAPI:
     app.include_router(cliente_router, prefix="/api")
 
     app.include_router(api_router, prefix="/api")
+    app.include_router(api_router, prefix="/api/1")
     app.include_router(enfc_router)
+    app.include_router(receptor_router, prefix="/receptor", tags=["receptor"])
+    app.include_router(ri_router, prefix="/ri", tags=["ri"])
 
     @app.middleware("http")
     async def security_headers(request: Request, call_next) -> Response:  # type: ignore[override]
@@ -106,13 +116,16 @@ def create_app() -> FastAPI:
             INSTRUMENTATOR.instrument(app).expose(app, include_in_schema=False, endpoint="/metrics")
             app.state.metrics_configured = True
         try:
-            await init_rate_limiter(app, settings.redis_url)
+            if settings.environment.lower() in {"production", "prod"}:
+                await init_rate_limiter(app, settings.redis_url)
         except Exception as exc:  # pragma: no cover - fail fast
             LOGGER.exception("Failed to initialise rate limiter", extra={"redis_url": settings.redis_url})
-            raise RuntimeError("Redis connection failed during startup") from exc
+            if settings.environment.lower() in {"production", "prod"}:
+                raise RuntimeError("Redis connection failed during startup") from exc
 
         try:
-            await start_dispatcher()
+            if settings.environment.lower() in {"production", "prod"}:
+                await start_dispatcher()
         except Exception as exc:  # pragma: no cover - defensive
             LOGGER.exception("Failed to start DGII dispatcher", exc_info=exc)
 

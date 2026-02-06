@@ -3,7 +3,7 @@
   <ENCF>E3200000001</ENCF>
   <TrackId>TRACK123</TrackId>
   <RNCEmisor>101234567</RNCEmisor>
-  <RNCComprador>102345678</RNCComprador>
-  <Estado>RECIBIDO</Estado>
+  <RNCReceptor>102345678</RNCReceptor>
   <FechaRecepcion>2024-05-01T10:00:00</FechaRecepcion>
+  <Estado>RECIBIDO</Estado>
 </ARECF>

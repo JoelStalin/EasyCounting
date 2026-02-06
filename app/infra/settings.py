@@ -1,6 +1,7 @@
 """Application settings module."""
 from __future__ import annotations
 
+import json
 from functools import lru_cache
 from typing import List, Literal, Set
 
@@ -12,16 +13,13 @@ from sqlalchemy.engine import make_url
 class Settings(BaseSettings):
     """Centralised configuration for the DGII service."""
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=True)
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=True, env_ignore_empty=True)
 
     app_name: str = Field(default="DGII e-CF API")
     environment: constr(strip_whitespace=True) = Field(default="development")
 
-    cors_allow_origins: List[str] = Field(
-        default_factory=lambda: [
-            "https://api.dgii.getupsoft.com.do",
-            "https://staging.dgii.getupsoft.com.do",
-        ],
+    cors_allow_origins_raw: str | None = Field(
+        default=None,
         validation_alias=AliasChoices("CORS_ALLOW_ORIGINS", "FRONTEND_ORIGINS"),
     )
     rate_limit_per_minute: int = Field(default=100, ge=1)
@@ -40,14 +38,7 @@ class Settings(BaseSettings):
     sentry_traces_sample_rate: float = Field(default=0.0, ge=0.0, le=1.0, alias="SENTRY_TRACES")
 
     dgii_env: Literal["PRECERT", "CERT", "PROD"] = Field(default="PRECERT", validation_alias=AliasChoices("DGII_ENV", "ENV"))
-    dgii_allowed_hosts: Set[str] = Field(
-        default_factory=lambda: {
-            "ecf.dgii.gov.do",
-            "fc.dgii.gov.do",
-            "servicios.dgii.gov.do",
-            "eCF.dgii.gov.do",
-        }
-    )
+    dgii_allowed_hosts_raw: str | None = Field(default=None, validation_alias=AliasChoices("DGII_ALLOWED_HOSTS"))
 
     # Official DGII services (base URLs by environment)
     dgii_auth_base_url_precert: AnyUrl = Field(
@@ -142,27 +133,41 @@ class Settings(BaseSettings):
     enfc_token_ttl_seconds: int = Field(default=900, ge=60, le=86400, validation_alias=AliasChoices("ENFC_TOKEN_TTL_SECONDS"))
     enfc_require_x509_signature: bool = Field(default=False, validation_alias=AliasChoices("ENFC_REQUIRE_X509_SIGNATURE"))
 
-    @field_validator("cors_allow_origins", mode="before")
-    @classmethod
-    def _split_cors_allow_origins(cls, value):
-        if value is None:
+    @staticmethod
+    def _parse_csv_or_json_array(value: str) -> list[str]:
+        stripped = value.strip()
+        if not stripped:
             return []
-        if isinstance(value, list):
-            return value
-        if isinstance(value, str):
-            return [item.strip() for item in value.split(",") if item.strip()]
-        return value
+        if stripped.startswith("["):
+            try:
+                decoded = json.loads(stripped)
+            except json.JSONDecodeError:
+                decoded = None
+            if isinstance(decoded, list):
+                return [str(item).strip() for item in decoded if str(item).strip()]
+        return [item.strip() for item in stripped.split(",") if item.strip()]
 
-    @field_validator("dgii_allowed_hosts", mode="before")
-    @classmethod
-    def _split_dgii_allowed_hosts(cls, value):
-        if value is None:
-            return set()
-        if isinstance(value, (set, list, tuple)):
-            return set(value)
-        if isinstance(value, str):
-            return {item.strip() for item in value.split(",") if item.strip()}
-        return value
+    @computed_field
+    @property
+    def cors_allow_origins(self) -> List[str]:
+        if self.cors_allow_origins_raw is None:
+            return [
+                "https://api.dgii.getupsoft.com.do",
+                "https://staging.dgii.getupsoft.com.do",
+            ]
+        return self._parse_csv_or_json_array(self.cors_allow_origins_raw)
+
+    @computed_field
+    @property
+    def dgii_allowed_hosts(self) -> Set[str]:
+        if self.dgii_allowed_hosts_raw is None:
+            return {
+                "ecf.dgii.gov.do",
+                "fc.dgii.gov.do",
+                "servicios.dgii.gov.do",
+                "eCF.dgii.gov.do",
+            }
+        return set(self._parse_csv_or_json_array(self.dgii_allowed_hosts_raw))
 
     @computed_field
     @property
@@ -247,13 +252,6 @@ class Settings(BaseSettings):
 
         async_url = url.set(drivername=f"{dialect}+asyncpg")
         return async_url.render_as_string(hide_password=False)
-
-    @field_validator("cors_allow_origins", mode="before")
-    @classmethod
-    def _parse_origins(cls, value: List[str] | str) -> List[str]:
-        if isinstance(value, str):
-            return [origin.strip() for origin in value.split(",") if origin.strip()]
-        return [origin.strip() for origin in value]
 
 
 @lru_cache

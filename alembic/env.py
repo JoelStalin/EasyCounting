@@ -2,12 +2,18 @@ from __future__ import annotations
 
 import asyncio
 import os
+import sys
 from logging.config import fileConfig
+from pathlib import Path
 
 from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine, async_engine_from_config
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from app.infra.settings import settings
 from app.models import anecf, approval, audit, base, invoice, receipt, rfce, storage, tenant, user
@@ -15,7 +21,10 @@ from app.models import anecf, approval, audit, base, invoice, receipt, rfce, sto
 config = context.config
 
 if config.config_file_name is not None:
-    fileConfig(config.config_file_name)
+    try:
+        fileConfig(config.config_file_name)
+    except KeyError:
+        pass
 
 config.set_main_option("sqlalchemy.url", os.getenv("DATABASE_URL", settings.sqlalchemy_async_url))
 
