@@ -9,6 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.models.billing import Plan, UsageRecord
+from app.models.invoice import Invoice
 from app.models.tenant import Tenant
 from app.shared.database import get_db
 
@@ -69,6 +70,55 @@ class BillingService:
             return Decimal("0")
         precio = context.plan.precio_por_documento or Decimal("0")
         return Decimal(str(precio))
+
+    def assert_ecf_allowed(
+        self,
+        *,
+        rnc: str,
+        rnc_receptor: str | None,
+        monto_total: Decimal,
+        when: datetime | None = None,
+    ) -> None:
+        tenant = self._resolve_tenant(rnc=rnc)
+        context = self._prepare_context(tenant)
+        reference = when or context.now
+        start, end = self._month_window(reference)
+
+        max_monto = context.plan.max_monto_por_factura or Decimal("0")
+        if max_monto and monto_total > max_monto:
+            raise BillingError(
+                f"Monto por factura excede el límite del plan (max {max_monto} DOP)"
+            )
+
+        max_facturas_mes = int(context.plan.max_facturas_mes or 0)
+        if max_facturas_mes:
+            facturas_mes = self.db.scalar(
+                select(func.count(Invoice.id)).where(
+                    Invoice.tenant_id == context.tenant.id,
+                    Invoice.fecha_emision >= start,
+                    Invoice.fecha_emision < end,
+                )
+            ) or 0
+            if int(facturas_mes) >= max_facturas_mes:
+                raise BillingError(
+                    f"Límite mensual de facturas excedido para el plan (max {max_facturas_mes}/mes)"
+                )
+
+        max_por_receptor = int(context.plan.max_facturas_por_receptor_mes or 0)
+        if max_por_receptor and rnc_receptor:
+            facturas_receptor = self.db.scalar(
+                select(func.count(Invoice.id)).where(
+                    Invoice.tenant_id == context.tenant.id,
+                    Invoice.rnc_receptor == rnc_receptor,
+                    Invoice.fecha_emision >= start,
+                    Invoice.fecha_emision < end,
+                )
+            ) or 0
+            if int(facturas_receptor) >= max_por_receptor:
+                raise BillingError(
+                    "Límite mensual de facturas por cliente excedido para el plan "
+                    f"(max {max_por_receptor}/cliente/mes)"
+                )
 
     def record_usage(
         self,

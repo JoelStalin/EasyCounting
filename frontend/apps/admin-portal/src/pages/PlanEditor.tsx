@@ -10,6 +10,9 @@ export function PlanEditorPage() {
     precio_mensual: "0.00",
     precio_por_documento: "0.0000",
     documentos_incluidos: 0,
+    max_facturas_mes: 0,
+    max_facturas_por_receptor_mes: 0,
+    max_monto_por_factura: "0.00",
     descripcion: "",
   });
 
@@ -20,6 +23,9 @@ export function PlanEditorPage() {
       precio_mensual: form.precio_mensual,
       precio_por_documento: form.precio_por_documento,
       documentos_incluidos: Number(form.documentos_incluidos) || 0,
+      max_facturas_mes: Number(form.max_facturas_mes) || 0,
+      max_facturas_por_receptor_mes: Number(form.max_facturas_por_receptor_mes) || 0,
+      max_monto_por_factura: form.max_monto_por_factura || "0.00",
       descripcion: form.descripcion ? form.descripcion : null,
     });
     navigate("/plans");
@@ -56,6 +62,34 @@ export function PlanEditorPage() {
               className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
               value={form.documentos_incluidos}
               onChange={(e) => setForm((prev) => ({ ...prev, documentos_incluidos: Number(e.target.value) }))}
+            />
+          </label>
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          <label className="space-y-2 text-sm text-slate-300">
+            Máx. facturas/mes
+            <input
+              type="number"
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+              value={form.max_facturas_mes}
+              onChange={(e) => setForm((prev) => ({ ...prev, max_facturas_mes: Number(e.target.value) }))}
+            />
+          </label>
+          <label className="space-y-2 text-sm text-slate-300">
+            Máx. facturas/cliente/mes
+            <input
+              type="number"
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+              value={form.max_facturas_por_receptor_mes}
+              onChange={(e) => setForm((prev) => ({ ...prev, max_facturas_por_receptor_mes: Number(e.target.value) }))}
+            />
+          </label>
+          <label className="space-y-2 text-sm text-slate-300">
+            Máx. monto por factura (DOP)
+            <input
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+              value={form.max_monto_por_factura}
+              onChange={(e) => setForm((prev) => ({ ...prev, max_monto_por_factura: e.target.value }))}
             />
           </label>
         </div>

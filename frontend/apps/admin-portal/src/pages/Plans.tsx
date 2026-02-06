@@ -6,6 +6,9 @@ interface PlanRow {
   id: number;
   name: string;
   documentos_incluidos: number;
+  max_facturas_mes: number;
+  max_facturas_por_receptor_mes: number;
+  max_monto_por_factura: string;
   precio_mensual: string;
   precio_por_documento: string;
 }
@@ -16,6 +19,9 @@ export function PlansPage() {
     id: plan.id,
     name: plan.name,
     documentos_incluidos: plan.documentos_incluidos,
+    max_facturas_mes: plan.max_facturas_mes,
+    max_facturas_por_receptor_mes: plan.max_facturas_por_receptor_mes,
+    max_monto_por_factura: plan.max_monto_por_factura,
     precio_mensual: plan.precio_mensual,
     precio_por_documento: plan.precio_por_documento,
   }));
@@ -41,6 +47,22 @@ export function PlansPage() {
         columns={[
           { header: "Nombre", cell: (row) => <span className="font-semibold text-slate-200">{row.name}</span> },
           { header: "Incluidos", cell: (row) => <span className="text-sm text-slate-300">{row.documentos_incluidos}</span> },
+          { header: "Máx/mes", cell: (row) => <span className="text-sm text-slate-300">{row.max_facturas_mes || "—"}</span> },
+          {
+            header: "Máx/cliente",
+            cell: (row) => <span className="text-sm text-slate-300">{row.max_facturas_por_receptor_mes || "—"}</span>,
+          },
+          {
+            header: "Máx monto",
+            cell: (row) => (
+              <span className="text-sm text-slate-300">
+                {Number(row.max_monto_por_factura || 0).toLocaleString("es-DO", {
+                  style: "currency",
+                  currency: "DOP",
+                })}
+              </span>
+            ),
+          },
           { header: "Mensual", cell: (row) => <span className="text-sm text-slate-300">{row.precio_mensual}</span> },
           { header: "Por doc.", cell: (row) => <span className="text-sm text-slate-300">{row.precio_por_documento}</span> },
         ]}

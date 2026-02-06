@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
@@ -32,6 +33,16 @@ async def enviar_ecf(
     db: Session = Depends(get_db),
     _trace = Depends(bind_request_headers),
 ) -> SubmissionResponse:
+    try:
+        billing_service.assert_ecf_allowed(
+            rnc=payload.rnc_emisor,
+            rnc_receptor=payload.rnc_receptor,
+            monto_total=Decimal(str(payload.monto_total)),
+            when=payload.fecha_emision,
+        )
+    except BillingError as exc:
+        raise HTTPException(status_code=status.HTTP_402_PAYMENT_REQUIRED, detail=str(exc)) from exc
+
     document = payload.to_model()
     xml = document.to_xml_bytes()
     validate_xml(xml, "ECF.xsd")
@@ -49,6 +60,7 @@ async def enviar_ecf(
         tenant_id=tenant.id,
         encf=payload.encf,
         tipo_ecf=payload.tipo_ecf[:3],
+        rnc_receptor=payload.rnc_receptor,
         xml_path=f"xml/{payload.encf}.xml",
         xml_hash=xml_hash,
         estado_dgii=str(response.status),
@@ -68,7 +80,7 @@ async def enviar_ecf(
             invoice_id=invoice.id,
         )
     except BillingError as exc:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+        raise HTTPException(status_code=status.HTTP_402_PAYMENT_REQUIRED, detail=str(exc)) from exc
 
     await dispatcher.enqueue_status_check(response.track_id, token)
     return response

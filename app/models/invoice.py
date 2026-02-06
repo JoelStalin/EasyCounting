@@ -19,6 +19,7 @@ class Invoice(Base):
     tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id", ondelete="CASCADE"))
     encf: Mapped[str] = mapped_column(String(20), index=True)
     tipo_ecf: Mapped[str] = mapped_column(String(3))
+    rnc_receptor: Mapped[str | None] = mapped_column(String(11), index=True, nullable=True)
     xml_path: Mapped[str] = mapped_column(String(255))
     xml_hash: Mapped[str] = mapped_column(String(128))
     estado_dgii: Mapped[str] = mapped_column(String(30), default="pendiente")

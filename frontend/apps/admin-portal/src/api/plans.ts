@@ -7,6 +7,9 @@ export interface Plan {
   precio_mensual: string;
   precio_por_documento: string;
   documentos_incluidos: number;
+  max_facturas_mes: number;
+  max_facturas_por_receptor_mes: number;
+  max_monto_por_factura: string;
   descripcion: string | null;
   created_at: string;
   updated_at: string;
@@ -17,6 +20,9 @@ export interface PlanCreatePayload {
   precio_mensual: string;
   precio_por_documento: string;
   documentos_incluidos: number;
+  max_facturas_mes: number;
+  max_facturas_por_receptor_mes: number;
+  max_monto_por_factura: string;
   descripcion: string | null;
 }
 
@@ -25,6 +31,9 @@ export interface PlanUpdatePayload {
   precio_mensual?: string;
   precio_por_documento?: string;
   documentos_incluidos?: number;
+  max_facturas_mes?: number;
+  max_facturas_por_receptor_mes?: number;
+  max_monto_por_factura?: string;
   descripcion?: string | null;
 }
 

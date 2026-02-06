@@ -20,6 +20,9 @@ class Plan(Base):
     precio_mensual: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0"))
     precio_por_documento: Mapped[Decimal] = mapped_column(Numeric(12, 4), default=Decimal("0"))
     documentos_incluidos: Mapped[int] = mapped_column(default=0)
+    max_facturas_mes: Mapped[int] = mapped_column(default=0)
+    max_facturas_por_receptor_mes: Mapped[int] = mapped_column(default=0)
+    max_monto_por_factura: Mapped[Decimal] = mapped_column(Numeric(16, 2), default=Decimal("0"))
     descripcion: Mapped[Optional[str]] = mapped_column(String(255))
 
     tenants: Mapped[List["Tenant"]] = relationship("Tenant", back_populates="plan")

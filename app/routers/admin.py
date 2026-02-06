@@ -182,10 +182,13 @@ def create_tenant(
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="RNC ya registrado")
 
+    default_plan = db.scalar(select(Plan).where(Plan.name == "Emprendedor").limit(1))
+
     tenant = Tenant(
         name=payload.name,
         rnc=payload.rnc,
         env=payload.env,
+        plan_id=default_plan.id if default_plan else None,
         dgii_base_ecf=str(payload.dgii_base_ecf or app_settings.dgii_recepcion_base_url),
         dgii_base_fc=str(payload.dgii_base_fc or app_settings.dgii_recepcion_fc_base_url),
     )
