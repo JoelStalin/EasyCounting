@@ -4,16 +4,20 @@ from __future__ import annotations
 import base64
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Dict, Union
 from xml.etree.ElementTree import Element, SubElement, tostring
 
 import structlog
 
 from app.security.xml import validate_with_xsd
+from app.security.xml_verify import verify_xml_signature
 
 logger = structlog.get_logger(__name__)
 
-_APROBACION_XSD_PATH = "xsd/acecf.xsd"
+_BASE_DIR = Path(__file__).resolve().parents[2]
+_APROBACION_XSD_OFFICIAL = _BASE_DIR / "xsd" / "ACECF v.1.0.xsd"
+_APROBACION_XSD_SIMPLIFIED = _BASE_DIR / "schemas" / "ACECF.xsd"
 
 
 def _populate_node(node: Element, value: Any) -> None:
@@ -54,7 +58,15 @@ async def procesar_aprobacion(payload: Union[str, bytes, Dict[str, Any]]) -> Dic
     xml_bytes = _extract_xml(payload)
     logger.info("aprobacion.ecf.decoded", size=len(xml_bytes))
 
-    validate_with_xsd(xml_bytes, _APROBACION_XSD_PATH)
+    xml_preview = xml_bytes.lstrip()[:256]
+    if b"DetalleAprobacionComercial" in xml_preview:
+        validate_with_xsd(xml_bytes, str(_APROBACION_XSD_OFFICIAL))
+    else:
+        validate_with_xsd(xml_bytes, str(_APROBACION_XSD_SIMPLIFIED))
+
+    if not verify_xml_signature(xml_bytes):
+        logger.warning("aprobacion.ecf.signature_invalid")
+        raise ValueError("Firma inválida del documento de aprobación comercial")
 
     acuse_id = f"AC-{uuid.uuid4().hex[:10].upper()}"
     estado = "ACEPTADO"

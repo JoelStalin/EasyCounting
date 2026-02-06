@@ -4,7 +4,7 @@ from __future__ import annotations
 import base64
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 import structlog
 from cryptography import x509
@@ -12,10 +12,14 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.serialization import pkcs12
 
+from app.infra.settings import settings
+
 logger = structlog.get_logger(__name__)
 
 _SEMILLA_TTL_SECONDS = 300
 _semillas: Dict[str, datetime] = {}
+
+_tokens: Dict[str, Tuple[datetime, datetime]] = {}
 
 
 def _now() -> datetime:
@@ -26,12 +30,40 @@ def emitir_semilla() -> Dict[str, object]:
     """Issue a short-lived DGII seed."""
 
     issued_at = _now()
-    nonce = secrets.token_urlsafe(16)
+    nonce = secrets.token_urlsafe(24)
     payload = f"{issued_at.isoformat()}:{nonce}".encode()
-    semilla = base64.urlsafe_b64encode(payload).decode().rstrip("=")
-    _semillas[semilla] = issued_at + timedelta(seconds=_SEMILLA_TTL_SECONDS)
+    valor = base64.b64encode(payload).decode()
+    _semillas[valor] = issued_at + timedelta(seconds=_SEMILLA_TTL_SECONDS)
     logger.info("auth.semilla.emitida", expira_en=_SEMILLA_TTL_SECONDS)
-    return {"semilla": semilla, "expiraEn": _SEMILLA_TTL_SECONDS}
+    return {"valor": valor, "fecha": issued_at.isoformat(), "expiraEn": _SEMILLA_TTL_SECONDS}
+
+
+def emitir_token(valor_semilla: str) -> Dict[str, object]:
+    expira_at = _semillas.get(valor_semilla)
+    if not expira_at:
+        raise ValueError("Semilla no encontrada")
+    now = _now()
+    if expira_at < now:
+        _semillas.pop(valor_semilla, None)
+        raise ValueError("Semilla expirada")
+
+    token = secrets.token_urlsafe(32)
+    expedido = now
+    expira = now + timedelta(seconds=settings.enfc_token_ttl_seconds)
+    _tokens[token] = (expedido, expira)
+    logger.info("auth.token.emitido", ttl=settings.enfc_token_ttl_seconds)
+    return {"token": token, "expedido": expedido.isoformat(), "expira": expira.isoformat()}
+
+
+def validar_token(token: str) -> bool:
+    record = _tokens.get(token)
+    if not record:
+        return False
+    _expedido, expira = record
+    if expira < _now():
+        _tokens.pop(token, None)
+        return False
+    return True
 
 
 def _load_certificate(cert_bytes: bytes) -> x509.Certificate:

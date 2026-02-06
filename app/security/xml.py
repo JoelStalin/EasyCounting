@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Iterable
 
 from defusedxml.ElementTree import fromstring as secure_fromstring
+from lxml import etree
 from xml.etree import ElementTree as ET
 
 MAX_XML_BYTES = 2_000_000  # 2 MB
@@ -41,38 +42,32 @@ def _require_paths(root: ET.Element, paths: Iterable[str]) -> None:
 
 
 def validate_with_xsd(xml_bytes: bytes, xsd_path: str) -> None:
-    """Validate XML bytes using lightweight checks derived from the schema name."""
+    """Validate XML bytes using a real XSD schema (lxml).
 
-    root = parse_secure(xml_bytes)
-    schema_name = Path(xsd_path).name.lower()
+    This function enforces size/depth protections before running XSD validation.
+    """
 
-    if schema_name == "ecf.xsd":
-        if root.tag != "eCF":
-            raise XMLSecurityError("XML e-CF debe tener raíz eCF")
-        _require_paths(
-            root,
-            [
-                "Encabezado",
-                "Encabezado/ENCF",
-                "Encabezado/RNCEmisor",
-                "Detalle",
-            ],
-        )
-    elif schema_name == "acecf.xsd":
-        if root.tag != "ACECF":
-            raise XMLSecurityError("XML de aprobación debe tener raíz ACECF")
-        _require_paths(
-            root,
-            [
-                "ENCF",
-                "RNCEmisor",
-                "RNCComprador",
-                "Estado",
-            ],
-        )
-    else:
-        # For unknown schemas simply ensure the path exists to detect misconfiguration.
-        Path(xsd_path).resolve(strict=True)
+    parse_secure(xml_bytes)
+
+    schema_path = Path(xsd_path).resolve(strict=True)
+    try:
+        xsd_doc = etree.parse(str(schema_path))
+        schema = etree.XMLSchema(xsd_doc)
+    except OSError as exc:  # pragma: no cover
+        raise XMLSecurityError(f"XSD no accesible: {schema_path}") from exc
+    except etree.XMLSchemaParseError as exc:  # pragma: no cover
+        raise XMLSecurityError(f"XSD inválido: {schema_path}") from exc
+
+    parser = etree.XMLParser(resolve_entities=False, no_network=True, recover=False, huge_tree=False)
+    try:
+        xml_doc = etree.fromstring(xml_bytes, parser=parser)
+    except etree.XMLSyntaxError as exc:
+        raise XMLSecurityError(f"XML inválido: {exc}") from exc
+
+    try:
+        schema.assertValid(xml_doc)
+    except etree.DocumentInvalid as exc:
+        raise XMLSecurityError(f"XML no cumple XSD: {exc}") from exc
 
 
 def ensure_elements(elements: Iterable[str], root: ET.Element) -> None:

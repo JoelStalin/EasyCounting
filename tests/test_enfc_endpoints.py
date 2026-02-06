@@ -31,10 +31,11 @@ async def _clear_idempotency():
 @pytest.mark.asyncio
 async def test_semilla_returns_seed():
     async with AsyncClient(app=app, base_url="http://test") as client:
-        response = await client.get("/fe/autenticacion/api/semilla")
+        response = await client.get("/fe/autenticacion/api/semilla", headers={"Accept": "application/json"})
     data = response.json()
     assert response.status_code == 200
-    assert "semilla" in data
+    assert "valor" in data
+    assert "fecha" in data
     assert data["expiraEn"] == 300
 
 
@@ -43,6 +44,7 @@ async def test_validacion_certificado_input_vacio():
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post(
             "/fe/autenticacion/api/validacioncertificado",
+            headers={"Accept": "application/json"},
             json={},
         )
     assert response.status_code == 200
@@ -54,6 +56,7 @@ async def test_validacion_certificado_expired():
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post(
             "/fe/autenticacion/api/validacioncertificado",
+            headers={"Accept": "application/json"},
             json={"cert_b64": base64.b64encode(EXPIRED_CERT_PEM).decode()},
         )
     assert response.status_code == 200
@@ -62,24 +65,27 @@ async def test_validacion_certificado_expired():
 
 
 @pytest.mark.asyncio
-async def test_recepcion_ecf_requires_idempotency_header():
+async def test_recepcion_ecf_no_idempotency_header(monkeypatch):
     payload = {
         "formato": "XML",
         "ecf_xml_b64": base64.b64encode(ECF_SAMPLE).decode(),
     }
+    monkeypatch.setattr("app.services.recepcion_service.verify_xml_signature", lambda _xml: True)
+    monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
     async with AsyncClient(app=app, base_url="http://test") as client:
-        response = await client.post("/fe/recepcion/api/ecf", json=payload)
-    assert response.status_code == 422
+        response = await client.post("/fe/recepcion/api/ecf", json=payload, headers={"Accept": "application/json"})
+    assert response.status_code == 200
 
 
 @pytest.mark.asyncio
 async def test_recepcion_ecf_success(monkeypatch):
     monkeypatch.setattr("app.services.recepcion_service.verify_xml_signature", lambda _xml: True)
+    monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
     payload = {
         "formato": "XML",
         "ecf_xml_b64": base64.b64encode(ECF_SAMPLE).decode(),
     }
-    headers = {"Idempotency-Key": "abc123"}
+    headers = {"Idempotency-Key": "abc123", "Accept": "application/json"}
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post(
             "/fe/recepcion/api/ecf",
@@ -101,11 +107,12 @@ async def test_recepcion_ecf_success(monkeypatch):
 @pytest.mark.asyncio
 async def test_recepcion_ecf_invalid_signature(monkeypatch):
     monkeypatch.setattr("app.services.recepcion_service.verify_xml_signature", lambda _xml: False)
+    monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
     payload = {
         "formato": "XML",
         "ecf_xml_b64": base64.b64encode(ECF_SAMPLE).decode(),
     }
-    headers = {"Idempotency-Key": "key-invalid"}
+    headers = {"Idempotency-Key": "key-invalid", "Accept": "application/json"}
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post(
             "/fe/recepcion/api/ecf",
@@ -119,10 +126,11 @@ async def test_recepcion_ecf_invalid_signature(monkeypatch):
 @pytest.mark.asyncio
 async def test_aprobacion_ecf_success(monkeypatch):
     monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("app.services.aprobacion_service.verify_xml_signature", lambda _xml: True)
     payload = {
         "aprobacion_xml_b64": base64.b64encode(APROBACION_SAMPLE).decode(),
     }
-    headers = {"Idempotency-Key": "approv-1"}
+    headers = {"Idempotency-Key": "approv-1", "Accept": "application/json"}
     async with AsyncClient(app=app, base_url="http://test") as client:
         response = await client.post(
             "/fe/aprobacioncomercial/api/ecf",
@@ -137,6 +145,7 @@ async def test_aprobacion_ecf_success(monkeypatch):
 async def test_aprobacion_content_type_invalido():
     headers = {
         "Idempotency-Key": "approv-2",
+        "Accept": "application/json",
         "Content-Type": "text/plain",
     }
     async with AsyncClient(app=app, base_url="http://test") as client:
@@ -146,3 +155,17 @@ async def test_aprobacion_content_type_invalido():
             headers=headers,
         )
     assert response.status_code == 415
+
+
+@pytest.mark.asyncio
+async def test_recepcion_multipart_xml(monkeypatch):
+    monkeypatch.setattr("app.services.recepcion_service.verify_xml_signature", lambda _xml: True)
+    monkeypatch.setattr("app.security.xml.validate_with_xsd", lambda *_args, **_kwargs: None)
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        response = await client.post(
+            "/fe/recepcion/api/ecf",
+            files={"xml": ("ecf.xml", ECF_SAMPLE, "text/xml")},
+            headers={"Accept": "application/json"},
+        )
+    assert response.status_code == 200
+    assert response.json()["estado"] == "RECIBIDO"

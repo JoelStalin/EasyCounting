@@ -138,6 +138,10 @@ class Settings(BaseSettings):
     dgii_p12_path: str = Field(default="/secrets/cert.p12")
     dgii_p12_password: str = Field(default="changeit")
 
+    enfc_require_bearer_token: bool = Field(default=False, validation_alias=AliasChoices("ENFC_REQUIRE_BEARER_TOKEN"))
+    enfc_token_ttl_seconds: int = Field(default=900, ge=60, le=86400, validation_alias=AliasChoices("ENFC_TOKEN_TTL_SECONDS"))
+    enfc_require_x509_signature: bool = Field(default=False, validation_alias=AliasChoices("ENFC_REQUIRE_X509_SIGNATURE"))
+
     @field_validator("cors_allow_origins", mode="before")
     @classmethod
     def _split_cors_allow_origins(cls, value):

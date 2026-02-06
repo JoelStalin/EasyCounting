@@ -4,6 +4,7 @@ from __future__ import annotations
 import base64
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Dict, Union
 from xml.etree.ElementTree import Element, SubElement, tostring
 
@@ -14,7 +15,59 @@ from app.security.xml_verify import verify_xml_signature
 
 logger = structlog.get_logger(__name__)
 
-_ECF_XSD_PATH = "xsd/ecf.xsd"
+_BASE_DIR = Path(__file__).resolve().parents[2]
+_ECF_XSD_OFFICIAL_BY_TIPO = {
+    "31": _BASE_DIR / "xsd" / "e-CF 31 v.1.0.xsd",
+    "32": _BASE_DIR / "xsd" / "e-CF 32 v.1.0.xsd",
+    "33": _BASE_DIR / "xsd" / "e-CF 33 v.1.0.xsd",
+    "34": _BASE_DIR / "xsd" / "e-CF 34 v.1.0.xsd",
+    "41": _BASE_DIR / "xsd" / "e-CF 41 v.1.0.xsd",
+    "43": _BASE_DIR / "xsd" / "e-CF 43 v.1.0.xsd",
+    "44": _BASE_DIR / "xsd" / "e-CF 44 v.1.0.xsd",
+    "45": _BASE_DIR / "xsd" / "e-CF 45 v.1.0.xsd",
+    "46": _BASE_DIR / "xsd" / "e-CF 46 v.1.0.xsd",
+    "47": _BASE_DIR / "xsd" / "e-CF 47 v.1.0.xsd",
+}
+_ECF_XSD_SIMPLIFIED = _BASE_DIR / "schemas" / "ECF.xsd"
+
+
+def _extract_tipo_ecf(xml_bytes: bytes) -> str | None:
+    try:
+        xml_text = xml_bytes.decode("utf-8", errors="ignore")
+    except Exception:
+        return None
+    for tag in ("<TipoeCF>", "<TipoECF>"):
+        start = xml_text.find(tag)
+        if start == -1:
+            continue
+        start += len(tag)
+        end = xml_text.find("<", start)
+        if end == -1:
+            continue
+        value = xml_text[start:end].strip()
+        digits = "".join(ch for ch in value if ch.isdigit())
+        if digits:
+            return digits
+    return None
+
+
+def _validate_official_ecf(xml_bytes: bytes) -> None:
+    tipo = _extract_tipo_ecf(xml_bytes)
+    if tipo and tipo in _ECF_XSD_OFFICIAL_BY_TIPO:
+        validate_with_xsd(xml_bytes, str(_ECF_XSD_OFFICIAL_BY_TIPO[tipo]))
+        return
+
+    last_error: Exception | None = None
+    for schema_path in _ECF_XSD_OFFICIAL_BY_TIPO.values():
+        try:
+            validate_with_xsd(xml_bytes, str(schema_path))
+            return
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+            continue
+
+    if last_error:
+        raise last_error
 
 
 def _populate_node(node: Element, value: Any) -> None:
@@ -56,7 +109,11 @@ async def procesar_ecf(payload: Union[str, bytes, Dict[str, Any]]) -> Dict[str, 
     xml_bytes = _extract_xml_bytes(payload)
     logger.info("recepcion.ecf.decoded", size=len(xml_bytes))
 
-    validate_with_xsd(xml_bytes, _ECF_XSD_PATH)
+    xml_preview = xml_bytes.lstrip()[:64]
+    if xml_preview.startswith(b"<ECF") or xml_preview.startswith(b"<?xml") and b"<ECF" in xml_preview:
+        _validate_official_ecf(xml_bytes)
+    else:
+        validate_with_xsd(xml_bytes, str(_ECF_XSD_SIMPLIFIED))
     if not verify_xml_signature(xml_bytes):
         logger.warning("recepcion.ecf.signature_invalid")
         raise ValueError("Firma inválida del documento e-CF")

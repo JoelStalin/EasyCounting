@@ -11,6 +11,7 @@ services:
     volumes:
       - ./xsd:/app/xsd:ro
       - ./alembic:/app/alembic:ro
+      - ./secrets:/secrets:ro
     restart: unless-stopped
     healthcheck:
       test:
