@@ -7,7 +7,7 @@ from typing import Optional, TYPE_CHECKING
 from sqlalchemy import DateTime, ForeignKey, Numeric, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
+from app.models.base import Base, utcnow
 from app.models.tenant import Tenant
 
 if TYPE_CHECKING:
@@ -45,7 +45,7 @@ class InvoiceLedgerEntry(Base):
     descripcion: Mapped[str | None] = mapped_column(String(255))
     debit: Mapped[float] = mapped_column(Numeric(16, 2), default=0)
     credit: Mapped[float] = mapped_column(Numeric(16, 2), default=0)
-    fecha: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    fecha: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
 
     tenant: Mapped[Tenant] = relationship(backref="ledger_entries")
     invoice: Mapped["Invoice | None"] = relationship(back_populates="ledger_entries")

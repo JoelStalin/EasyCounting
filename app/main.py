@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import logging
+from contextlib import asynccontextmanager
 from typing import Any
 
 import sentry_sdk
@@ -66,7 +67,36 @@ def create_app() -> FastAPI:
             traces_sample_rate=settings.sentry_traces_sample_rate,
         )
 
-    app = FastAPI(title=settings.app_name, version="2.0.0", openapi_tags=[ENFC_TAG_METADATA])
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        try:
+            if settings.environment.lower() in {"production", "prod"}:
+                await init_rate_limiter(app, settings.redis_url)
+        except Exception as exc:  # pragma: no cover - fail fast
+            LOGGER.exception("Failed to initialise rate limiter", extra={"redis_url": settings.redis_url})
+            if settings.environment.lower() in {"production", "prod"}:
+                raise RuntimeError("Redis connection failed during startup") from exc
+
+        try:
+            if settings.environment.lower() in {"production", "prod"}:
+                await start_dispatcher()
+        except Exception as exc:  # pragma: no cover - defensive
+            LOGGER.exception("Failed to start DGII dispatcher", exc_info=exc)
+
+        yield
+
+        await shutdown_rate_limiter(app)
+        try:
+            await stop_dispatcher()
+        except Exception as exc:  # pragma: no cover - defensive
+            LOGGER.exception("Failed to stop DGII dispatcher", exc_info=exc)
+
+    app = FastAPI(
+        title=settings.app_name,
+        version="2.0.0",
+        openapi_tags=[ENFC_TAG_METADATA],
+        lifespan=lifespan,
+    )
 
     if not getattr(app.state, "metrics_configured", False):
         INSTRUMENTATOR.instrument(app).expose(app, include_in_schema=False, endpoint="/metrics")
@@ -109,33 +139,6 @@ def create_app() -> FastAPI:
         response.headers.setdefault("Referrer-Policy", "no-referrer")
         response.headers.setdefault("X-Request-ID", request.headers.get("X-Request-ID", ""))
         return response
-
-    @app.on_event("startup")
-    async def on_startup() -> None:
-        if not getattr(app.state, "metrics_configured", False):
-            INSTRUMENTATOR.instrument(app).expose(app, include_in_schema=False, endpoint="/metrics")
-            app.state.metrics_configured = True
-        try:
-            if settings.environment.lower() in {"production", "prod"}:
-                await init_rate_limiter(app, settings.redis_url)
-        except Exception as exc:  # pragma: no cover - fail fast
-            LOGGER.exception("Failed to initialise rate limiter", extra={"redis_url": settings.redis_url})
-            if settings.environment.lower() in {"production", "prod"}:
-                raise RuntimeError("Redis connection failed during startup") from exc
-
-        try:
-            if settings.environment.lower() in {"production", "prod"}:
-                await start_dispatcher()
-        except Exception as exc:  # pragma: no cover - defensive
-            LOGGER.exception("Failed to start DGII dispatcher", exc_info=exc)
-
-    @app.on_event("shutdown")
-    async def on_shutdown() -> None:
-        await shutdown_rate_limiter(app)
-        try:
-            await stop_dispatcher()
-        except Exception as exc:  # pragma: no cover - defensive
-            LOGGER.exception("Failed to stop DGII dispatcher", exc_info=exc)
 
     @app.get("/health", tags=["infra"], include_in_schema=False)
     async def health() -> dict[str, str]:

@@ -1,7 +1,7 @@
 """Generador de e-CF."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
@@ -22,5 +22,5 @@ def build_ecf(*, encf: str, rnc_emisor: str, rnc_comprador: str, total: float) -
         rnc_comprador=rnc_comprador,
         encf=encf,
         total=f"{total:.2f}",
-        fecha_emision=datetime.utcnow().isoformat(),
+        fecha_emision=datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
     )

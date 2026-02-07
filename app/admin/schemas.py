@@ -9,6 +9,8 @@ from pydantic import BaseModel, Field
 from pydantic.alias_generators import to_camel
 from pydantic.config import ConfigDict
 
+from app.shared.time import utcnow
+
 
 class TenantSettingsPayload(BaseModel):
     moneda: str = Field(default="DOP", max_length=5)
@@ -33,6 +35,12 @@ class TenantCreate(BaseModel):
     dgii_base_fc: Optional[str] = Field(default=None, max_length=255)
 
 
+class TenantUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, max_length=255)
+    rnc: Optional[str] = Field(default=None, max_length=11)
+    env: Optional[str] = Field(default=None, max_length=20)
+
+
 class TenantItem(BaseModel):
     id: int
     name: str
@@ -47,7 +55,7 @@ class LedgerEntryBase(BaseModel):
     descripcion: Optional[str] = Field(default=None, max_length=255)
     debit: Decimal = Field(default=Decimal("0"), ge=Decimal("0"))
     credit: Decimal = Field(default=Decimal("0"), ge=Decimal("0"))
-    fecha: datetime = Field(default_factory=datetime.utcnow)
+    fecha: datetime = Field(default_factory=utcnow)
 
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 

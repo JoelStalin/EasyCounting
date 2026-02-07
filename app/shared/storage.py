@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict
 
@@ -42,7 +42,7 @@ class LocalStorage:
         metadata = {
             "path": str(target),
             "hash": digest,
-            "computed_at": datetime.utcnow().isoformat() + "Z",
+            "computed_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat() + "Z",
         }
         metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
         return digest

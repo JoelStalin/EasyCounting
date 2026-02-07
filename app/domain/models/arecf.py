@@ -7,6 +7,7 @@ from lxml import etree
 from lxml.builder import E
 from pydantic import BaseModel, Field
 
+from app.shared.time import utcnow
 
 class ARECF(BaseModel):
     ENCF: str = Field(..., max_length=13)
@@ -14,7 +15,7 @@ class ARECF(BaseModel):
     RNCEmisor: str = Field(..., max_length=11)
     RNCComprador: str = Field(..., max_length=11)
     Estado: str = Field(..., max_length=20)
-    FechaRecepcion: datetime = Field(default_factory=datetime.utcnow)
+    FechaRecepcion: datetime = Field(default_factory=utcnow)
 
     def to_xml(self) -> bytes:
         doc = E.ARECF(

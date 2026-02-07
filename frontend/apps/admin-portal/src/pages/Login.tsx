@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState, useEffect } from "react";
+import { ChangeEvent, FormEvent, useMemo, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Spinner } from "@getupsoft/ui";
 import { useLoginMutation } from "../api/auth";
@@ -50,7 +50,7 @@ export function LoginPage() {
                   type="email"
                   autoComplete="email"
                   value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => setEmail(event.target.value)}
                   required
                 />
               </div>
@@ -61,7 +61,7 @@ export function LoginPage() {
                   type="password"
                   autoComplete="current-password"
                   value={password}
-                  onChange={(event) => setPassword(event.target.value)}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => setPassword(event.target.value)}
                   required
                 />
               </div>

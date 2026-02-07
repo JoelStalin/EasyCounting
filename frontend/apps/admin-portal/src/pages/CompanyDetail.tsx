@@ -2,7 +2,7 @@ import { type ChangeEvent, type PropsWithChildren, FormEvent, useEffect, useStat
 import { NavLink, Outlet, useParams } from "react-router-dom";
 import { useAccountingSummary, useCreateLedgerEntry, useLedgerEntries, useTenantSettings, useUpdateTenantSettings } from "../api/accounting";
 import { useAdminInvoices } from "../api/dashboard";
-import { useAssignTenantPlan, useTenant, useTenantPlan } from "../api/tenants";
+import { useAssignTenantPlan, useTenant, useTenantPlan, useUpdateTenant } from "../api/tenants";
 import { type Plan, usePlans } from "../api/plans";
 
 const TABS = [
@@ -88,6 +88,7 @@ export function CompanyInvoicesTab() {
     dateTo: dateTo ? `${dateTo}T00:00:00` : undefined,
   });
   const invoices = invoicesQuery.data;
+  const invoiceItems = invoices?.items ?? [];
 
   return (
     <div className="space-y-5">
@@ -167,7 +168,7 @@ export function CompanyInvoicesTab() {
             </tr>
           </thead>
           <tbody>
-            {invoices?.items.map((item) => (
+            {invoiceItems.map((item) => (
               <tr key={item.id} className="border-b border-slate-800/80 hover:bg-slate-900/40">
                 <td className="px-3 py-2">{new Date(item.fecha_emision).toLocaleString()}</td>
                 <td className="px-3 py-2 font-mono text-xs text-slate-400">{item.encf}</td>
@@ -191,7 +192,7 @@ export function CompanyInvoicesTab() {
               </tr>
             ) : null}
 
-            {invoices && invoices.items.length === 0 && !invoicesQuery.isLoading ? (
+            {invoiceItems.length === 0 && !invoicesQuery.isLoading ? (
               <tr>
                 <td className="px-3 py-6 text-center text-sm text-slate-500" colSpan={6}>
                   No hay comprobantes para los filtros actuales.
@@ -218,7 +219,7 @@ export function CompanyInvoicesTab() {
           <button
             type="button"
             onClick={() => setPage((p) => p + 1)}
-            disabled={Boolean(invoices) && invoices.items.length < 20}
+            disabled={invoiceItems.length < 20}
             className="rounded-md border border-slate-700 px-3 py-1.5 font-semibold text-slate-200 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Siguiente
@@ -338,9 +339,9 @@ export function CompanyAccountingTab() {
             <button
               type="submit"
               className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-slate-700"
-              disabled={createLedgerEntry.isLoading}
+              disabled={createLedgerEntry.isPending}
             >
-              {createLedgerEntry.isLoading ? "Guardando…" : "Registrar asiento"}
+              {createLedgerEntry.isPending ? "Guardando…" : "Registrar asiento"}
             </button>
           </div>
         </form>
@@ -479,9 +480,15 @@ export function CompanyUsersTab() {
 
 export function CompanySettingsTab() {
   const { id } = useParams();
+  const tenantQuery = useTenant(id);
+  const updateTenant = useUpdateTenant(id);
   const settingsQuery = useTenantSettings(id);
   const updateSettings = useUpdateTenantSettings(id);
-  const [form, setForm] = useState({
+  const [issuerForm, setIssuerForm] = useState({
+    name: "",
+    rnc: "",
+  });
+  const [settingsForm, setSettingsForm] = useState({
     moneda: "DOP",
     cuenta_ingresos: "",
     cuenta_itbis: "",
@@ -493,8 +500,17 @@ export function CompanySettingsTab() {
   });
 
   useEffect(() => {
+    if (tenantQuery.data) {
+      setIssuerForm({
+        name: tenantQuery.data.name,
+        rnc: tenantQuery.data.rnc,
+      });
+    }
+  }, [tenantQuery.data]);
+
+  useEffect(() => {
     if (settingsQuery.data) {
-      setForm({
+      setSettingsForm({
         moneda: settingsQuery.data.moneda,
         cuenta_ingresos: settingsQuery.data.cuenta_ingresos ?? "",
         cuenta_itbis: settingsQuery.data.cuenta_itbis ?? "",
@@ -507,114 +523,157 @@ export function CompanySettingsTab() {
     }
   }, [settingsQuery.data]);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleIssuerChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
-    setForm((prev) => ({ ...prev, [name]: name === "dias_credito" ? Number(value) : value }));
+    setIssuerForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSettingsChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
+    setSettingsForm((prev) => ({ ...prev, [name]: name === "dias_credito" ? Number(value) : value }));
+  };
+
+  const handleIssuerSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    updateTenant.mutate({
+      name: issuerForm.name,
+      rnc: issuerForm.rnc,
+    });
+  };
+
+  const handleSettingsSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     updateSettings.mutate({
-      moneda: form.moneda,
-      cuenta_ingresos: form.cuenta_ingresos || null,
-      cuenta_itbis: form.cuenta_itbis || null,
-      cuenta_retenciones: form.cuenta_retenciones || null,
-      dias_credito: form.dias_credito,
-      correo_facturacion: form.correo_facturacion || null,
-      telefono_contacto: form.telefono_contacto || null,
-      notas: form.notas || null,
+      moneda: settingsForm.moneda,
+      cuenta_ingresos: settingsForm.cuenta_ingresos || null,
+      cuenta_itbis: settingsForm.cuenta_itbis || null,
+      cuenta_retenciones: settingsForm.cuenta_retenciones || null,
+      dias_credito: settingsForm.dias_credito,
+      correo_facturacion: settingsForm.correo_facturacion || null,
+      telefono_contacto: settingsForm.telefono_contacto || null,
+      notas: settingsForm.notas || null,
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">
-      <Field label="Moneda">
-        <input
-          name="moneda"
-          value={form.moneda}
-          onChange={handleChange}
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
-        />
-      </Field>
-      <Field label="Días de crédito">
-        <input
-          name="dias_credito"
-          type="number"
-          min={0}
-          max={365}
-          value={form.dias_credito}
-          onChange={handleChange}
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
-        />
-      </Field>
-      <Field label="Cuenta de ingresos">
-        <input
-          name="cuenta_ingresos"
-          value={form.cuenta_ingresos}
-          onChange={handleChange}
-          placeholder="701-VENT"
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
-        />
-      </Field>
-      <Field label="Cuenta de ITBIS">
-        <input
-          name="cuenta_itbis"
-          value={form.cuenta_itbis}
-          onChange={handleChange}
-          placeholder="208-ITBIS"
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
-        />
-      </Field>
-      <Field label="Cuenta de retenciones">
-        <input
-          name="cuenta_retenciones"
-          value={form.cuenta_retenciones}
-          onChange={handleChange}
-          placeholder="209-RET"
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
-        />
-      </Field>
-      <Field label="Correo para facturación">
-        <input
-          name="correo_facturacion"
-          value={form.correo_facturacion}
-          onChange={handleChange}
-          type="email"
-          placeholder="facturacion@empresa.do"
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
-        />
-      </Field>
-      <Field label="Teléfono de contacto">
-        <input
-          name="telefono_contacto"
-          value={form.telefono_contacto}
-          onChange={handleChange}
-          placeholder="809-555-0000"
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
-        />
-      </Field>
-      <Field label="Notas internas" className="md:col-span-2">
-        <textarea
-          name="notas"
-          value={form.notas}
-          onChange={handleChange}
-          rows={3}
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
-        />
-      </Field>
-      <div className="md:col-span-2 flex justify-end gap-3">
-        {settingsQuery.data?.updated_at && (
-          <span className="self-center text-xs text-slate-500">Última actualización: {new Date(settingsQuery.data.updated_at).toLocaleString()}</span>
-        )}
-        <button
-          type="submit"
-          className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-slate-700"
-          disabled={updateSettings.isLoading}
-        >
-          {updateSettings.isLoading ? "Guardando…" : "Guardar cambios"}
-        </button>
-      </div>
-    </form>
+    <div className="space-y-8">
+      <form onSubmit={handleIssuerSubmit} className="grid gap-4 md:grid-cols-2">
+        <Field label="Nombre / razon social del emisor">
+          <input
+            name="name"
+            value={issuerForm.name}
+            onChange={handleIssuerChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="RNC del emisor">
+          <input
+            name="rnc"
+            value={issuerForm.rnc}
+            onChange={handleIssuerChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <div className="md:col-span-2 flex justify-end gap-3">
+          <button
+            type="submit"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-slate-700"
+            disabled={updateTenant.isPending}
+          >
+            {updateTenant.isPending ? "Guardando..." : "Guardar emisor"}
+          </button>
+        </div>
+      </form>
+
+      <form onSubmit={handleSettingsSubmit} className="grid gap-4 md:grid-cols-2">
+        <Field label="Moneda">
+          <input
+            name="moneda"
+            value={settingsForm.moneda}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Dias de credito">
+          <input
+            name="dias_credito"
+            type="number"
+            min={0}
+            max={365}
+            value={settingsForm.dias_credito}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Cuenta de ingresos">
+          <input
+            name="cuenta_ingresos"
+            value={settingsForm.cuenta_ingresos}
+            onChange={handleSettingsChange}
+            placeholder="701-VENT"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Cuenta de ITBIS">
+          <input
+            name="cuenta_itbis"
+            value={settingsForm.cuenta_itbis}
+            onChange={handleSettingsChange}
+            placeholder="208-ITBIS"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Cuenta de retenciones">
+          <input
+            name="cuenta_retenciones"
+            value={settingsForm.cuenta_retenciones}
+            onChange={handleSettingsChange}
+            placeholder="209-RET"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Correo para facturacion">
+          <input
+            name="correo_facturacion"
+            value={settingsForm.correo_facturacion}
+            onChange={handleSettingsChange}
+            type="email"
+            placeholder="facturacion@empresa.do"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Telefono de contacto">
+          <input
+            name="telefono_contacto"
+            value={settingsForm.telefono_contacto}
+            onChange={handleSettingsChange}
+            placeholder="809-555-0000"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Notas internas" className="md:col-span-2">
+          <textarea
+            name="notas"
+            value={settingsForm.notas}
+            onChange={handleSettingsChange}
+            rows={3}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <div className="md:col-span-2 flex justify-end gap-3">
+          {settingsQuery.data?.updated_at && (
+            <span className="self-center text-xs text-slate-500">Ultima actualizacion: {new Date(settingsQuery.data.updated_at).toLocaleString()}</span>
+          )}
+          <button
+            type="submit"
+            className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-slate-700"
+            disabled={updateSettings.isPending}
+          >
+            {updateSettings.isPending ? "Guardando..." : "Guardar cambios"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
 

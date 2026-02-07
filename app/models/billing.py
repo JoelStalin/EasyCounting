@@ -8,7 +8,7 @@ from typing import List, Optional
 from sqlalchemy import ForeignKey, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
+from app.models.base import Base, utcnow
 
 
 class Plan(Base):
@@ -25,7 +25,7 @@ class Plan(Base):
     max_monto_por_factura: Mapped[Decimal] = mapped_column(Numeric(16, 2), default=Decimal("0"))
     descripcion: Mapped[Optional[str]] = mapped_column(String(255))
 
-    tenants: Mapped[List["Tenant"]] = relationship("Tenant", back_populates="plan")
+    tenants: Mapped[List["Tenant"]] = relationship("Tenant", back_populates="plan", foreign_keys="Tenant.plan_id")
     usage_records: Mapped[List["UsageRecord"]] = relationship("UsageRecord", back_populates="plan")
 
 
@@ -40,7 +40,7 @@ class UsageRecord(Base):
     ecf_type: Mapped[str] = mapped_column(String(6))
     track_id: Mapped[Optional[str]] = mapped_column(String(64))
     monto_cargado: Mapped[Decimal] = mapped_column(Numeric(16, 4), default=Decimal("0"))
-    fecha: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    fecha: Mapped[datetime] = mapped_column(default=utcnow)
 
     tenant: Mapped["Tenant"] = relationship("Tenant", back_populates="usage_records")
     plan: Mapped[Optional[Plan]] = relationship("Plan", back_populates="usage_records")

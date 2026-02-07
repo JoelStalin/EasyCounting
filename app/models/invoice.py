@@ -7,7 +7,7 @@ from typing import List
 from sqlalchemy import Boolean, DateTime, ForeignKey, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import Base
+from app.models.base import Base, utcnow
 from app.models.tenant import Tenant
 
 
@@ -26,7 +26,7 @@ class Invoice(Base):
     track_id: Mapped[str | None] = mapped_column(String(64))
     codigo_seguridad: Mapped[str | None] = mapped_column(String(6))
     total: Mapped[float] = mapped_column(Numeric(16, 2))
-    fecha_emision: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    fecha_emision: Mapped[datetime] = mapped_column(default=utcnow)
     contabilizado: Mapped[bool] = mapped_column(Boolean, default=False)
     accounted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     asiento_referencia: Mapped[str | None] = mapped_column(String(64))

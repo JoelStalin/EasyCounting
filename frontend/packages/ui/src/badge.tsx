@@ -1,4 +1,4 @@
-import type { HTMLAttributes } from "react";
+import type { HTMLAttributes, ReactElement } from "react";
 import { cn } from "./utils";
 
 type BadgeVariant = "default" | "success" | "warning" | "info";
@@ -14,7 +14,7 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
 }
 
-export function Badge({ className, variant = "default", ...props }: BadgeProps) {
+export function Badge({ className, variant = "default", ...props }: BadgeProps): ReactElement {
   return (
     <span
       className={cn(

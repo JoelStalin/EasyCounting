@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from fastapi.testclient import TestClient
@@ -44,7 +44,7 @@ def test_accounting_summary_returns_totals() -> None:
     with get_sync_session() as session:
         tenant = _create_tenant(session, "Empresa Demo", "12345678901")
         invoices = [
-            Invoice(tenant_id=tenant.id, encf="E3100001", tipo_ecf="E31", xml_path="/tmp/a.xml", xml_hash="hash1", estado_dgii="ACEPTADO", total=Decimal("1000.00"), contabilizado=True, accounted_at=datetime.utcnow(), asiento_referencia="AS-001"),
+            Invoice(tenant_id=tenant.id, encf="E3100001", tipo_ecf="E31", xml_path="/tmp/a.xml", xml_hash="hash1", estado_dgii="ACEPTADO", total=Decimal("1000.00"), contabilizado=True, accounted_at=datetime.now(timezone.utc).replace(tzinfo=None), asiento_referencia="AS-001"),
             Invoice(tenant_id=tenant.id, encf="E3100002", tipo_ecf="E31", xml_path="/tmp/b.xml", xml_hash="hash2", estado_dgii="RECHAZADO", total=Decimal("500.00")),
             Invoice(tenant_id=tenant.id, encf="E3100003", tipo_ecf="E31", xml_path="/tmp/c.xml", xml_hash="hash3", estado_dgii="ACEPTADO", total=Decimal("250.00")),
         ]
@@ -87,7 +87,7 @@ def test_create_ledger_entry_marks_invoice() -> None:
         "descripcion": "Registro de ingreso",
         "debit": "0",
         "credit": "750.00",
-        "fecha": datetime.utcnow().isoformat(),
+        "fecha": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
     }
     response = client.post(
         f"/api/admin/tenants/{tenant.id}/accounting/ledger",

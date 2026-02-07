@@ -1,4 +1,4 @@
-import { FileText, ScanQrCode, ShieldCheck } from "lucide-react";
+import { FileText, ScanBarcode, ShieldCheck } from "lucide-react";
 import { CardKPI } from "../components/CardKPI";
 
 const KPIS = [
@@ -18,7 +18,7 @@ const KPIS = [
     title: "RI descargadas",
     value: "692",
     subtitle: "Con QR y hash de seguridad",
-    icon: <ScanQrCode className="h-5 w-5 text-primary" aria-hidden />,
+    icon: <ScanBarcode className="h-5 w-5 text-primary" aria-hidden />,
   },
 ];
 

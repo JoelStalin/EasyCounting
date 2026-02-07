@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Spinner } from "@getupsoft/ui";
 import { api } from "../api/client";
@@ -68,7 +68,7 @@ export function MFAPage() {
                   maxLength={6}
                   className="text-center text-lg tracking-[0.35em]"
                   value={code}
-                  onChange={(event) => setCode(event.target.value)}
+                  onChange={(event: ChangeEvent<HTMLInputElement>) => setCode(event.target.value)}
                   required
                 />
               </div>

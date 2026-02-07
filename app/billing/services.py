@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from fastapi import Depends
 from sqlalchemy import func, select
@@ -42,10 +42,20 @@ class BillingService:
         return tenant
 
     def _prepare_context(self, tenant: Tenant) -> BillingContext:
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
+        if tenant.pending_plan_id and tenant.plan_change_effective_at and tenant.plan_change_effective_at <= now:
+            pending_plan = self.db.get(Plan, tenant.pending_plan_id)
+            if pending_plan:
+                tenant.plan = pending_plan
+                tenant.plan_id = pending_plan.id
+            tenant.pending_plan_id = None
+            tenant.plan_change_requested_at = None
+            tenant.plan_change_effective_at = None
+            self.db.flush()
+
         plan = tenant.plan
         if not plan:
             raise BillingError("El tenant no tiene un plan de facturación asignado")
-        now = datetime.utcnow()
         return BillingContext(tenant=tenant, plan=plan, now=now)
 
     def _month_window(self, reference: datetime) -> tuple[datetime, datetime]:

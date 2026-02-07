@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Generator, Tuple
 
@@ -41,8 +41,8 @@ def certificate_bundle(tmp_path_factory: pytest.TempPathFactory) -> Tuple[Path, 
         .issuer_name(issuer)
         .public_key(key.public_key())
         .serial_number(x509.random_serial_number())
-        .not_valid_before(datetime.utcnow() - timedelta(days=1))
-        .not_valid_after(datetime.utcnow() + timedelta(days=365))
+        .not_valid_before(datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(days=1))
+        .not_valid_after(datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(days=365))
         .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
         .sign(key, hashes.SHA256())
     )
@@ -94,6 +94,12 @@ async def fake_redis_backend(monkeypatch: pytest.MonkeyPatch):
     try:
         yield
     finally:
+        aclose = getattr(redis_instance, "aclose", None)
+        if aclose is not None:
+            result = aclose()
+            if asyncio.iscoroutine(result):  # pragma: no branch
+                await result
+            return
         close = getattr(redis_instance, "close", None)
         if close is not None:
             result = close()

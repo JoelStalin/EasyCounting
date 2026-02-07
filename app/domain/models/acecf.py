@@ -7,6 +7,7 @@ from lxml import etree
 from lxml.builder import E
 from pydantic import BaseModel, Field
 
+from app.shared.time import utcnow
 
 class ACECF(BaseModel):
     ENCF: str = Field(..., max_length=13)
@@ -14,7 +15,7 @@ class ACECF(BaseModel):
     RNCComprador: str = Field(..., max_length=11)
     Estado: str = Field(..., max_length=1)
     Motivo: str = Field(..., max_length=255)
-    FechaAprobacion: datetime = Field(default_factory=datetime.utcnow)
+    FechaAprobacion: datetime = Field(default_factory=utcnow)
 
     def to_xml(self) -> bytes:
         doc = E.ACECF(

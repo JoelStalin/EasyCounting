@@ -22,6 +22,14 @@ class Settings(BaseSettings):
         default=None,
         validation_alias=AliasChoices("CORS_ALLOW_ORIGINS", "FRONTEND_ORIGINS"),
     )
+    client_portal_domain: str = Field(
+        default="cliente.getupsoft.com.do",
+        validation_alias=AliasChoices("CLIENT_PORTAL_DOMAIN"),
+    )
+    admin_portal_domain: str = Field(
+        default="admin.getupsoft.com.do",
+        validation_alias=AliasChoices("ADMIN_PORTAL_DOMAIN"),
+    )
     rate_limit_per_minute: int = Field(default=100, ge=1)
 
     jwt_secret: str = Field(default="change-me", validation_alias=AliasChoices("JWT_SECRET", "SECRET_KEY"))
@@ -164,15 +172,36 @@ class Settings(BaseSettings):
                 return [str(item).strip() for item in decoded if str(item).strip()]
         return [item.strip() for item in stripped.split(",") if item.strip()]
 
+    @staticmethod
+    def _normalize_origin(value: str | None) -> str | None:
+        if value is None:
+            return None
+        stripped = value.strip()
+        if not stripped:
+            return None
+        if stripped.startswith("http://") or stripped.startswith("https://"):
+            return stripped
+        return f"https://{stripped}"
+
     @computed_field
     @property
     def cors_allow_origins(self) -> List[str]:
         if self.cors_allow_origins_raw is None:
-            return [
+            origins = [
                 "https://api.dgii.getupsoft.com.do",
                 "https://staging.dgii.getupsoft.com.do",
             ]
-        return self._parse_csv_or_json_array(self.cors_allow_origins_raw)
+        else:
+            origins = self._parse_csv_or_json_array(self.cors_allow_origins_raw)
+
+        portal_origins = [
+            self._normalize_origin(self.client_portal_domain),
+            self._normalize_origin(self.admin_portal_domain),
+        ]
+        for origin in portal_origins:
+            if origin and origin not in origins:
+                origins.append(origin)
+        return origins
 
     @computed_field
     @property

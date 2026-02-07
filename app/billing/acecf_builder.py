@@ -1,7 +1,7 @@
 """Generador de ACECF."""
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.billing.validators import validate_encf, validate_rnc
 
@@ -16,5 +16,5 @@ def build_acecf(*, encf: str, rnc_emisor: str, rnc_comprador: str, estado: int, 
         "<?xml version='1.0' encoding='UTF-8'?>"
         f"<ACECF><ENCF>{encf}</ENCF><RNCEmisor>{rnc_emisor}</RNCEmisor>"
         f"<RNCComprador>{rnc_comprador}</RNCComprador><Estado>{estado}</Estado>"
-        f"<DetalleMotivo>{detalle_motivo or ''}</DetalleMotivo><Fecha>{datetime.utcnow().isoformat()}</Fecha></ACECF>"
+        f"<DetalleMotivo>{detalle_motivo or ''}</DetalleMotivo><Fecha>{datetime.now(timezone.utc).replace(tzinfo=None).isoformat()}</Fecha></ACECF>"
     )

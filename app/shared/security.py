@@ -31,7 +31,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_jwt(payload: Dict[str, Any], expires_delta: dt.timedelta | None = None) -> str:
     """Genera un JWT firmado con HS256."""
 
-    now = dt.datetime.utcnow()
+    now = dt.datetime.now(dt.timezone.utc).replace(tzinfo=None)
     if expires_delta is None:
         expires_delta = dt.timedelta(minutes=settings.access_token_exp_minutes)
     exp = now + expires_delta

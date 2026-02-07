@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import respx
 from fastapi.testclient import TestClient
@@ -16,7 +16,7 @@ def test_e2e_seed_token_send_ecf_status_and_ri(configured_settings) -> None:
     recepcion_base = str(settings.url_for("recepcion"))
 
     respx.get(f"{auth_base}/semilla").respond(200, content=b"<Autenticacion><Semilla>ABC123</Semilla></Autenticacion>")
-    respx.post(f"{auth_base}/token").respond(200, json={"access_token": "token-123", "expires_at": datetime.utcnow().isoformat()})
+    respx.post(f"{auth_base}/token").respond(200, json={"access_token": "token-123", "expires_at": datetime.now(timezone.utc).replace(tzinfo=None).isoformat()})
     respx.post(f"{recepcion_base}/ecf").respond(202, json={"trackId": "TRACK-XYZ", "estado": "EN_PROCESO"})
     respx.get(f"{recepcion_base}/estatus/TRACK-XYZ").respond(200, json={"estado": "ACEPTADO", "descripcion": "Procesado"})
 
@@ -25,7 +25,7 @@ def test_e2e_seed_token_send_ecf_status_and_ri(configured_settings) -> None:
         "tipoECF": "E31",
         "rncEmisor": "131415161",
         "rncReceptor": "172839405",
-        "fechaEmision": datetime.utcnow().isoformat(),
+        "fechaEmision": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
         "montoTotal": 1500.0,
         "moneda": "DOP",
         "items": [
@@ -44,7 +44,7 @@ def test_e2e_seed_token_send_ecf_status_and_ri(configured_settings) -> None:
         "rncReceptor": "172839405",
         "razonSocialReceptor": "Cliente Demo",
         "montoTotal": 1500.0,
-        "fechaEmision": datetime.utcnow().isoformat(),
+        "fechaEmision": datetime.now(timezone.utc).replace(tzinfo=None).isoformat(),
         "items": [
             {
                 "descripcion": "Servicio de consultoría",

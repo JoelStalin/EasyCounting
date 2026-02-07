@@ -4,6 +4,7 @@ import { useAuth } from "../auth/use-auth";
 const NAV = [
   { to: "/dashboard", label: "Dashboard", permissions: ["TENANT_INVOICE_READ"] },
   { to: "/invoices", label: "Comprobantes", permissions: ["TENANT_INVOICE_READ"] },
+  { to: "/plans", label: "Planes", permissions: ["TENANT_PLAN_VIEW", "TENANT_PLAN_UPGRADE"] },
   { to: "/emit/ecf", label: "Emitir e-CF", permissions: ["TENANT_INVOICE_EMIT"] },
   { to: "/emit/rfce", label: "Emitir RFCE", permissions: ["TENANT_RFCE_SUBMIT"] },
   { to: "/approvals", label: "Aprobaciones", permissions: ["TENANT_APPROVAL_SEND"] },

@@ -7,6 +7,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.shared.time import utcnow
+
 
 class RILineItem(BaseModel):
     descripcion: str = Field(..., max_length=200)
@@ -25,7 +27,7 @@ class RIRequest(BaseModel):
     rnc_receptor: str = Field(..., max_length=11, alias="rncReceptor")
     razon_social_receptor: str = Field(..., max_length=120, alias="razonSocialReceptor")
     monto_total: Decimal = Field(..., alias="montoTotal")
-    fecha_emision: datetime = Field(default_factory=datetime.utcnow, alias="fechaEmision")
+    fecha_emision: datetime = Field(default_factory=utcnow, alias="fechaEmision")
     items: List[RILineItem] = Field(default_factory=list)
     qr_url: Optional[str] = Field(None, alias="qrUrl")
     direccion_emisor: Optional[str] = Field(None, alias="direccionEmisor", max_length=250)

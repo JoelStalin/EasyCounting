@@ -34,6 +34,12 @@ export interface TenantCreatePayload {
   dgii_base_fc?: string | null;
 }
 
+export interface TenantUpdatePayload {
+  name?: string;
+  rnc?: string;
+  env?: string;
+}
+
 export function useTenants() {
   return useQuery({
     queryKey: ["admin", "tenants"],
@@ -63,6 +69,20 @@ export function useCreateTenant() {
       return data;
     },
     onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["admin", "tenants"] });
+    },
+  });
+}
+
+export function useUpdateTenant(tenantId?: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: TenantUpdatePayload) => {
+      const { data } = await api.put<TenantItem>(`/api/v1/admin/tenants/${tenantId}`, payload);
+      return data;
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["admin", "tenant", tenantId] });
       await queryClient.invalidateQueries({ queryKey: ["admin", "tenants"] });
     },
   });

@@ -6,7 +6,7 @@ from typing import List
 
 from lxml import etree
 from lxml.builder import E
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class ECFItem(BaseModel):
@@ -36,7 +36,8 @@ class ECF(BaseModel):
     Encabezado: ECFHeader
     Items: List[ECFItem] = Field(default_factory=list)
 
-    @validator("Items")
+    @field_validator("Items")
+    @classmethod
     def ensure_items(cls, value: List[ECFItem]) -> List[ECFItem]:
         if not value:
             raise ValueError("Debe incluir al menos un item")

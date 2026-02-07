@@ -1,11 +1,11 @@
-import type { HTMLAttributes } from "react";
+import type { HTMLAttributes, ReactElement } from "react";
 import { cn } from "./utils";
 
 interface SpinnerProps extends HTMLAttributes<HTMLDivElement> {
   label?: string;
 }
 
-export function Spinner({ className, label, ...props }: SpinnerProps) {
+export function Spinner({ className, label, ...props }: SpinnerProps): ReactElement {
   return (
     <div className={cn("flex items-center gap-2 text-sm text-slate-200", className)} {...props}>
       <svg

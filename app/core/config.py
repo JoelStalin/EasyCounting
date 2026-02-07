@@ -6,7 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from pydantic import AnyUrl, Field, field_validator
+from pydantic import AliasChoices, AnyUrl, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -31,19 +31,19 @@ class Settings(BaseSettings):
     # General application configuration
     app_name: str = Field("getupsoft API", description="Nombre expuesto en OpenAPI")
     environment: str = Field("development", description="Entorno de despliegue actual")
-    secret_key: str = Field("dev-secret", env="JWT_SECRET", description="Secreto para firmar JWT")
-    hmac_service_secret: str = Field("dev-hmac", env="HMAC_SERVICE_SECRET", description="Secreto compartido entre microservicios")
+    secret_key: str = Field("dev-secret", validation_alias=AliasChoices("JWT_SECRET"), description="Secreto para firmar JWT")
+    hmac_service_secret: str = Field("dev-hmac", validation_alias=AliasChoices("HMAC_SERVICE_SECRET"), description="Secreto compartido entre microservicios")
     access_token_exp_minutes: int = Field(15, ge=5, le=120, description="Duración del access token en minutos")
     refresh_token_exp_minutes: int = Field(60 * 24 * 7, description="Duración del refresh token en minutos")
-    database_url: str = Field("sqlite:///./local.db", env="DB_URL", description="Cadena de conexión a PostgreSQL/SQLite")
-    redis_url: str = Field("redis://localhost:6379/0", env="REDIS_URL", description="URL de conexión a Redis")
+    database_url: str = Field("sqlite:///./local.db", validation_alias=AliasChoices("DB_URL"), description="Cadena de conexión a PostgreSQL/SQLite")
+    redis_url: str = Field("redis://localhost:6379/0", validation_alias=AliasChoices("REDIS_URL"), description="URL de conexión a Redis")
     log_level: str = Field("INFO", description="Nivel de logs para toda la plataforma")
     cors_allow_origins: List[str] = Field(default_factory=list, description="Orígenes permitidos para CORS")
     tls_enabled: bool = Field(True, description="Indica si el despliegue debe forzar TLS 1.3")
     tracing_header: str = Field("X-Trace-ID", description="Encabezado utilizado para el tracing distribuido")
     request_id_header: str = Field("X-Request-ID", description="Encabezado de correlación de solicitudes")
     metrics_enabled: bool = Field(True, description="Habilita la exposición de métricas Prometheus")
-    sentry_dsn: Optional[str] = Field(None, env="SENTRY_DSN", description="DSN de Sentry opcional")
+    sentry_dsn: Optional[str] = Field(None, validation_alias=AliasChoices("SENTRY_DSN"), description="DSN de Sentry opcional")
     storage_bucket: str = Field("local", description="Bucket/espacio para almacenamiento WORM")
     storage_base_path: Path = Field(Path("/var/getupsoft/storage"), description="Ruta por defecto para almacenamiento local")
 

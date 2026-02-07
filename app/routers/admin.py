@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 import hashlib
 from typing import List, Optional
@@ -35,6 +35,7 @@ from app.admin.schemas import (
     TenantSettingsResponse,
     TenantCreate,
     TenantItem,
+    TenantUpdate,
     PlatformUserItem,
 )
 from app.infra.settings import settings as app_settings
@@ -124,7 +125,7 @@ def _append_audit_log(
     )
     hash_prev = last.hash_curr if last else "0" * 64
     actor = _actor_from_payload(db, payload)
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
     raw = f"{tenant_id}|{actor}|{action}|{resource}|{hash_prev}|{now.isoformat()}"
     hash_curr = hashlib.sha256(raw.encode("utf-8")).hexdigest()
     db.add(
@@ -215,7 +216,7 @@ def dashboard_kpis(
         except ValueError as exc:  # pragma: no cover - validado por regex
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Formato de mes inválido") from exc
     else:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         period = datetime(now.year, now.month, 1)
         month = period.strftime("%Y-%m")
 
@@ -265,7 +266,7 @@ def dashboard_kpis(
 
     return DashboardKpisResponse(
         month=month,
-        generated_at=datetime.utcnow(),
+        generated_at=datetime.now(timezone.utc).replace(tzinfo=None),
         companies_active=int(companies_active),
         invoices_month=int(invoices_month),
         invoices_accepted=int(invoices_accepted),
@@ -364,6 +365,37 @@ def get_invoice(invoice_id: int, db: Session = Depends(get_db)) -> InvoiceDetail
 @router.get("/tenants/{tenant_id}", response_model=TenantItem)
 def get_tenant(tenant_id: int, db: Session = Depends(get_db)) -> TenantItem:
     tenant = _get_tenant_or_404(db, tenant_id)
+    return TenantItem(id=tenant.id, name=tenant.name, rnc=tenant.rnc, env=tenant.env, status="Activa")
+
+
+@router.put("/tenants/{tenant_id}", response_model=TenantItem)
+def update_tenant(
+    request: Request,
+    tenant_id: int,
+    payload: TenantUpdate,
+    db: Session = Depends(get_db),
+) -> TenantItem:
+    platform_payload = _platform_payload(request)
+    tenant = _get_tenant_or_404(db, tenant_id)
+
+    updates = payload.model_dump(exclude_none=True)
+    if "rnc" in updates and updates["rnc"] != tenant.rnc:
+        existing = db.scalar(select(Tenant).where(Tenant.rnc == updates["rnc"], Tenant.id != tenant.id))
+        if existing:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="RNC ya registrado")
+
+    for field, value in updates.items():
+        setattr(tenant, field, value)
+
+    db.flush()
+    _append_audit_log(
+        db,
+        tenant_id=tenant.id,
+        payload=platform_payload,
+        action="TENANT_UPDATED",
+        resource=f"tenant:{tenant.id}",
+    )
+
     return TenantItem(id=tenant.id, name=tenant.name, rnc=tenant.rnc, env=tenant.env, status="Activa")
 
 
@@ -612,9 +644,15 @@ def assign_tenant_plan(
         if not plan:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Plan no encontrado")
         tenant.plan = plan
+        tenant.pending_plan_id = None
+        tenant.plan_change_requested_at = None
+        tenant.plan_change_effective_at = None
     else:
         tenant.plan = None
         tenant.plan_id = None
+        tenant.pending_plan_id = None
+        tenant.plan_change_requested_at = None
+        tenant.plan_change_effective_at = None
     db.flush()
     _append_audit_log(
         db,
@@ -646,7 +684,7 @@ def admin_billing_summary(
         except ValueError as exc:  # pragma: no cover - validado por regex
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Formato de mes inválido") from exc
     else:
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         period = datetime(now.year, now.month, 1)
         month = period.strftime("%Y-%m")
 
@@ -655,7 +693,7 @@ def admin_billing_summary(
     items = [BillingSummaryItem(**row) for row in rows]
     return BillingSummaryResponse(
         month=month,
-        generated_at=datetime.utcnow(),
+        generated_at=datetime.now(timezone.utc).replace(tzinfo=None),
         items=items,
         total_amount_due=total_amount,
     )

@@ -7,7 +7,7 @@ Create Date: 2026-02-06
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 
 from alembic import op
@@ -37,7 +37,7 @@ def upgrade() -> None:
     op.add_column("invoices", sa.Column("rnc_receptor", sa.String(length=11), nullable=True))
     op.create_index("ix_invoices_rnc_receptor", "invoices", ["rnc_receptor"])
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
     bind = op.get_bind()
     existing_names = {
         str(row[0])

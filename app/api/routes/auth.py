@@ -76,6 +76,9 @@ def _permissions_for(role: str) -> list[str]:
         "TENANT_RFCE_SUBMIT",
         "TENANT_APPROVAL_SEND",
         "TENANT_CERT_UPLOAD",
+        "TENANT_PLAN_VIEW",
+        "TENANT_PLAN_UPGRADE",
+        "TENANT_USAGE_VIEW",
     ]
 
 
