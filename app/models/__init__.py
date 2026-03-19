@@ -14,6 +14,10 @@ from app.models import (
     billing,
     platform_ai,
     partner,
+    authn,
+    ui_tour,
+    tenant_api_token,
+    recurring_invoice,
 )
 
 __all__ = [
@@ -31,4 +35,8 @@ __all__ = [
     "billing",
     "platform_ai",
     "partner",
+    "authn",
+    "ui_tour",
+    "tenant_api_token",
+    "recurring_invoice",
 ]

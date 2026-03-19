@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-from e2e.support import record_step, wait_for_ready
+from e2e.support import dismiss_tour, ensure_tour_visible, record_step, wait_for_ready
 
 
 def test_client_login_emit_ecf_profile_and_logout(driver, client_url):
@@ -20,6 +20,10 @@ def test_client_login_emit_ecf_profile_and_logout(driver, client_url):
 
     WebDriverWait(driver, 20).until(EC.url_contains("/emit/ecf"))
     textarea = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.TAG_NAME, "textarea")))
+    ensure_tour_visible(driver, "Aqui preparas y envias el XML firmado del e-CF.")
+    record_step(driver, "client_tour_open")
+    dismiss_tour(driver)
+    record_step(driver, "client_tour_dismissed")
     record_step(driver, "client_emit_form_ready")
     textarea.send_keys("PHhtbD48ZWNmPkRlbW88L2VjZj48L3htbD4=")
     record_step(driver, "client_emit_payload_loaded")

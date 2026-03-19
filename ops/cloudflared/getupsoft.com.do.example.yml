@@ -4,10 +4,14 @@ credentials-file: C:\Users\yoeli\.cloudflared\getupsoft-local.json
 ingress:
   - hostname: getupsoft.com.do
     service: http://127.0.0.1:18083
+  - hostname: www.getupsoft.com.do
+    service: http://127.0.0.1:18085
   - hostname: api.getupsoft.com.do
     service: http://127.0.0.1:28080
   - hostname: admin.getupsoft.com.do
     service: http://127.0.0.1:18081
   - hostname: cliente.getupsoft.com.do
     service: http://127.0.0.1:18082
+  - hostname: socios.getupsoft.com.do
+    service: http://127.0.0.1:18084
   - service: http_status:404

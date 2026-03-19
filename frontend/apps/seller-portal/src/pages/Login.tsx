@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Spinner } from "@getupsoft/ui";
-import { useLoginMutation } from "../api/auth";
+import { startSocialLogin, useLoginMutation, useSocialProvidersQuery } from "../api/auth";
 import { useAuth } from "../auth/use-auth";
 
 const DEMO_ACCOUNTS = [
@@ -15,7 +15,7 @@ const DEMO_ACCOUNTS = [
     title: "Auditor demo",
     email: "seller.auditor@getupsoft.com.do",
     password: "SellerAudit123!",
-    note: "Mismo alcance de cartera, pero sin permiso de emisiÃ³n.",
+    note: "Mismo alcance de cartera, pero sin permiso de emision.",
   },
 ];
 
@@ -26,6 +26,7 @@ export function LoginPage() {
   const location = useLocation();
   const { mutateAsync, isPending, isError } = useLoginMutation();
   const { isAuthenticated } = useAuth();
+  const providersQuery = useSocialProvidersQuery();
 
   const from = useMemo(() => {
     const state = location.state as { from?: { pathname?: string } } | undefined;
@@ -42,7 +43,7 @@ export function LoginPage() {
     event.preventDefault();
     const response = await mutateAsync({ email, password });
     if (response.mfa_required) {
-      navigate("/mfa", { state: { email } });
+      navigate("/mfa", { state: { challengeId: response.challenge_id, returnTo: from } });
       return;
     }
     navigate(from, { replace: true });
@@ -62,8 +63,9 @@ export function LoginPage() {
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Correo electrÃ³nico</Label>
+                  <Label htmlFor="email">Correo electronico</Label>
                   <Input
+                    data-tour="login-email"
                     id="email"
                     type="email"
                     autoComplete="email"
@@ -73,8 +75,9 @@ export function LoginPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password">ContraseÃ±a</Label>
+                  <Label htmlFor="password">Contrasena</Label>
                   <Input
+                    data-tour="login-password"
                     id="password"
                     type="password"
                     autoComplete="current-password"
@@ -84,11 +87,25 @@ export function LoginPage() {
                   />
                 </div>
               </div>
-              <Button className="w-full" type="submit" disabled={isPending}>
+              <Button className="w-full" type="submit" disabled={isPending} data-tour="login-submit">
                 {isPending ? <Spinner label="Validando" /> : "Ingresar"}
               </Button>
+              {providersQuery.data && providersQuery.data.length > 0 ? (
+                <div className="space-y-2 border-t border-slate-800 pt-4" data-tour="login-social">
+                  {providersQuery.data.map((provider) => (
+                    <button
+                      key={provider.provider}
+                      type="button"
+                      className="w-full rounded-md border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:border-primary hover:text-primary"
+                      onClick={() => startSocialLogin(provider.provider, from)}
+                    >
+                      Continuar con {provider.label}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
               {isError ? (
-                <p className="text-center text-sm text-red-400">Credenciales invÃ¡lidas o cuenta sin perfil seller.</p>
+                <p className="text-center text-sm text-red-400">Credenciales invalidas o cuenta sin perfil seller.</p>
               ) : null}
             </form>
           </CardContent>
@@ -122,7 +139,7 @@ export function LoginPage() {
               </div>
             ))}
             <div className="rounded-xl border border-amber-900/60 bg-amber-950/30 p-4 text-sm text-amber-100">
-              El acceso demo estÃ¡ aislado del entorno principal y opera con datos ficticios de clientes y comprobantes.
+              El acceso demo esta aislado del entorno principal y opera con datos ficticios de clientes y comprobantes.
             </div>
           </CardContent>
         </Card>

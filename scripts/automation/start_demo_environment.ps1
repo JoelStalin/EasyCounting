@@ -8,12 +8,22 @@ param(
 )
 
 $root = Resolve-Path "."
-$python = Join-Path $root ".venv\Scripts\python.exe"
+$pythonCandidates = @(
+    (Join-Path $root ".venv\Scripts\python.exe"),
+    (Join-Path $root ".venv312\Scripts\python.exe")
+)
+$python = $pythonCandidates |
+    Where-Object {
+        if (-not (Test-Path $_)) { return $false }
+        $venvRoot = Split-Path (Split-Path $_ -Parent) -Parent
+        return Test-Path (Join-Path $venvRoot "pyvenv.cfg")
+    } |
+    Select-Object -First 1
 $setupScript = Join-Path $root "scripts\automation\setup_demo_environment.py"
 $publicEdgeScript = Join-Path $root "scripts\automation\start_local_public_edge.ps1"
 
-if (-not (Test-Path $python)) {
-    throw "No se encontro Python del entorno virtual en $python"
+if (-not $python) {
+    throw "No se encontro Python del entorno virtual en .venv ni .venv312"
 }
 
 & $python $setupScript --database-name $DemoDatabaseName

@@ -8,6 +8,7 @@ import { EmitECFPage } from "./pages/EmitECF";
 import { ProfilePage } from "./pages/Profile";
 import { LoginPage } from "./pages/Login";
 import { MFAPage } from "./pages/MFA";
+import { AuthCallbackPage } from "./pages/AuthCallback";
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
   {
     path: "/mfa",
     element: <MFAPage />,
+  },
+  {
+    path: "/auth/callback",
+    element: <AuthCallbackPage />,
   },
   {
     path: "/",

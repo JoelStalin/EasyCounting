@@ -73,12 +73,16 @@ def _spa_handler_for(directory: Path):
 
 
 def _start_static_portal_server(directory: Path, port: int) -> tuple[ThreadingHTTPServer, Thread]:
+    return _start_static_site_server(directory=directory, port=port, readiness_path="/login")
+
+
+def _start_static_site_server(directory: Path, port: int, readiness_path: str = "/") -> tuple[ThreadingHTTPServer, Thread]:
     if not directory.exists():
         raise RuntimeError(f"No existe el directorio de portal compilado: {directory}")
     server = ThreadingHTTPServer(("127.0.0.1", port), _spa_handler_for(directory))
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()
-    _wait_for_http(f"http://127.0.0.1:{port}/login", timeout=20.0)
+    _wait_for_http(f"http://127.0.0.1:{port}{readiness_path}", timeout=20.0)
     return server, thread
 
 
@@ -104,11 +108,13 @@ def frontend_servers(mock_api_server: str) -> dict[str, str]:
     external_admin = os.getenv("ADMIN_BASE_URL")
     external_client = os.getenv("CLIENT_BASE_URL")
     external_seller = os.getenv("SELLER_BASE_URL")
+    external_corporate = os.getenv("CORPORATE_BASE_URL")
     if external_admin and external_client and external_seller:
         yield {
             "admin": external_admin.rstrip("/"),
             "client": external_client.rstrip("/"),
             "seller": external_seller.rstrip("/"),
+            "corporate": (external_corporate or "http://127.0.0.1:18085").rstrip("/"),
             "api": mock_api_server,
         }
         return
@@ -116,6 +122,7 @@ def frontend_servers(mock_api_server: str) -> dict[str, str]:
     admin_port = _find_free_port()
     client_port = _find_free_port()
     seller_port = _find_free_port()
+    corporate_port = _find_free_port()
     admin_server, admin_thread = _start_static_portal_server(
         ROOT / "frontend" / "apps" / "admin-portal" / "dist",
         admin_port,
@@ -128,19 +135,28 @@ def frontend_servers(mock_api_server: str) -> dict[str, str]:
         ROOT / "frontend" / "apps" / "seller-portal" / "dist",
         seller_port,
     )
+    corporate_server, corporate_thread = _start_static_site_server(
+        ROOT / "frontend" / "apps" / "corporate-portal" / "dist",
+        corporate_port,
+        readiness_path="/",
+    )
     urls = {
         "admin": f"http://127.0.0.1:{admin_port}",
         "client": f"http://127.0.0.1:{client_port}",
         "seller": f"http://127.0.0.1:{seller_port}",
+        "corporate": f"http://127.0.0.1:{corporate_port}",
         "api": mock_api_server,
     }
     yield urls
+    with suppress(Exception):
+        corporate_server.shutdown()
     with suppress(Exception):
         seller_server.shutdown()
     with suppress(Exception):
         client_server.shutdown()
     with suppress(Exception):
         admin_server.shutdown()
+    corporate_thread.join(timeout=5)
     seller_thread.join(timeout=5)
     client_thread.join(timeout=5)
     admin_thread.join(timeout=5)
@@ -159,6 +175,11 @@ def client_url(frontend_servers: dict[str, str]) -> str:
 @pytest.fixture(scope="session")
 def seller_url(frontend_servers: dict[str, str]) -> str:
     return frontend_servers["seller"]
+
+
+@pytest.fixture(scope="session")
+def corporate_url(frontend_servers: dict[str, str]) -> str:
+    return frontend_servers["corporate"]
 
 
 def _installed_browser_binary(browser_name: str) -> str | None:

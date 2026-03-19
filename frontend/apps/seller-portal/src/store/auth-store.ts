@@ -8,6 +8,7 @@ export interface AuthUser {
   scope: AuthScope;
   tenantId: string | null;
   roles: string[];
+  onboardingStatus?: string | null;
 }
 
 export interface AuthSession {

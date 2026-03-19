@@ -18,6 +18,7 @@ class PlanPublic(BaseModel):
     max_facturas_mes: int
     max_facturas_por_receptor_mes: int
     max_monto_por_factura: Decimal
+    includes_recurring_invoices: bool = False
     descripcion: Optional[str] = None
     created_at: datetime
     updated_at: datetime
@@ -112,3 +113,26 @@ class ChatAnswerResponse(BaseModel):
     tenant_id: int
     sources: List[ChatSource]
     warnings: List[str] = Field(default_factory=list)
+
+
+class TenantOnboardingStatusResponse(BaseModel):
+    tenant_id: int = Field(alias="tenantId")
+    onboarding_status: str = Field(alias="onboardingStatus")
+    company_name: str = Field(alias="companyName")
+    rnc: str
+    contact_email: Optional[str] = Field(default=None, alias="contactEmail")
+    contact_phone: Optional[str] = Field(default=None, alias="contactPhone")
+    notes: Optional[str] = None
+    can_emit_real: bool = Field(default=False, alias="canEmitReal")
+
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+
+class TenantOnboardingUpdateRequest(BaseModel):
+    company_name: str = Field(..., min_length=2, max_length=255, alias="companyName")
+    rnc: str = Field(..., min_length=9, max_length=11)
+    contact_email: Optional[str] = Field(default=None, max_length=255, alias="contactEmail")
+    contact_phone: Optional[str] = Field(default=None, max_length=25, alias="contactPhone")
+    notes: Optional[str] = Field(default=None, max_length=512)
+
+    model_config = ConfigDict(populate_by_name=True)

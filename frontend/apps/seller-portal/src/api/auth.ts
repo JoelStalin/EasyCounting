@@ -1,12 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { api } from "./client";
+import { api, resolveApiBaseUrl } from "./client";
 import { useAuth } from "../auth/use-auth";
 import type { AuthSession } from "../store/auth-store";
-
-interface LoginPayload {
-  email: string;
-  password: string;
-}
 
 interface LoginResponse {
   access_token: string;
@@ -17,33 +12,54 @@ interface LoginResponse {
     scope: "PLATFORM" | "TENANT" | "PARTNER";
     tenant_id: string | null;
     roles: string[];
+    onboarding_status?: string | null;
   };
   permissions: string[];
   mfa_required: boolean;
+  challenge_id?: string | null;
+}
+
+export interface SocialProviderItem {
+  provider: "google" | "facebook" | "apple";
+  label: string;
+}
+
+export interface SocialExchangePendingMFA {
+  mfaRequired: true;
+  challengeId: string;
+  permissions: string[];
+  returnTo?: string | null;
+  user: AuthSession["user"];
+}
+
+export type SocialExchangeResponse = (AuthSession & { returnTo?: string | null }) | SocialExchangePendingMFA;
+
+function toSession(data: LoginResponse): AuthSession {
+  return {
+    accessToken: data.access_token,
+    refreshToken: data.refresh_token,
+    user: {
+      id: data.user.id,
+      email: data.user.email,
+      scope: data.user.scope,
+      tenantId: data.user.tenant_id,
+      roles: data.user.roles,
+      onboardingStatus: data.user.onboarding_status ?? null,
+    },
+    permissions: data.permissions,
+  };
 }
 
 export function useLoginMutation() {
   const { setSession } = useAuth();
   return useMutation({
-    mutationFn: async (payload: LoginPayload) => {
-      const { data } = await api.post<LoginResponse>("/api/v1/auth/login", payload);
+    mutationFn: async (payload: { email: string; password: string }) => {
+      const { data } = await api.post<LoginResponse>("/api/v1/auth/login", { ...payload, portal: "seller" });
       return data;
     },
-    onSuccess: (data: LoginResponse) => {
+    onSuccess: (data) => {
       if (!data.mfa_required) {
-        const session: AuthSession = {
-          accessToken: data.access_token,
-          refreshToken: data.refresh_token,
-          user: {
-            id: data.user.id,
-            email: data.user.email,
-            scope: data.user.scope,
-            tenantId: data.user.tenant_id,
-            roles: data.user.roles,
-          },
-          permissions: data.permissions,
-        };
-        setSession(session);
+        setSession(toSession(data));
       }
     },
   });
@@ -56,20 +72,36 @@ export function useProfileQuery(enabled: boolean) {
     enabled,
     queryFn: async () => {
       const { data } = await api.get<LoginResponse>("/api/v1/me");
-      const session: AuthSession = {
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          scope: data.user.scope,
-          tenantId: data.user.tenant_id,
-          roles: data.user.roles,
-        },
-        permissions: data.permissions,
-      };
+      const session = toSession(data);
       setSession(session);
       return data;
     },
   });
+}
+
+export function useSocialProvidersQuery() {
+  return useQuery({
+    queryKey: ["social-providers", "seller"],
+    queryFn: async () => {
+      const { data } = await api.get<SocialProviderItem[]>("/api/v1/auth/oauth/providers", {
+        params: { portal: "seller" },
+      });
+      return data;
+    },
+  });
+}
+
+export function startSocialLogin(provider: SocialProviderItem["provider"], returnTo: string) {
+  const url = new URL(`/api/v1/auth/oauth/${provider}/start`, resolveApiBaseUrl());
+  url.searchParams.set("portal", "seller");
+  url.searchParams.set("return_to", returnTo);
+  window.location.assign(url.toString());
+}
+
+export async function exchangeSocialTicket(ticket: string): Promise<SocialExchangeResponse> {
+  const { data } = await api.post<SocialExchangeResponse>("/api/v1/auth/oauth/exchange", {
+    ticket,
+    portal: "seller",
+  });
+  return data;
 }

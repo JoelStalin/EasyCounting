@@ -21,20 +21,41 @@ from app.shared.database import session_scope
 from app.shared.security import hash_password
 
 
-def _ensure_plan(name: str) -> Plan:
+def _ensure_plan(
+    name: str,
+    *,
+    precio_mensual: Decimal,
+    precio_por_documento: Decimal,
+    documentos_incluidos: int,
+    max_facturas_mes: int,
+    max_facturas_por_receptor_mes: int,
+    max_monto_por_factura: Decimal,
+    includes_recurring_invoices: bool,
+    descripcion: str,
+) -> Plan:
     with session_scope() as session:
         plan = session.scalar(select(Plan).where(Plan.name == name))
         if plan:
+            plan.precio_mensual = precio_mensual
+            plan.precio_por_documento = precio_por_documento
+            plan.documentos_incluidos = documentos_incluidos
+            plan.max_facturas_mes = max_facturas_mes
+            plan.max_facturas_por_receptor_mes = max_facturas_por_receptor_mes
+            plan.max_monto_por_factura = max_monto_por_factura
+            plan.includes_recurring_invoices = includes_recurring_invoices
+            plan.descripcion = descripcion
+            session.flush()
             return plan
         plan = Plan(
             name=name,
-            precio_mensual=Decimal("1490.00"),
-            precio_por_documento=Decimal("3.50"),
-            documentos_incluidos=500,
-            max_facturas_mes=2500,
-            max_facturas_por_receptor_mes=500,
-            max_monto_por_factura=Decimal("500000.00"),
-            descripcion="Plan de demostracion para publicacion local",
+            precio_mensual=precio_mensual,
+            precio_por_documento=precio_por_documento,
+            documentos_incluidos=documentos_incluidos,
+            max_facturas_mes=max_facturas_mes,
+            max_facturas_por_receptor_mes=max_facturas_por_receptor_mes,
+            max_monto_por_factura=max_monto_por_factura,
+            includes_recurring_invoices=includes_recurring_invoices,
+            descripcion=descripcion,
         )
         session.add(plan)
         session.flush()
@@ -249,14 +270,35 @@ def _ensure_invoice_seed(
 
 
 def main() -> None:
-    plan = _ensure_plan("Emprendedor")
+    basic_plan = _ensure_plan(
+        "Emprendedor",
+        precio_mensual=Decimal("1490.00"),
+        precio_por_documento=Decimal("3.50"),
+        documentos_incluidos=500,
+        max_facturas_mes=2500,
+        max_facturas_por_receptor_mes=500,
+        max_monto_por_factura=Decimal("500000.00"),
+        includes_recurring_invoices=False,
+        descripcion="Plan basico para emision y consulta. No incluye automatizacion recurrente.",
+    )
+    pro_plan = _ensure_plan(
+        "Profesional",
+        precio_mensual=Decimal("2990.00"),
+        precio_por_documento=Decimal("3.00"),
+        documentos_incluidos=2500,
+        max_facturas_mes=7500,
+        max_facturas_por_receptor_mes=800,
+        max_monto_por_factura=Decimal("750000.00"),
+        includes_recurring_invoices=True,
+        descripcion="Plan Pro con automatizaciones operativas, incluyendo facturas recurrentes.",
+    )
     platform_tenant = _ensure_tenant(
         name="Platform",
         rnc="00000000000",
         env="testecf",
         dgii_base_ecf=str(settings.dgii_recepcion_base_url),
         dgii_base_fc=str(settings.dgii_recepcion_fc_base_url),
-        plan_id=plan.id,
+        plan_id=basic_plan.id,
     )
     demo_tenant = _ensure_tenant(
         name="Empresa Demo",
@@ -264,7 +306,7 @@ def main() -> None:
         env="testecf",
         dgii_base_ecf=str(settings.dgii_recepcion_base_url),
         dgii_base_fc=str(settings.dgii_recepcion_fc_base_url),
-        plan_id=plan.id,
+        plan_id=pro_plan.id,
     )
     reseller_tenant = _ensure_tenant(
         name="Cliente Seller Demo",
@@ -272,7 +314,7 @@ def main() -> None:
         env="certecf",
         dgii_base_ecf=str(settings.dgii_recepcion_base_url),
         dgii_base_fc=str(settings.dgii_recepcion_fc_base_url),
-        plan_id=plan.id,
+        plan_id=pro_plan.id,
     )
     read_only_tenant = _ensure_tenant(
         name="Cliente Solo Lectura",
@@ -280,7 +322,7 @@ def main() -> None:
         env="precert",
         dgii_base_ecf=str(settings.dgii_recepcion_base_url),
         dgii_base_fc=str(settings.dgii_recepcion_fc_base_url),
-        plan_id=plan.id,
+        plan_id=basic_plan.id,
     )
     seller_account = _ensure_partner_account(name="Seller Demo", slug="seller-demo")
 
@@ -338,7 +380,7 @@ def main() -> None:
     _ensure_assignment(partner_account_id=seller_account.id, tenant_id=read_only_tenant.id, can_emit=False, can_manage=False)
     _ensure_invoice_seed(
         demo_tenant.id,
-        plan.id,
+        pro_plan.id,
         encf="E310000000001",
         tipo_ecf="31",
         rnc_receptor="101010101",
@@ -350,7 +392,7 @@ def main() -> None:
     )
     _ensure_invoice_seed(
         reseller_tenant.id,
-        plan.id,
+        pro_plan.id,
         encf="E310000000002",
         tipo_ecf="31",
         rnc_receptor="131998887",
@@ -362,7 +404,7 @@ def main() -> None:
     )
     _ensure_invoice_seed(
         read_only_tenant.id,
-        plan.id,
+        basic_plan.id,
         encf="E310000000003",
         tipo_ecf="31",
         rnc_receptor="101112131",
@@ -387,7 +429,8 @@ def main() -> None:
                 f"Seller operator: {seller_operator.email} ({seller_operator.role})",
                 f"Seller auditor: {seller_auditor.email} ({seller_auditor.role})",
                 f"Partner account: {seller_account.id} {seller_account.slug}",
-                f"Plan: {plan.id} {plan.name}",
+                f"Plan basico: {basic_plan.id} {basic_plan.name}",
+                f"Plan pro: {pro_plan.id} {pro_plan.name}",
             ]
         )
     )

@@ -10,6 +10,7 @@ export interface Plan {
   max_facturas_mes: number;
   max_facturas_por_receptor_mes: number;
   max_monto_por_factura: string;
+  includes_recurring_invoices: boolean;
   descripcion: string | null;
   created_at: string;
   updated_at: string;

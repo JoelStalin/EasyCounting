@@ -105,3 +105,11 @@ charge = max(base, plan.minimum or Decimal("0"))
 - Motor de reglas personalizadas por tenant.
 - Integración con pasarelas de pago para debitar automáticamente los cargos calculados.
 - Visualizaciones dinámicas en Grafana (panel `getupsoft/Plans`) con alertas por consumo atípico.
+
+## 13.9 Paquetizacion de automatizaciones
+
+- `Basico / Emprendedor`: emisión, consulta, límites de consumo y operación manual.
+- `Pro / Profesional`: incluye automatizaciones de operación, como facturas recurrentes.
+- `Enterprise`: mantiene automatizaciones y amplía integración y gobernanza.
+
+Esta segmentación evita empujar automatización avanzada al plan de entrada y se alinea con la práctica observable del mercado, donde las capas superiores concentran integraciones, automatización y módulos operativos adicionales.

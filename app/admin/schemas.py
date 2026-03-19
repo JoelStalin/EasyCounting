@@ -111,6 +111,7 @@ class PlanBase(BaseModel):
     max_facturas_mes: int = Field(default=0, ge=0)
     max_facturas_por_receptor_mes: int = Field(default=0, ge=0)
     max_monto_por_factura: Decimal = Field(default=Decimal("0"), ge=Decimal("0"))
+    includes_recurring_invoices: bool = False
     descripcion: Optional[str] = Field(default=None, max_length=255)
 
 
@@ -126,6 +127,7 @@ class PlanUpdate(BaseModel):
     max_facturas_mes: Optional[int] = Field(default=None, ge=0)
     max_facturas_por_receptor_mes: Optional[int] = Field(default=None, ge=0)
     max_monto_por_factura: Optional[Decimal] = Field(default=None, ge=Decimal("0"))
+    includes_recurring_invoices: Optional[bool] = None
     descripcion: Optional[str] = Field(default=None, max_length=255)
 
 

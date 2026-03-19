@@ -6,7 +6,8 @@ import { useAuth } from "../auth/use-auth";
 import type { AuthSession } from "../store/auth-store";
 
 interface LocationState {
-  email: string;
+  challengeId?: string;
+  returnTo?: string;
 }
 
 export function MFAPage() {
@@ -17,13 +18,14 @@ export function MFAPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const email = (location.state as LocationState | undefined)?.email;
+  const challengeId = (location.state as LocationState | undefined)?.challengeId;
+  const returnTo = (location.state as LocationState | undefined)?.returnTo;
 
   useEffect(() => {
-    if (!email) {
+    if (!challengeId) {
       navigate("/login", { replace: true });
     }
-  }, [email, navigate]);
+  }, [challengeId, navigate]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -31,7 +33,7 @@ export function MFAPage() {
     setError(null);
     try {
       const { data } = await api.post<AuthSession & { permissions: string[] }>("/auth/mfa/verify", {
-        email,
+        challenge_id: challengeId,
         code,
       });
       setSession({
@@ -40,9 +42,9 @@ export function MFAPage() {
         user: data.user,
         permissions: data.permissions,
       });
-      navigate("/dashboard", { replace: true });
-    } catch (err) {
-      setError("Código inválido o expirado.");
+      navigate(returnTo ?? "/dashboard", { replace: true });
+    } catch {
+      setError("Codigo invalido o expirado.");
     } finally {
       setLoading(false);
     }
@@ -52,14 +54,14 @@ export function MFAPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-2 text-center">
-          <CardTitle>Verificación MFA</CardTitle>
-          <p className="text-sm text-slate-300">Ingresa el código TOTP generado en tu dispositivo seguro.</p>
+          <CardTitle>Verificacion MFA</CardTitle>
+          <p className="text-sm text-slate-300">Ingresa el codigo TOTP generado en tu dispositivo seguro.</p>
         </CardHeader>
         <CardContent>
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="mfa-code">Código</Label>
+                <Label htmlFor="mfa-code">Codigo</Label>
                 <Input
                   id="mfa-code"
                   type="text"

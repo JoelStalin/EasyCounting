@@ -19,6 +19,7 @@ class Tenant(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     rnc: Mapped[str] = mapped_column(String(11), nullable=False, unique=True)
     env: Mapped[str] = mapped_column(String(20), default="testecf")
+    onboarding_status: Mapped[str] = mapped_column(String(30), default="completed")
     plan_id: Mapped[int | None] = mapped_column(ForeignKey("billing_plans.id", ondelete="SET NULL"), nullable=True)
     pending_plan_id: Mapped[int | None] = mapped_column(ForeignKey("billing_plans.id", ondelete="SET NULL"), nullable=True)
     plan_change_requested_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

@@ -175,7 +175,7 @@ def _redirect_handler_for(target: str):
         def log_message(self, format: str, *args) -> None:  # noqa: A003
             return
 
-        def do_GET(self) -> None:  # noqa: N802
+        def _redirect(self) -> None:
             parsed = urlparse(self.path)
             destination = target.rstrip("/") + (parsed.path or "/")
             if parsed.query:
@@ -183,6 +183,12 @@ def _redirect_handler_for(target: str):
             self.send_response(301)
             self.send_header("Location", destination)
             self.end_headers()
+
+        def do_GET(self) -> None:  # noqa: N802
+            self._redirect()
+
+        def do_HEAD(self) -> None:  # noqa: N802
+            self._redirect()
 
     return RedirectHandler
 

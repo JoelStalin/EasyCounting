@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
 
-from sqlalchemy import ForeignKey, Index, Numeric, String
+from sqlalchemy import Boolean, ForeignKey, Index, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, utcnow
@@ -23,6 +23,7 @@ class Plan(Base):
     max_facturas_mes: Mapped[int] = mapped_column(default=0)
     max_facturas_por_receptor_mes: Mapped[int] = mapped_column(default=0)
     max_monto_por_factura: Mapped[Decimal] = mapped_column(Numeric(16, 2), default=Decimal("0"))
+    includes_recurring_invoices: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     descripcion: Mapped[Optional[str]] = mapped_column(String(255))
 
     tenants: Mapped[List["Tenant"]] = relationship("Tenant", back_populates="plan", foreign_keys="Tenant.plan_id")

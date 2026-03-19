@@ -1,0 +1,33 @@
+2026-03-19T19:38:23Z INF Starting tunnel tunnelID=80297212-52f4-4f4e-b0dd-11bcd2307399
+2026-03-19T19:38:23Z INF Version 2025.8.1 (Checksum b5d598b00cc3a28cabc5812d9f762819334614bae452db4e7f23eefe7b081556)
+2026-03-19T19:38:23Z INF GOOS: windows, GOVersion: go1.24.2, GoArch: amd64
+2026-03-19T19:38:23Z INF Settings: map[config:C:\Users\yoeli/.cloudflared/config.yml cred-file:C:\Users\yoeli\.cloudflared\80297212-52f4-4f4e-b0dd-11bcd2307399.json credentials-file:C:\Users\yoeli\.cloudflared\80297212-52f4-4f4e-b0dd-11bcd2307399.json logfile:artifacts_live_dns\cloudflared\cloudflared_run.log loglevel:info]
+2026-03-19T19:38:23Z INF cloudflared will not automatically update on Windows systems.
+2026-03-19T19:38:23Z INF Generated Connector ID: ded71cb0-a29e-40dd-8571-36c7455b35ec
+2026-03-19T19:38:23Z INF Initial protocol quic
+2026-03-19T19:38:23Z INF ICMP proxy will use 192.168.12.165 as source for IPv4
+2026-03-19T19:38:23Z INF ICMP proxy will use 2607:fb92:982:690a:b24d:6ef4:3010:d23c in zone Wi-Fi as source for IPv6
+2026-03-19T19:38:23Z INF cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool
+2026-03-19T19:38:23Z INF cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool
+2026-03-19T19:38:23Z INF cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool
+2026-03-19T19:38:23Z INF cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool
+2026-03-19T19:38:23Z INF cloudflared does not support loading the system root certificate pool on Windows. Please use --origin-ca-pool <PATH> to specify the path to the certificate pool
+2026-03-19T19:38:23Z INF ICMP proxy will use 192.168.12.165 as source for IPv4
+2026-03-19T19:38:23Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.53
+2026-03-19T19:38:24Z INF ICMP proxy will use 2607:fb92:982:690a:b24d:6ef4:3010:d23c in zone Wi-Fi as source for IPv6
+2026-03-19T19:38:24Z INF Starting metrics server on 127.0.0.1:20241/metrics
+2026-03-19T19:38:24Z INF Registered tunnel connection connIndex=0 connection=9590f3e4-389b-4d8f-bb5d-c827ec789e43 event=0 ip=198.41.200.53 location=mia04 protocol=quic
+2026-03-19T19:38:24Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=1 event=0 ip=198.41.192.27
+2026-03-19T19:38:24Z INF Registered tunnel connection connIndex=1 connection=55b36f16-79b8-4099-af7a-7509a87ac8f8 event=0 ip=198.41.192.27 location=mia02 protocol=quic
+2026-03-19T19:38:25Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=2 event=0 ip=198.41.192.57
+2026-03-19T19:38:25Z INF Registered tunnel connection connIndex=2 connection=7d8c93b3-77c7-489d-93b3-3566e0adaf59 event=0 ip=198.41.192.57 location=mia01 protocol=quic
+2026-03-19T19:38:26Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=3 event=0 ip=198.41.200.113
+2026-03-19T19:38:26Z INF Registered tunnel connection connIndex=3 connection=1a96bf8e-a79f-49f3-9ca0-957ee88c6f0e event=0 ip=198.41.200.113 location=mia05 protocol=quic
+2026-03-19T19:39:08Z ERR  error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp 127.0.0.1:18184: connectex: No connection could be made because the target machine actively refused it." connIndex=3 event=1 ingressRule=4 originService=http://127.0.0.1:18184
+2026-03-19T19:39:08Z ERR Request failed error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp 127.0.0.1:18184: connectex: No connection could be made because the target machine actively refused it." connIndex=3 dest=https://socios.getupsoft.com.do/login event=0 ip=198.41.200.113 type=http
+2026-03-19T19:39:35Z ERR  error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp 127.0.0.1:18184: connectex: No connection could be made because the target machine actively refused it." connIndex=0 event=1 ingressRule=4 originService=http://127.0.0.1:18184
+2026-03-19T19:39:35Z ERR Request failed error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp 127.0.0.1:18184: connectex: No connection could be made because the target machine actively refused it." connIndex=0 dest=https://socios.getupsoft.com.do/login event=0 ip=198.41.200.53 type=http
+2026-03-19T19:39:46Z ERR  error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp 127.0.0.1:18184: connectex: No connection could be made because the target machine actively refused it." connIndex=0 event=1 ingressRule=4 originService=http://127.0.0.1:18184
+2026-03-19T19:39:46Z ERR Request failed error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp 127.0.0.1:18184: connectex: No connection could be made because the target machine actively refused it." connIndex=0 dest=https://socios.getupsoft.com.do/ event=0 ip=198.41.200.53 type=http
+2026-03-19T19:39:46Z ERR  error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp 127.0.0.1:18184: connectex: No connection could be made because the target machine actively refused it." connIndex=0 event=1 ingressRule=4 originService=http://127.0.0.1:18184
+2026-03-19T19:39:46Z ERR Request failed error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp 127.0.0.1:18184: connectex: No connection could be made because the target machine actively refused it." connIndex=0 dest=https://socios.getupsoft.com.do/ event=0 ip=198.41.200.53 type=http

@@ -9,6 +9,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.models.accounting import TenantSettings
 from app.models.billing import Plan, UsageRecord
 from app.models.invoice import Invoice
 from app.models.tenant import Tenant
@@ -17,6 +18,8 @@ from app.portal_client.schemas import (
     InvoiceListItem,
     InvoiceListResponse,
     PlanPublic,
+    TenantOnboardingStatusResponse,
+    TenantOnboardingUpdateRequest,
     TenantPlanSummary,
     UsageInvoiceItem,
     UsageListResponse,
@@ -45,6 +48,16 @@ def _get_tenant_or_404(db: Session, tenant_id: int) -> Tenant:
     return tenant
 
 
+def _get_tenant_settings(db: Session, tenant_id: int) -> TenantSettings:
+    settings = db.scalar(select(TenantSettings).where(TenantSettings.tenant_id == tenant_id))
+    if settings:
+        return settings
+    settings = TenantSettings(tenant_id=tenant_id)
+    db.add(settings)
+    db.flush()
+    return settings
+
+
 def _apply_pending_plan_if_due(db: Session, tenant: Tenant) -> None:
     now = datetime.now(timezone.utc).replace(tzinfo=None)
     if tenant.pending_plan_id and tenant.plan_change_effective_at and tenant.plan_change_effective_at <= now:
@@ -65,6 +78,42 @@ class ClientPortalService:
     def list_plans(self) -> list[PlanPublic]:
         plans = self.db.scalars(select(Plan).order_by(Plan.name)).all()
         return [PlanPublic.model_validate(plan, from_attributes=True) for plan in plans]
+
+    def get_onboarding_status(self, tenant_id: int) -> TenantOnboardingStatusResponse:
+        tenant = _get_tenant_or_404(self.db, tenant_id)
+        tenant_settings = _get_tenant_settings(self.db, tenant.id)
+        return TenantOnboardingStatusResponse(
+            tenant_id=tenant.id,
+            onboarding_status=tenant.onboarding_status,
+            company_name=tenant.name,
+            rnc=tenant.rnc,
+            contact_email=tenant_settings.correo_facturacion,
+            contact_phone=tenant_settings.telefono_contacto,
+            notes=tenant_settings.notas,
+            can_emit_real=tenant.onboarding_status == "completed",
+        )
+
+    def complete_onboarding(
+        self,
+        tenant_id: int,
+        payload: TenantOnboardingUpdateRequest,
+    ) -> TenantOnboardingStatusResponse:
+        tenant = _get_tenant_or_404(self.db, tenant_id)
+        normalized_rnc = payload.rnc.strip()
+        existing = self.db.scalar(select(Tenant.id).where(Tenant.rnc == normalized_rnc, Tenant.id != tenant.id))
+        if existing:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="El RNC ya esta registrado en otra empresa")
+
+        tenant.name = payload.company_name.strip()
+        tenant.rnc = normalized_rnc
+        tenant.onboarding_status = "completed"
+
+        tenant_settings = _get_tenant_settings(self.db, tenant.id)
+        tenant_settings.correo_facturacion = (payload.contact_email or "").strip() or None
+        tenant_settings.telefono_contacto = (payload.contact_phone or "").strip() or None
+        tenant_settings.notas = (payload.notes or "").strip() or None
+        self.db.flush()
+        return self.get_onboarding_status(tenant.id)
 
     def get_plan_summary(self, tenant_id: int) -> TenantPlanSummary:
         tenant = _get_tenant_or_404(self.db, tenant_id)

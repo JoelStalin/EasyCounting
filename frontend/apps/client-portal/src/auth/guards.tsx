@@ -73,6 +73,29 @@ export function RequireScope({ scope, children }: RequireScopeProps) {
   return <>{children}</>;
 }
 
+interface RequireOnboardingCompleteProps {
+  children: ReactNode;
+}
+
+export function RequireOnboardingComplete({ children }: RequireOnboardingCompleteProps) {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spinner label="Cargando" />
+      </div>
+    );
+  }
+
+  if (user?.onboardingStatus && user.onboardingStatus !== "completed" && location.pathname !== "/onboarding") {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  return <>{children}</>;
+}
+
 interface RequireMFAProps {
   children: ReactNode;
   mfaCompleted: boolean;

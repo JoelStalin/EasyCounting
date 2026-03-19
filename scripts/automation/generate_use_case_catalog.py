@@ -146,8 +146,8 @@ def _components() -> list[Component]:
     add("ODOO_RNC_SEARCH", "odoo", "router", "app/routers/odoo.py", "dgii_formats", ("odoo_operator", "internal_service"), "high", external_dependency=False)
     add("ODOO_RNC_LOOKUP", "odoo", "router", "app/routers/odoo.py", "dgii_formats", ("odoo_operator", "internal_service"), "high", external_dependency=False)
     add("LOCAL_RNC_DIRECTORY", "odoo", "service", "app/services/local_rnc_directory.py", "local_repo", ("internal_service",), "high")
-    add("ODOO_PARTNER_ENRICHMENT", "odoo", "service", "integration/odoo/getupsoft_do_localization/getupsoft_l10n_do_accounting/models/res_partner.py", "odoo_portal_docs", ("odoo_operator",), "high", external_dependency=True, mutable=True)
-    add("ODOO_DGII_AUTOCOMPLETE", "odoo", "router", "integration/odoo/getupsoft_do_localization/getupsoft_l10n_do_rnc_search/controllers/controllers.py", "odoo_portal_docs", ("odoo_operator",), "high", external_dependency=True)
+    add("ODOO_PARTNER_ENRICHMENT", "odoo", "service", "integration/odoo/odoo19_getupsoft_do_localization/getupsoft_l10n_do_accounting/models/res_partner.py", "odoo_portal_docs", ("odoo_operator",), "high", external_dependency=True, mutable=True)
+    add("ODOO_DGII_AUTOCOMPLETE", "odoo", "router", "integration/odoo/odoo19_getupsoft_do_localization/getupsoft_l10n_do_rnc_search/controllers/controllers.py", "odoo_portal_docs", ("odoo_operator",), "high", external_dependency=True)
 
     # DGII / submission
     add("DGII_ECF_SUBMIT", "dgii", "service", "app/application/ecf_submission.py", "dgii_ecf_docs", ("internal_service",), "critical", multitenant=True, external_dependency=True, mutable=True)
@@ -187,12 +187,12 @@ def _components() -> list[Component]:
 
     # Odoo reporting / fiscal files
     report_roles = ("odoo_operator", "platform_admin", "internal_service")
-    add("ODOO_REPORT_606", "odoo_reports", "report", "integration/odoo/getupsoft_do_localization/getupsoft_l10n_do_accounting_report/models/dgii_report.py", "dgii_formats", report_roles, "critical", mutable=True)
-    add("ODOO_REPORT_607", "odoo_reports", "report", "integration/odoo/getupsoft_do_localization/getupsoft_l10n_do_accounting_report/models/dgii_report.py", "dgii_formats", report_roles, "critical", mutable=True)
-    add("ODOO_REPORT_608", "odoo_reports", "report", "integration/odoo/getupsoft_do_localization/getupsoft_l10n_do_accounting_report/models/dgii_report.py", "dgii_formats", report_roles, "high", mutable=True)
-    add("ODOO_REPORT_609", "odoo_reports", "report", "integration/odoo/getupsoft_do_localization/getupsoft_l10n_do_accounting_report/models/dgii_report.py", "dgii_formats", report_roles, "high", mutable=True)
-    add("ODOO_REPORT_IT1", "odoo_reports", "report", "integration/odoo/getupsoft_do_localization/getupsoft_l10n_do_accounting_report/views/dgii_report_view.xml", "dgii_formats", report_roles, "high")
-    add("ODOO_REPORT_DOWNLOADS", "odoo_reports", "report", "integration/odoo/getupsoft_do_localization/getupsoft_l10n_do_accounting_report/views/dgii_report_view.xml", "dgii_formats", report_roles, "high")
+    add("ODOO_REPORT_606", "odoo_reports", "report", "integration/odoo/odoo19_getupsoft_do_localization/getupsoft_l10n_do_accounting_report/models/dgii_report.py", "dgii_formats", report_roles, "critical", mutable=True)
+    add("ODOO_REPORT_607", "odoo_reports", "report", "integration/odoo/odoo19_getupsoft_do_localization/getupsoft_l10n_do_accounting_report/models/dgii_report.py", "dgii_formats", report_roles, "critical", mutable=True)
+    add("ODOO_REPORT_608", "odoo_reports", "report", "integration/odoo/odoo19_getupsoft_do_localization/getupsoft_l10n_do_accounting_report/models/dgii_report.py", "dgii_formats", report_roles, "high", mutable=True)
+    add("ODOO_REPORT_609", "odoo_reports", "report", "integration/odoo/odoo19_getupsoft_do_localization/getupsoft_l10n_do_accounting_report/models/dgii_report.py", "dgii_formats", report_roles, "high", mutable=True)
+    add("ODOO_REPORT_IT1", "odoo_reports", "report", "integration/odoo/odoo19_getupsoft_do_localization/getupsoft_l10n_do_accounting_report/views/dgii_report_view.xml", "dgii_formats", report_roles, "high")
+    add("ODOO_REPORT_DOWNLOADS", "odoo_reports", "report", "integration/odoo/odoo19_getupsoft_do_localization/getupsoft_l10n_do_accounting_report/views/dgii_report_view.xml", "dgii_formats", report_roles, "high")
 
     # Pricing / billing
     add("PRICING_PLAN_RULES", "billing", "service", "app/models/billing.py", "local_repo", ("internal_service", "platform_admin"), "high")

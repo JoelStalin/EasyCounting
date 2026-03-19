@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@getupsoft/ui": ["../../packages/ui/src"]
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "../../packages/ui" }]
+}

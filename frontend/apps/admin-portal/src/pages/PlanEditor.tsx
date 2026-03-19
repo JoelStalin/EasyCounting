@@ -13,6 +13,7 @@ export function PlanEditorPage() {
     max_facturas_mes: 0,
     max_facturas_por_receptor_mes: 0,
     max_monto_por_factura: "0.00",
+    includes_recurring_invoices: false,
     descripcion: "",
   });
 
@@ -26,6 +27,7 @@ export function PlanEditorPage() {
       max_facturas_mes: Number(form.max_facturas_mes) || 0,
       max_facturas_por_receptor_mes: Number(form.max_facturas_por_receptor_mes) || 0,
       max_monto_por_factura: form.max_monto_por_factura || "0.00",
+      includes_recurring_invoices: form.includes_recurring_invoices,
       descripcion: form.descripcion ? form.descripcion : null,
     });
     navigate("/plans");
@@ -119,6 +121,14 @@ export function PlanEditorPage() {
             />
           </label>
         </div>
+        <label className="flex items-center gap-3 rounded-md border border-slate-800 bg-slate-950/40 px-4 py-3 text-sm text-slate-200">
+          <input
+            type="checkbox"
+            checked={form.includes_recurring_invoices}
+            onChange={(e) => setForm((prev) => ({ ...prev, includes_recurring_invoices: e.target.checked }))}
+          />
+          Incluir facturas recurrentes en este plan
+        </label>
         <div className="flex justify-end gap-2">
           <button type="button" className="rounded-md border border-slate-700 px-4 py-2 text-sm text-slate-200">
             Cancelar

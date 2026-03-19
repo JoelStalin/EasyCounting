@@ -9,13 +9,16 @@ function isLoopbackHost(hostname: string): boolean {
   return hostname === "127.0.0.1" || hostname === "localhost" || hostname.endsWith(".localhost");
 }
 
-function resolveApiBaseUrl(): string {
+export function resolveApiBaseUrl(): string {
   const currentHostname = globalThis.location?.hostname ?? "";
   const currentOrigin = globalThis.location?.origin ?? "";
   const runtimeValue = (globalThis as RuntimeApiConfig).__GETUPSOFT_API_BASE_URL__;
   if (runtimeValue) {
     try {
       const runtimeUrl = new URL(runtimeValue, currentOrigin || undefined);
+      if (isLoopbackHost(currentHostname) && !isLoopbackHost(runtimeUrl.hostname) && currentOrigin) {
+        return currentOrigin;
+      }
       if (!isLoopbackHost(currentHostname) && isLoopbackHost(runtimeUrl.hostname)) {
         return currentOrigin;
       }

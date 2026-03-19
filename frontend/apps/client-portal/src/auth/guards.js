@@ -34,6 +34,17 @@ export function RequireScope({ scope, children }) {
     }
     return _jsx(_Fragment, { children: children });
 }
+export function RequireOnboardingComplete({ children }) {
+    const { user, loading } = useAuth();
+    const location = useLocation();
+    if (loading) {
+        return (_jsx("div", { className: "flex h-full items-center justify-center", children: _jsx(Spinner, { label: "Cargando" }) }));
+    }
+    if (user?.onboardingStatus && user.onboardingStatus !== "completed" && location.pathname !== "/onboarding") {
+        return _jsx(Navigate, { to: "/onboarding", replace: true });
+    }
+    return _jsx(_Fragment, { children: children });
+}
 export function RequireMFA({ children, mfaCompleted }) {
     if (!mfaCompleted) {
         return _jsx(ForbiddenState, { description: "Completa MFA para emitir comprobantes." });

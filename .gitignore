@@ -14,3 +14,17 @@ frontend/**/dist/
 .venv/
 .pytest_cache/
 htmlcov/
+.coverage
+
+# Entornos virtuales locales
+.venv312/
+.venv*/
+
+# Logs temporales
+logs/
+*.log
+
+# Artefactos y pruebas E2E
+e2e/artifacts/
+artifacts_live_dns/
+seller_debug.png

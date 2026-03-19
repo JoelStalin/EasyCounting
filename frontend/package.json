@@ -5,7 +5,7 @@
   "packageManager": "pnpm@9.0.0",
   "scripts": {
     "build": "pnpm -r run build",
-    "lint": "pnpm exec tsc -p packages/api-client/tsconfig.json --noEmit && pnpm exec tsc -p packages/ui/tsconfig.json --noEmit && pnpm --filter @getupsoft/admin-portal exec tsc --noEmit && pnpm --filter @getupsoft/client-portal exec tsc --noEmit && pnpm --filter @getupsoft/seller-portal exec tsc --noEmit",
+    "lint": "pnpm exec tsc -p packages/api-client/tsconfig.json --noEmit && pnpm exec tsc -p packages/ui/tsconfig.json --noEmit && pnpm --filter @getupsoft/admin-portal exec tsc --noEmit && pnpm --filter @getupsoft/client-portal exec tsc --noEmit && pnpm --filter @getupsoft/seller-portal exec tsc --noEmit && pnpm --filter @getupsoft/corporate-portal exec tsc --noEmit",
     "dev": "pnpm --filter @getupsoft/admin-portal dev"
   },
   "devDependencies": {

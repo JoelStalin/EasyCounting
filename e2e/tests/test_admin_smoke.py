@@ -5,7 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
-from e2e.support import record_step, wait_for_ready
+from e2e.support import dismiss_tour, ensure_tour_visible, record_step, wait_for_ready
 
 
 def test_admin_login_create_company_and_open_detail(driver, admin_url):
@@ -28,6 +28,10 @@ def test_admin_login_create_company_and_open_detail(driver, admin_url):
     WebDriverWait(driver, 20).until(EC.url_contains("/companies"))
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//h1[contains(., 'Compa')]")))
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.LINK_TEXT, "Empresa Demo")))
+    ensure_tour_visible(driver, "Esta vista concentra la cartera multi-tenant administrada por plataforma.")
+    record_step(driver, "admin_tour_open")
+    dismiss_tour(driver)
+    record_step(driver, "admin_tour_dismissed")
     record_step(driver, "admin_companies_loaded")
 
     driver.get(f"{admin_url}/ai-providers")

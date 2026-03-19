@@ -12,6 +12,7 @@ import { PlatformUsersPage } from "./pages/Users";
 import { LoginPage } from "./pages/Login";
 import { MFAPage } from "./pages/MFA";
 import { AIProvidersPage } from "./pages/AIProviders";
+import { AuthCallbackPage } from "./pages/AuthCallback";
 export const router = createBrowserRouter([
     {
         path: "/",
@@ -24,6 +25,10 @@ export const router = createBrowserRouter([
     {
         path: "/mfa",
         element: _jsx(MFAPage, {}),
+    },
+    {
+        path: "/auth/callback",
+        element: _jsx(AuthCallbackPage, {}),
     },
     {
         path: "/",

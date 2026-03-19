@@ -105,6 +105,12 @@ function PlanCard({ plan, currentPlanId, pendingPlanId, onSelect, isLoading }: P
         <p>Max facturas/mes: {plan.max_facturas_mes}</p>
         <p>Max facturas/cliente/mes: {plan.max_facturas_por_receptor_mes}</p>
         <p>Monto max por factura: {Number(plan.max_monto_por_factura).toLocaleString("es-DO", { style: "currency", currency: "DOP" })}</p>
+        <p>
+          Facturas recurrentes:{" "}
+          <span className={plan.includes_recurring_invoices ? "text-emerald-300" : "text-amber-200"}>
+            {plan.includes_recurring_invoices ? "Incluidas" : "No incluidas"}
+          </span>
+        </p>
       </div>
       <button
         type="button"

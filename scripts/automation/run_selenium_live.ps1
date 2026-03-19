@@ -4,6 +4,8 @@ param(
     [int]$KeepOpenMs = 2000,
     [string]$AdminBaseUrl = "",
     [string]$ClientBaseUrl = "",
+    [string]$SellerBaseUrl = "",
+    [string]$CorporateBaseUrl = "",
     [string]$ApiBaseUrl = ""
 )
 
@@ -24,11 +26,32 @@ if ($AdminBaseUrl) {
 if ($ClientBaseUrl) {
     $env:CLIENT_BASE_URL = $ClientBaseUrl
 }
+if ($SellerBaseUrl) {
+    $env:SELLER_BASE_URL = $SellerBaseUrl
+}
+if ($CorporateBaseUrl) {
+    $env:CORPORATE_BASE_URL = $CorporateBaseUrl
+}
 if ($ApiBaseUrl) {
     $env:API_BASE_URL = $ApiBaseUrl
 }
 
-.\.venv\Scripts\python -m pytest e2e `
+$pythonCandidates = @(
+    ".\.venv\Scripts\python.exe",
+    ".\.venv312\Scripts\python.exe"
+)
+$python = $pythonCandidates |
+    Where-Object {
+        if (-not (Test-Path $_)) { return $false }
+        $venvRoot = Split-Path (Split-Path $_ -Parent) -Parent
+        return Test-Path (Join-Path $venvRoot "pyvenv.cfg")
+    } |
+    Select-Object -First 1
+if (-not $python) {
+    throw "No se encontro Python del entorno virtual en .venv ni .venv312"
+}
+
+& $python -m pytest e2e `
   --html="$reportPath" `
   --self-contained-html
 

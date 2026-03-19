@@ -35,6 +35,10 @@ class Settings(BaseSettings):
         default="socios.getupsoft.com.do",
         validation_alias=AliasChoices("PARTNER_PORTAL_DOMAIN", "SELLER_PORTAL_DOMAIN"),
     )
+    public_site_domain: str = Field(
+        default="www.getupsoft.com.do",
+        validation_alias=AliasChoices("PUBLIC_SITE_DOMAIN", "CORPORATE_PORTAL_DOMAIN"),
+    )
     rate_limit_per_minute: int = Field(default=100, ge=1)
 
     jwt_secret: str = Field(default="change-me", validation_alias=AliasChoices("JWT_SECRET", "SECRET_KEY"))
@@ -51,7 +55,7 @@ class Settings(BaseSettings):
     storage_bucket: str = Field(default="local", validation_alias=AliasChoices("STORAGE_BUCKET"))
     storage_base_path: Path = Field(default=Path("/var/getupsoft/storage"), validation_alias=AliasChoices("STORAGE_BASE_PATH"))
     odoo_rnc_catalog_path: Path = Field(
-        default=Path("integration/odoo/getupsoft_do_localization/local_rnc_directory.json"),
+        default=Path("integration/odoo/odoo19_getupsoft_do_localization/local_rnc_directory.json"),
         validation_alias=AliasChoices("ODOO_RNC_CATALOG_PATH"),
     )
     llm_chat_enabled: bool = Field(default=True, validation_alias=AliasChoices("LLM_CHAT_ENABLED"))
@@ -65,6 +69,42 @@ class Settings(BaseSettings):
     llm_timeout_seconds: float = Field(default=20.0, gt=1.0, le=120.0, validation_alias=AliasChoices("LLM_TIMEOUT_SECONDS"))
     llm_max_context_invoices: int = Field(default=60, ge=5, le=200, validation_alias=AliasChoices("LLM_MAX_CONTEXT_INVOICES"))
     llm_max_completion_tokens: int = Field(default=500, ge=64, le=4000, validation_alias=AliasChoices("LLM_MAX_COMPLETION_TOKENS"))
+
+    ui_tours_enabled: bool = Field(default=True, validation_alias=AliasChoices("UI_TOURS_ENABLED"))
+    ui_tours_default_autorun: bool = Field(default=True, validation_alias=AliasChoices("UI_TOURS_DEFAULT_AUTORUN"))
+
+    social_auth_enabled: bool = Field(default=False, validation_alias=AliasChoices("SOCIAL_AUTH_ENABLED"))
+    social_auth_base_url: str | None = Field(default=None, validation_alias=AliasChoices("SOCIAL_AUTH_BASE_URL"))
+    social_auth_session_secret: str = Field(
+        default="change-social-session",
+        validation_alias=AliasChoices("SOCIAL_AUTH_SESSION_SECRET"),
+    )
+
+    social_google_enabled: bool = Field(default=False, validation_alias=AliasChoices("SOCIAL_GOOGLE_ENABLED"))
+    social_google_client_id: str | None = Field(default=None, validation_alias=AliasChoices("SOCIAL_GOOGLE_CLIENT_ID"))
+    social_google_client_secret: str | None = Field(default=None, validation_alias=AliasChoices("SOCIAL_GOOGLE_CLIENT_SECRET"))
+
+    social_facebook_enabled: bool = Field(default=False, validation_alias=AliasChoices("SOCIAL_FACEBOOK_ENABLED"))
+    social_facebook_client_id: str | None = Field(default=None, validation_alias=AliasChoices("SOCIAL_FACEBOOK_CLIENT_ID"))
+    social_facebook_client_secret: str | None = Field(default=None, validation_alias=AliasChoices("SOCIAL_FACEBOOK_CLIENT_SECRET"))
+
+    social_apple_enabled: bool = Field(default=False, validation_alias=AliasChoices("SOCIAL_APPLE_ENABLED"))
+    social_apple_client_id: str | None = Field(default=None, validation_alias=AliasChoices("SOCIAL_APPLE_CLIENT_ID"))
+    social_apple_team_id: str | None = Field(default=None, validation_alias=AliasChoices("SOCIAL_APPLE_TEAM_ID"))
+    social_apple_key_id: str | None = Field(default=None, validation_alias=AliasChoices("SOCIAL_APPLE_KEY_ID"))
+    social_apple_private_key: str | None = Field(default=None, validation_alias=AliasChoices("SOCIAL_APPLE_PRIVATE_KEY"))
+    social_apple_private_key_path: Path | None = Field(
+        default=None,
+        validation_alias=AliasChoices("SOCIAL_APPLE_PRIVATE_KEY_PATH"),
+    )
+
+    smtp_host: str | None = Field(default=None, validation_alias=AliasChoices("SMTP_HOST"))
+    smtp_port: int | None = Field(default=None, ge=1, le=65535, validation_alias=AliasChoices("SMTP_PORT"))
+    smtp_user: str | None = Field(default=None, validation_alias=AliasChoices("SMTP_USER"))
+    smtp_pass: str | None = Field(default=None, validation_alias=AliasChoices("SMTP_PASS"))
+    smtp_secure: bool = Field(default=True, validation_alias=AliasChoices("SMTP_SECURE"))
+    smtp_from: str | None = Field(default=None, validation_alias=AliasChoices("SMTP_FROM"))
+    smtp_timeout_seconds: float = Field(default=20.0, gt=1.0, le=120.0, validation_alias=AliasChoices("SMTP_TIMEOUT_SECONDS"))
 
     bootstrap_admin_email: str = Field(
         default="admin@getupsoft.com.do",
@@ -189,6 +229,16 @@ class Settings(BaseSettings):
     dgii_cert_p12_password: str = Field(default="changeit", validation_alias=AliasChoices("DGII_CERT_P12_PASSWORD", "DGII_P12_PASSWORD"))
     ri_qr_base_url: AnyUrl = Field(default="https://ri.mock/qr", validation_alias=AliasChoices("RI_QR_BASE_URL"))
     jobs_enabled: bool = Field(default=True, validation_alias=AliasChoices("JOBS_ENABLED"))
+    recurring_invoice_job_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("RECURRING_INVOICE_JOB_ENABLED"),
+    )
+    recurring_invoice_poll_seconds: int = Field(
+        default=60,
+        ge=10,
+        le=3600,
+        validation_alias=AliasChoices("RECURRING_INVOICE_POLL_SECONDS"),
+    )
 
     enfc_require_bearer_token: bool = Field(default=False, validation_alias=AliasChoices("ENFC_REQUIRE_BEARER_TOKEN"))
     enfc_token_ttl_seconds: int = Field(default=900, ge=60, le=86400, validation_alias=AliasChoices("ENFC_TOKEN_TTL_SECONDS"))
@@ -222,9 +272,51 @@ class Settings(BaseSettings):
     @model_validator(mode="after")
     def _validate_security(self) -> "Settings":
         env = str(self.environment).lower()
+        smtp_configured = any(
+            value not in {None, ""}
+            for value in [self.smtp_host, self.smtp_port, self.smtp_user, self.smtp_pass, self.smtp_from]
+        )
+        if smtp_configured:
+            if not self.smtp_host or not self.smtp_port or not self.smtp_from:
+                raise ValueError("SMTP_HOST, SMTP_PORT y SMTP_FROM son obligatorios cuando se configura SMTP")
+            if bool(self.smtp_user) != bool(self.smtp_pass):
+                raise ValueError("SMTP_USER y SMTP_PASS deben definirse juntos")
+
+        social_providers_enabled = any(
+            [self.social_google_enabled, self.social_facebook_enabled, self.social_apple_enabled]
+        )
+        if social_providers_enabled and not self.social_auth_enabled:
+            raise ValueError("SOCIAL_AUTH_ENABLED debe ser true cuando se habilita algun proveedor social")
+
+        if self.social_google_enabled and (
+            not self.social_google_client_id or not self.social_google_client_secret
+        ):
+            raise ValueError("SOCIAL_GOOGLE_CLIENT_ID y SOCIAL_GOOGLE_CLIENT_SECRET son obligatorios")
+        if self.social_facebook_enabled and (
+            not self.social_facebook_client_id or not self.social_facebook_client_secret
+        ):
+            raise ValueError("SOCIAL_FACEBOOK_CLIENT_ID y SOCIAL_FACEBOOK_CLIENT_SECRET son obligatorios")
+        if self.social_apple_enabled:
+            apple_private_key_present = bool(self.social_apple_private_key or self.social_apple_private_key_path)
+            if not (
+                self.social_apple_client_id
+                and self.social_apple_team_id
+                and self.social_apple_key_id
+                and apple_private_key_present
+            ):
+                raise ValueError(
+                    "SOCIAL_APPLE_CLIENT_ID, SOCIAL_APPLE_TEAM_ID, SOCIAL_APPLE_KEY_ID y una private key son obligatorios"
+                )
+
         if env in {"production", "prod"}:
             if self.jwt_secret in {"change-me", "dev-secret", ""}:
                 raise ValueError("JWT_SECRET must be set to a non-default value in production")
+            if self.social_auth_enabled and self.social_auth_session_secret in {
+                "change-social-session",
+                "dev-secret",
+                "",
+            }:
+                raise ValueError("SOCIAL_AUTH_SESSION_SECRET debe definirse en produccion")
             if self.bootstrap_admin_enabled:
                 default_passwords = {"ChangeMe123!", "change-me", "dev-secret", ""}
                 if self.bootstrap_admin_password in default_passwords:
@@ -242,10 +334,14 @@ class Settings(BaseSettings):
                 "https://admin.getupsoft.com.do",
                 "https://cliente.getupsoft.com.do",
                 "https://socios.getupsoft.com.do",
+                "https://www.getupsoft.com.do",
+                "https://getupsoft.com.do",
                 "http://api.getupsoft.com.do",
                 "http://admin.getupsoft.com.do",
                 "http://cliente.getupsoft.com.do",
                 "http://socios.getupsoft.com.do",
+                "http://www.getupsoft.com.do",
+                "http://getupsoft.com.do",
             ]
         else:
             origins = self._parse_csv_or_json_array(self.cors_allow_origins_raw)
@@ -254,6 +350,7 @@ class Settings(BaseSettings):
             self._normalize_origin(self.client_portal_domain),
             self._normalize_origin(self.admin_portal_domain),
             self._normalize_origin(self.partner_portal_domain),
+            self._normalize_origin(self.public_site_domain),
         ]
         for origin in portal_origins:
             if origin and origin not in origins:
@@ -394,6 +491,14 @@ class Settings(BaseSettings):
 
         async_url = url.set(drivername=f"{dialect}+asyncpg")
         return async_url.render_as_string(hide_password=False)
+
+    @computed_field
+    @property
+    def social_callback_base_url(self) -> str:
+        base = (self.social_auth_base_url or "").strip()
+        if base:
+            return base.rstrip("/")
+        return "https://api.getupsoft.com.do"
 
 
 @lru_cache

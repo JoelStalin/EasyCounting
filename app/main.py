@@ -11,6 +11,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from prometheus_fastapi_instrumentator import Instrumentator
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.routes.auth import me_router as portal_me_router
 from app.api.routes.auth import router as portal_auth_router
@@ -19,10 +20,13 @@ from app.api.routes.ri import router as ri_router
 from app.api.enfc_routes import router as enfc_router
 from app.api.router import api_router
 from app.dgii.jobs import start_dispatcher, stop_dispatcher
+from app.jobs.recurring_invoices import start_recurring_invoice_runner, stop_recurring_invoice_runner
 from app.routers.admin import router as admin_router
 from app.routers.cliente import router as cliente_router
 from app.routers.odoo import router as odoo_router
 from app.routers.partner import router as partner_router
+from app.routers.tenant_api import router as tenant_api_router
+from app.routers.ui_tours import router as ui_tours_router
 from app.db import check_database_connection
 from app.infra.logging import configure_logging
 from app.infra.settings import settings
@@ -85,6 +89,12 @@ def create_app() -> FastAPI:
         except Exception as exc:  # pragma: no cover - defensive
             LOGGER.exception("Failed to start DGII dispatcher", exc_info=exc)
 
+        try:
+            if settings.jobs_enabled:
+                await start_recurring_invoice_runner()
+        except Exception as exc:  # pragma: no cover - defensive
+            LOGGER.exception("Failed to start recurring invoice runner", exc_info=exc)
+
         yield
 
         await shutdown_rate_limiter(app)
@@ -92,6 +102,10 @@ def create_app() -> FastAPI:
             await stop_dispatcher()
         except Exception as exc:  # pragma: no cover - defensive
             LOGGER.exception("Failed to stop DGII dispatcher", exc_info=exc)
+        try:
+            await stop_recurring_invoice_runner()
+        except Exception as exc:  # pragma: no cover - defensive
+            LOGGER.exception("Failed to stop recurring invoice runner", exc_info=exc)
 
     app = FastAPI(
         title=settings.app_name,
@@ -105,6 +119,12 @@ def create_app() -> FastAPI:
         app.state.metrics_configured = True
 
     app.add_middleware(GZipMiddleware, minimum_size=1024)
+    app.add_middleware(
+        SessionMiddleware,
+        secret_key=settings.social_auth_session_secret,
+        same_site="lax",
+        https_only=settings.environment.lower() in {"production", "prod"},
+    )
     trusted_hosts = sorted(
         {
             *settings.dgii_allowed_hosts,
@@ -113,6 +133,7 @@ def create_app() -> FastAPI:
             "testserver",
             "test",
             "getupsoft.com.do",
+            settings.public_site_domain,
             "api.getupsoft.com.do",
             settings.admin_portal_domain,
             settings.client_portal_domain,
@@ -136,12 +157,16 @@ def create_app() -> FastAPI:
     app.include_router(cliente_router, prefix="/api/v1")
     app.include_router(odoo_router, prefix="/api/v1")
     app.include_router(partner_router, prefix="/api/v1")
+    app.include_router(tenant_api_router, prefix="/api/v1")
+    app.include_router(ui_tours_router, prefix="/api/v1")
 
     # Legacy paths (kept for existing tests/integrations)
     app.include_router(admin_router, prefix="/api")
     app.include_router(cliente_router, prefix="/api")
     app.include_router(odoo_router, prefix="/api")
     app.include_router(partner_router, prefix="/api")
+    app.include_router(tenant_api_router, prefix="/api")
+    app.include_router(ui_tours_router, prefix="/api")
 
     app.include_router(api_router, prefix="/api")
     app.include_router(api_router, prefix="/api/1")

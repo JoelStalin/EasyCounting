@@ -28,3 +28,19 @@ class User(Base):
 
     tenant: Mapped[Tenant] = relationship(back_populates="users")
     partner_account: Mapped[PartnerAccount | None] = relationship(back_populates="users")
+    external_identities: Mapped[list["UserExternalIdentity"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    login_challenges: Mapped[list["AuthLoginChallenge"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    login_tickets: Mapped[list["AuthLoginTicket"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    view_tours: Mapped[list["UserViewTour"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )

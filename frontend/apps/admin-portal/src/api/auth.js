@@ -1,28 +1,31 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { api } from "./client";
+import { api, resolveApiBaseUrl } from "./client";
 import { useAuth } from "../auth/use-auth";
+function toSession(data) {
+    return {
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        user: {
+            id: data.user.id,
+            email: data.user.email,
+            scope: data.user.scope,
+            tenantId: data.user.tenant_id,
+            roles: data.user.roles,
+            onboardingStatus: data.user.onboarding_status ?? null,
+        },
+        permissions: data.permissions,
+    };
+}
 export function useLoginMutation() {
     const { setSession } = useAuth();
     return useMutation({
         mutationFn: async (payload) => {
-            const { data } = await api.post("/api/v1/auth/login", payload);
+            const { data } = await api.post("/api/v1/auth/login", { ...payload, portal: "admin" });
             return data;
         },
         onSuccess: (data) => {
             if (!data.mfa_required) {
-                const session = {
-                    accessToken: data.access_token,
-                    refreshToken: data.refresh_token,
-                    user: {
-                        id: data.user.id,
-                        email: data.user.email,
-                        scope: data.user.scope,
-                        tenantId: data.user.tenant_id,
-                        roles: data.user.roles,
-                    },
-                    permissions: data.permissions,
-                };
-                setSession(session);
+                setSession(toSession(data));
             }
         },
     });
@@ -34,20 +37,33 @@ export function useProfileQuery(enabled) {
         enabled,
         queryFn: async () => {
             const { data } = await api.get("/api/v1/me");
-            const session = {
-                accessToken: data.access_token,
-                refreshToken: data.refresh_token,
-                user: {
-                    id: data.user.id,
-                    email: data.user.email,
-                    scope: data.user.scope,
-                    tenantId: data.user.tenant_id,
-                    roles: data.user.roles,
-                },
-                permissions: data.permissions,
-            };
+            const session = toSession(data);
             setSession(session);
             return data;
         },
     });
+}
+export function useSocialProvidersQuery() {
+    return useQuery({
+        queryKey: ["social-providers", "admin"],
+        queryFn: async () => {
+            const { data } = await api.get("/api/v1/auth/oauth/providers", {
+                params: { portal: "admin" },
+            });
+            return data;
+        },
+    });
+}
+export function startSocialLogin(provider, returnTo) {
+    const url = new URL(`/api/v1/auth/oauth/${provider}/start`, resolveApiBaseUrl());
+    url.searchParams.set("portal", "admin");
+    url.searchParams.set("return_to", returnTo);
+    window.location.assign(url.toString());
+}
+export async function exchangeSocialTicket(ticket) {
+    const { data } = await api.post("/api/v1/auth/oauth/exchange", {
+        ticket,
+        portal: "admin",
+    });
+    return data;
 }

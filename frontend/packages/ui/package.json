@@ -12,6 +12,7 @@
   "dependencies": {
     "@radix-ui/react-slot": "^1.0.4",
     "clsx": "^2.1.0",
+    "react-joyride": "^2.9.3",
     "tailwind-merge": "^2.2.2"
   },
   "devDependencies": {
