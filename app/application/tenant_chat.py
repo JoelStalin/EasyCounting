@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from app.infra.settings import settings
 from app.models.invoice import Invoice
 from app.models.tenant import Tenant
-from app.portal_client.schemas import ChatAnswerResponse, ChatQuestionRequest, ChatSource
+from app.portal_client.schemas import ChatAnswerResponse, ChatPreprocessMetadata, ChatQuestionRequest, ChatSource
 from app.services.platform_ai import PlatformAIProviderRuntime, load_default_runtime_provider
 
 
@@ -27,7 +27,25 @@ def _get_tenant_or_404(db: Session, tenant_id: int) -> Tenant:
 
 
 def _normalize_question(question: str) -> str:
-    return re.sub(r"\s+", " ", (question or "").strip())
+    normalized = re.sub(r"\s+", " ", (question or "").strip())
+    replacements = {
+        "dgii": "DGII",
+        "odoo": "Odoo",
+        "ecf": "e-CF",
+        "encf": "eNCF",
+        "cual": "cuál",
+        "cuantos": "cuántos",
+        "ultimo": "último",
+        "analisis": "análisis",
+        "gramatica": "gramática",
+        "ortografia": "ortografía",
+        "funcion": "función",
+    }
+    for source, target in replacements.items():
+        normalized = re.sub(rf"\b{re.escape(source)}\b", target, normalized, flags=re.IGNORECASE)
+    if normalized and normalized[0].isalpha():
+        normalized = normalized[0].upper() + normalized[1:]
+    return normalized
 
 
 def _tokenize(value: str) -> list[str]:
@@ -44,6 +62,17 @@ class RankedInvoice:
     score: int
 
 
+@dataclass(slots=True)
+class ChatPreprocessDecision:
+    original_question: str
+    normalized_question: str
+    normalized_changed: bool
+    intent: str
+    dispatch_strategy: str
+    provider_skipped_to_save_credits: bool
+    reasons: list[str]
+
+
 class TenantChatService:
     def __init__(self, db: Session) -> None:
         self.db = db
@@ -56,7 +85,10 @@ class TenantChatService:
             )
 
         tenant = _get_tenant_or_404(self.db, tenant_id)
-        question = _normalize_question(payload.question)
+        platform_provider = load_default_runtime_provider(self.db)
+        external_provider_available = bool(platform_provider) or settings.llm_provider == "openai_compatible"
+        preprocess = self._preprocess_question(payload.question, provider_available=external_provider_available)
+        question = preprocess.normalized_question
         invoices = self._load_tenant_invoices(tenant.id)
         ranked = self._rank_invoices(question, invoices)
         explicit_reference = self._extract_explicit_reference(question)
@@ -64,9 +96,33 @@ class TenantChatService:
         top_ranked = ranked[: payload.max_sources] if matched_explicit_reference or not explicit_reference else []
         sources = [self._to_source(item.invoice) for item in top_ranked]
         warnings: list[str] = []
-        platform_provider = load_default_runtime_provider(self.db)
 
-        if platform_provider:
+        if preprocess.provider_skipped_to_save_credits:
+            warnings.append("Consulta operativa resuelta localmente para ahorrar créditos IA.")
+
+        if preprocess.intent == "greeting":
+            return ChatAnswerResponse(
+                answer=(
+                    "Puedo ayudarte con estados, conteos, rechazos, aceptación, comprobantes específicos "
+                    "y resúmenes de facturas de tu empresa. Escribe un eNCF, un estado DGII o una pregunta operativa."
+                ),
+                engine="local",
+                tenant_id=tenant.id,
+                sources=[],
+                warnings=warnings,
+                preprocess=self._to_preprocess_metadata(preprocess),
+            )
+
+        if preprocess.dispatch_strategy == "local_only":
+            answer = self._answer_local(
+                tenant=tenant,
+                question=question,
+                ranked=top_ranked,
+                invoices=invoices,
+                explicit_reference=explicit_reference,
+            )
+            engine = "local"
+        elif platform_provider:
             try:
                 answer = self._answer_with_platform_provider(
                     provider=platform_provider,
@@ -125,6 +181,92 @@ class TenantChatService:
             tenant_id=tenant.id,
             sources=sources,
             warnings=warnings,
+            preprocess=self._to_preprocess_metadata(preprocess),
+        )
+
+    def _preprocess_question(self, question: str, *, provider_available: bool) -> ChatPreprocessDecision:
+        original = (question or "").strip()
+        normalized = _normalize_question(original)
+        lowered = normalized.lower()
+        explicit_reference = self._extract_explicit_reference(normalized)
+
+        greeting_keywords = ("hola", "buenas", "buenos días", "buen dia", "gracias", "saludos")
+        analysis_keywords = (
+            "analiza",
+            "análisis",
+            "explica",
+            "recomienda",
+            "compara",
+            "tendencia",
+            "patrón",
+            "patron",
+            "riesgo",
+            "insight",
+            "estrategia",
+            "causa",
+            "por qué",
+            "porque",
+        )
+        operational_keywords = (
+            "estado",
+            "detalle",
+            "detalles",
+            "track",
+            "último",
+            "ultimo",
+            "cuántos",
+            "cuantos",
+            "cantidad",
+            "total",
+            "resumen",
+            "acept",
+            "rechaz",
+            "contabil",
+            "comprobante",
+            "factura",
+            "emitido",
+            "emitida",
+        )
+
+        reasons: list[str] = []
+        if any(keyword in lowered for keyword in greeting_keywords) and len(_tokenize(lowered)) <= 6:
+            intent = "greeting"
+        elif any(keyword in lowered for keyword in analysis_keywords):
+            intent = "analysis"
+        elif explicit_reference or any(keyword in lowered for keyword in operational_keywords):
+            intent = "operational_lookup"
+        else:
+            intent = "open_question"
+
+        if not provider_available:
+            dispatch_strategy = "local_only"
+            reasons.append("No hay proveedor IA externo disponible; la consulta se resuelve localmente.")
+        elif intent in {"greeting", "operational_lookup"}:
+            dispatch_strategy = "local_only"
+            reasons.append("La consulta puede resolverse con reglas y datos locales antes de consumir créditos.")
+        else:
+            dispatch_strategy = "provider_preferred"
+            reasons.append("La consulta es abierta o analítica y puede beneficiarse del proveedor IA.")
+
+        return ChatPreprocessDecision(
+            original_question=original,
+            normalized_question=normalized,
+            normalized_changed=normalized != original,
+            intent=intent,
+            dispatch_strategy=dispatch_strategy,
+            provider_skipped_to_save_credits=provider_available and dispatch_strategy == "local_only",
+            reasons=reasons,
+        )
+
+    def _to_preprocess_metadata(self, decision: ChatPreprocessDecision) -> ChatPreprocessMetadata:
+        return ChatPreprocessMetadata(
+            originalQuestion=decision.original_question,
+            normalizedQuestion=decision.normalized_question,
+            normalizedChanged=decision.normalized_changed,
+            intent=decision.intent,
+            dispatchStrategy=decision.dispatch_strategy,
+            providerSkippedToSaveCredits=decision.provider_skipped_to_save_credits,
+            reasons=decision.reasons,
         )
 
     def _load_tenant_invoices(self, tenant_id: int) -> list[Invoice]:

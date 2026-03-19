@@ -1,0 +1,47 @@
+{
+  "updated_at": "2026-03-19T23:22:50.946211+00:00",
+  "sessions": [
+    {
+      "session_id": "bootstrap-memoria-conversacional-cierre-de-sesi-n-76b9f5ebd5e4",
+      "title": "Bootstrap memoria conversacional - cierre de sesión",
+      "slug": "bootstrap-memoria-conversacional-cierre-de-sesi-n",
+      "created_at": "2026-03-19T23:22:50.802901+00:00",
+      "source_type": "file",
+      "source_path": "C:\\Users\\yoeli\\Downloads\\prompt_branding_ceo_facturacion.md",
+      "prompt_count": 1,
+      "status_counts": {
+        "informational": 1
+      },
+      "pending_tasks": [],
+      "files_or_evidence": [],
+      "tags": [
+        "branding",
+        "chat-memory",
+        "dgii"
+      ],
+      "sensitivity": "low",
+      "redaction_applied": false,
+      "session_log_path": ".ai_context/session_logs/2026-03-19_bootstrap-memoria-conversacional-cierre-de-sesi-n_session.md",
+      "compact_session_path": ".ai_context/session_logs/2026-03-19_bootstrap-memoria-conversacional-cierre-de-sesi-n_session.compact.json",
+      "docs_prompt_path": "docs/prompts/2026-03-19_bootstrap-memoria-conversacional-cierre-de-sesi-n.md"
+    }
+  ],
+  "prompts": [
+    {
+      "prompt_id": "bootstrap-memoria-conversacional-cierre-de-sesi-n-76b9f5ebd5e4-p001",
+      "source_session_id": "bootstrap-memoria-conversacional-cierre-de-sesi-n-76b9f5ebd5e4",
+      "index": 1,
+      "timestamp": null,
+      "status": "informational",
+      "tags": [
+        "branding",
+        "chat-memory",
+        "dgii"
+      ],
+      "sensitivity": "low",
+      "redaction_applied": false,
+      "archive_path": ".ai_context/session_logs/2026-03-19_bootstrap-memoria-conversacional-cierre-de-sesi-n_session.compact.json",
+      "archive_prompt_index": 0
+    }
+  ]
+}

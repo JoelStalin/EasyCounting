@@ -1,0 +1,324 @@
+{
+  "status": "compliant",
+  "repo_root": "C:\\Users\\yoeli\\Documents\\dgii_encf",
+  "summary": {
+    "required_total": 30,
+    "present_total": 30,
+    "missing_total": 0
+  },
+  "categories": {
+    "business_context": {
+      "required_total": 3,
+      "present_total": 3,
+      "missing": []
+    },
+    "chat_memory": {
+      "required_total": 7,
+      "present_total": 7,
+      "missing": []
+    },
+    "plans_and_pricing": {
+      "required_total": 4,
+      "present_total": 4,
+      "missing": []
+    },
+    "demo_and_sales": {
+      "required_total": 4,
+      "present_total": 4,
+      "missing": []
+    },
+    "enterprise_and_odoo": {
+      "required_total": 4,
+      "present_total": 4,
+      "missing": []
+    },
+    "notifications": {
+      "required_total": 3,
+      "present_total": 3,
+      "missing": []
+    },
+    "compliance_and_runbooks": {
+      "required_total": 3,
+      "present_total": 3,
+      "missing": []
+    },
+    "dgii_automation": {
+      "required_total": 2,
+      "present_total": 2,
+      "missing": []
+    }
+  },
+  "missing_required": [],
+  "items": [
+    {
+      "category": "business_context",
+      "name": "master_business_audit",
+      "path": "docs/business/2026-03-19_auditoria_repositorio_mercado_pricing.md",
+      "kind": "doc",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "business_context",
+      "name": "market_pricing_note",
+      "path": ".ai_context/notes/2026-03-19_repo_market_pricing_audit.md",
+      "kind": "note",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "business_context",
+      "name": "long_term_prompt_memory",
+      "path": ".ai_context/notes/LONG_TERM_PROMPT_MEMORY.md",
+      "kind": "memory",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "chat_memory",
+      "name": "chat_policy_file",
+      "path": ".ai_context/notes/chat_memory_policy.json",
+      "kind": "policy",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "chat_memory",
+      "name": "prompt_catalog",
+      "path": ".ai_context/notes/prompt_catalog.json",
+      "kind": "index",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "chat_memory",
+      "name": "prompt_dictionary",
+      "path": ".ai_context/notes/prompt_dictionary.json",
+      "kind": "index",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "chat_memory",
+      "name": "save_chat_history_cli",
+      "path": "scripts/automation/save_chat_history.py",
+      "kind": "script",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "chat_memory",
+      "name": "close_chat_session_cli",
+      "path": "scripts/automation/close_project_chat_session.py",
+      "kind": "script",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "chat_memory",
+      "name": "chat_memory_compliance_cli",
+      "path": "scripts/automation/check_chat_memory_compliance.py",
+      "kind": "script",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "chat_memory",
+      "name": "chat_memory_tests",
+      "path": "tests/test_chat_memory.py",
+      "kind": "test",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "plans_and_pricing",
+      "name": "plans_pricing_guide",
+      "path": "docs/guide/13-planes-tarifas.md",
+      "kind": "doc",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "plans_and_pricing",
+      "name": "billing_model",
+      "path": "app/models/billing.py",
+      "kind": "code",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "plans_and_pricing",
+      "name": "recurring_invoices_service",
+      "path": "app/application/recurring_invoices.py",
+      "kind": "code",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "plans_and_pricing",
+      "name": "recurring_invoices_tests",
+      "path": "tests/test_recurring_invoices.py",
+      "kind": "test",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "demo_and_sales",
+      "name": "demo_setup",
+      "path": "scripts/automation/setup_demo_environment.py",
+      "kind": "script",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "demo_and_sales",
+      "name": "demo_seed",
+      "path": "scripts/automation/seed_public_demo_data.py",
+      "kind": "script",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "demo_and_sales",
+      "name": "corporate_portal",
+      "path": "frontend/apps/corporate-portal/index.html",
+      "kind": "frontend",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "demo_and_sales",
+      "name": "seller_portal",
+      "path": "frontend/apps/seller-portal/src/pages/Login.tsx",
+      "kind": "frontend",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "enterprise_and_odoo",
+      "name": "tenant_api_service",
+      "path": "app/application/tenant_api.py",
+      "kind": "code",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "enterprise_and_odoo",
+      "name": "tenant_api_guide",
+      "path": "docs/guide/20-odoo-api-cliente-empresarial.md",
+      "kind": "doc",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "enterprise_and_odoo",
+      "name": "odoo15_localization",
+      "path": "integration/odoo/odoo15_getupsoft_do_localization/README.md",
+      "kind": "addon",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "enterprise_and_odoo",
+      "name": "odoo19_localization",
+      "path": "integration/odoo/odoo19_getupsoft_do_localization/README.md",
+      "kind": "addon",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "notifications",
+      "name": "email_service",
+      "path": "app/services/email_service.py",
+      "kind": "code",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "notifications",
+      "name": "email_service_tests",
+      "path": "tests/test_email_service.py",
+      "kind": "test",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "notifications",
+      "name": "email_service_guide",
+      "path": "docs/guide/19-email-smtp-service.md",
+      "kind": "doc",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "compliance_and_runbooks",
+      "name": "sla_doc",
+      "path": "docs/compliance/SOPORTE_SLA.md",
+      "kind": "doc",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "compliance_and_runbooks",
+      "name": "dgii_contact_doc",
+      "path": "docs/compliance/CONTACTO_DGII.md",
+      "kind": "doc",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "compliance_and_runbooks",
+      "name": "real_certification_runbook",
+      "path": "scripts/automation/REAL_CERTIFICATION_RUNBOOK.md",
+      "kind": "runbook",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "dgii_automation",
+      "name": "dgii_portal_automation_guide",
+      "path": "docs/guide/22-dgii-portal-automation.md",
+      "kind": "doc",
+      "required": true,
+      "exists": true,
+      "note": ""
+    },
+    {
+      "category": "dgii_automation",
+      "name": "dgii_portal_automation_tests",
+      "path": "tests/test_dgii_portal_automation.py",
+      "kind": "test",
+      "required": true,
+      "exists": true,
+      "note": ""
+    }
+  ]
+}

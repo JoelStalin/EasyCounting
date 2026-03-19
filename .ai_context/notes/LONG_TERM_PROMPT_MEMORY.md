@@ -270,6 +270,50 @@ Fecha de inicialización: 2026-03-19
   - `docs/guide/*`
   - `docs/business/*`
 
+### 2026-03-19 - Restauracion del tunel publico Cloudflare
+
+- Prompt/objetivo:
+  - revisar el error `Cloudflare Tunnel 1033`
+  - dejar `admin`, `cliente`, `socios` y el borde publico nuevamente funcionales
+- Errores o brechas detectadas:
+  - `cloudflared` no tenia conector activo
+  - la configuracion activa del tunel apuntaba `socios.getupsoft.com.do` a `127.0.0.1:18184`
+  - faltaba publicar `www.getupsoft.com.do` en DNS del tunel
+  - el portal de socios mostraba el selector de clientes antes de que terminara de cargar la cartera asignada
+- Solucion/decision:
+  - se corrigio `C:\Users\yoeli\.cloudflared\config.yml`
+  - se reactivo el tunel `getupsoft-local`
+  - se publico `www.getupsoft.com.do` con `cloudflared tunnel route dns`
+  - se ajusto `frontend/apps/seller-portal/src/pages/EmitECF.tsx` para esperar la carga real de clientes antes de renderizar el selector
+  - se recompilo el portal de socios y se repitio la suite funcional publica
+- Estado:
+  - resuelto para `api`, `admin`, `cliente` y `socios`
+  - `www` publicado y respondiendo en Cloudflare; la propagacion/cache del resolver local puede tardar mas
+- Evidencia:
+  - `.ai_context/current_state/2026-03-19_public_tunnel_restored.md`
+  - `.ai_context/test_evidence/2026-03-19_public_tunnel_restored_validation.md`
+  - `e2e/artifacts/public_fix_retry_20260319_155543/report.html`
+
+<!-- chat-memory:auto -->:bootstrap-memoria-conversacional-cierre-de-sesi-n-76b9f5ebd5e4:start
+### 2026-03-19 - Bootstrap memoria conversacional - cierre de sesión
+
+- Prompt útil consolidado desde sesión `bootstrap-memoria-conversacional-cierre-de-sesi-n-76b9f5ebd5e4`.
+- Resumen ejecutivo:
+  - Conversación: Bootstrap memoria conversacional - cierre de sesión
+  - Prompts útiles detectados: 1
+  - Estado agregado: informational
+  - Etiquetas principales: branding, chat-memory, dgii
+- Errores o brechas detectadas:
+  - Ninguno.
+- Soluciones o decisiones:
+  - Ninguno.
+- Pendientes abiertos:
+  - Ninguno.
+- Evidencia:
+  - `.ai_context/session_logs/2026-03-19_bootstrap-memoria-conversacional-cierre-de-sesi-n_session.md`
+  - `docs/prompts/2026-03-19_bootstrap-memoria-conversacional-cierre-de-sesi-n.md`
+<!-- chat-memory:auto -->:bootstrap-memoria-conversacional-cierre-de-sesi-n-76b9f5ebd5e4:end
+
 ## Errores recurrentes detectados en prompts del usuario
 
 - Pedidos de automatización de alto riesgo con credenciales o cuentas expuestas:

@@ -97,6 +97,18 @@ class ChatQuestionRequest(BaseModel):
     max_sources: int = Field(default=3, ge=1, le=8)
 
 
+class ChatPreprocessMetadata(BaseModel):
+    original_question: str = Field(alias="originalQuestion")
+    normalized_question: str = Field(alias="normalizedQuestion")
+    normalized_changed: bool = Field(alias="normalizedChanged")
+    intent: str
+    dispatch_strategy: str = Field(alias="dispatchStrategy")
+    provider_skipped_to_save_credits: bool = Field(alias="providerSkippedToSaveCredits")
+    reasons: List[str] = Field(default_factory=list)
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
 class ChatSource(BaseModel):
     invoice_id: int
     encf: str
@@ -113,6 +125,7 @@ class ChatAnswerResponse(BaseModel):
     tenant_id: int
     sources: List[ChatSource]
     warnings: List[str] = Field(default_factory=list)
+    preprocess: ChatPreprocessMetadata | None = None
 
 
 class TenantOnboardingStatusResponse(BaseModel):

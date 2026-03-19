@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "policy_name": "repo_chat_memory_close_required",
+  "repo_root": "C:\\Users\\yoeli\\Documents\\dgii_encf",
+  "canonical_repo_root": "C:\\Users\\yoeli\\Documents\\dgii_encf",
+  "close_required": true,
+  "redact_secrets_required": true,
+  "raw_transcript_required": true,
+  "normalized_transcript_required": true,
+  "update_long_term_memory_required": true,
+  "update_prompt_catalog_required": true,
+  "update_prompt_dictionary_required": true,
+  "session_logs_dir": "C:\\Users\\yoeli\\Documents\\dgii_encf\\.ai_context\\session_logs",
+  "notes_dir": "C:\\Users\\yoeli\\Documents\\dgii_encf\\.ai_context\\notes",
+  "docs_prompts_dir": "C:\\Users\\yoeli\\Documents\\dgii_encf\\docs\\prompts"
+}

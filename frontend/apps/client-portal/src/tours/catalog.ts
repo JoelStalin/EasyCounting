@@ -23,8 +23,8 @@ export const CLIENT_TOURS: ViewTourDefinition[] = [
     version: 1,
     steps: [
       { target: "h1", content: "Este dashboard muestra el estado operativo de tu cuenta cliente." },
-      { target: "[data-tour='portal-nav']", content: "Desde aqui accedes a facturas, emision, certificados y asistente." },
-      { target: "[data-tour='session-user']", content: "Siempre valida la sesion activa antes de emitir o aprobar." },
+      { target: "[data-tour='portal-nav']", content: "Desde aquí accedes a facturas, emisión, certificados y el asistente." },
+      { target: "[data-tour='session-user']", content: "Siempre valida tu sesión activa antes de emitir o aprobar." },
     ],
   },
   {
@@ -32,8 +32,8 @@ export const CLIENT_TOURS: ViewTourDefinition[] = [
     patterns: ["/invoices", "/invoices/:id"],
     version: 1,
     steps: [
-      { target: "h1", content: "Consulta estados DGII, detalles y consumo de tus comprobantes." },
-      { target: "[data-tour='portal-nav']", content: "Puedes saltar a emision o planes sin salir del portal." },
+      { target: "h1", content: "Consulta estados de la DGII, detalles y consumo de tus comprobantes." },
+      { target: "[data-tour='portal-nav']", content: "Puedes saltar a emisión o revisar planes sin salir del portal." },
     ],
   },
   {
@@ -41,8 +41,8 @@ export const CLIENT_TOURS: ViewTourDefinition[] = [
     patterns: ["/plans"],
     version: 1,
     steps: [
-      { target: "h1", content: "Aqui revisas o solicitas cambios del plan comercial de tu tenant." },
-      { target: "[data-tour='tour-trigger']", content: "Usa este boton para repetir el recorrido cuando lo necesites." },
+      { target: "h1", content: "Aquí revisas o solicitas cambios del plan comercial de tu tenant." },
+      { target: "[data-tour='tour-trigger']", content: "Usa este botón para repetir el recorrido cuando lo necesites." },
     ],
   },
   {
@@ -50,17 +50,47 @@ export const CLIENT_TOURS: ViewTourDefinition[] = [
     patterns: ["/assistant"],
     version: 1,
     steps: [
-      { target: "h1", content: "El asistente responde solo sobre la informacion del tenant autenticado." },
+      { target: "h1", content: "El asistente responde exclusivamente sobre la información de la empresa (tenant) activa." },
       { target: "[data-tour='session-user']", content: "La segregacion se aplica por sesion y tenant." },
     ],
   },
   {
     viewKey: "client-emit-ecf",
     patterns: ["/emit/ecf"],
-    version: 1,
+    version: 2,
     steps: [
-      { target: "h1", content: "Aqui preparas y envias el XML firmado del e-CF." },
-      { target: "textarea", content: "Carga el payload firmado antes de ejecutar el envio." },
+      { 
+        target: "h1", 
+        content: "🎓 ¡Bienvenido al Tutor Automático Interactivo! Aquí aprenderás cómo emitir y parametrizar correctamente un Comprobante Fiscal Electrónico (e-CF)." 
+      },
+      { 
+        target: "#tour-step-tipo-ecf", 
+        content: "📋 **Tipo de e-CF (Obligatorio)**\nDefine la naturaleza fiscal del comprobante.\n• Ej: '31' para B2B que requiere ITBIS, o '32' para B2C final.\n🔴 Si el cliente no tiene RNC, no puedes elegir '31'." 
+      },
+      { 
+        target: "#tour-step-rnc", 
+        content: "🏢 **RNC o Cédula (Obligatorio/Condicional)**\nEl número de identificación tributaria del comprador. Debe validar estructura matemática DGII (9 u 11 dígitos).\n💡 *Recomendación:* Si emites un tipo '32' (Consumo) y el monto > RD$250,000, la cédula se vuelve obligatoria." 
+      },
+      { 
+        target: "#tour-step-monto", 
+        content: "💰 **Cobro Total (Obligatorio)**\nMonto final a facturar incluyendo impuestos.\n⚙️ *Impacto:* Determina los umbrales de alerta y posibles cruces de validación fiscal por montos altos." 
+      },
+      { 
+        target: "#tour-step-itbis", 
+        content: "📊 **ITBIS Facturado (Opcional)**\nEl tributo calculado (18% típico). En Certia puedes parametrizarlo para que asuma productos exentos (0%) según el catálogo o lo declare automáticamente." 
+      },
+      { 
+        target: "#tour-step-payload", 
+        content: "🧩 **Payload JSON/XML**\nA nivel de API, Certia procesará todos los artículos, ITBIS retenidos y retenciones de ISR. Si hay dependencias estructurales, las explicamos en la validación." 
+      },
+      { 
+        target: "#tour-step-sync", 
+        content: "⚡ **Transmisión Ágil (Toggle)**\nValores: [Activado/Desactivado].\n• *Activado (Default):* Transmisión sincronizada inmediata en el botón ('Fire and Forget').\n• *Desactivado:* Envío asincrónico por bacheras nocturnas para grandes flujos comerciales." 
+      },
+      { 
+        target: "#tour-step-submit", 
+        content: "✅ **Botón Inteligente de Emisión**\nAl presionar este botón, antes de ir a DGII, Certia detectará ERRORES de captura (Ej.. RNC inventado, montos ilógicos). ¡Si todo está correcto, habrás emitido tu e-CF!" 
+      },
     ],
   },
   {
@@ -68,10 +98,10 @@ export const CLIENT_TOURS: ViewTourDefinition[] = [
     patterns: ["/recurring-invoices"],
     version: 1,
     steps: [
-      { target: "h1", content: "Aqui programas facturas diarias, quincenales, mensuales o personalizadas." },
-      { target: "[data-tour='recurring-form']", content: "Define la plantilla, el tipo e-CF y el rango de ejecucion." },
-      { target: "[data-tour='recurring-run-due']", content: "Este boton permite procesar manualmente las programaciones vencidas." },
-      { target: "[data-tour='recurring-list']", content: "Revisa el historial corto y pausa o reanuda cada programacion." },
+      { target: "h1", content: "Aquí programas facturas diarias, quincenales, mensuales o personalizadas." },
+      { target: "[data-tour='recurring-form']", content: "Define la plantilla, el tipo de e-CF y el rango de ejecución." },
+      { target: "[data-tour='recurring-run-due']", content: "Este botón permite procesar manualmente las programaciones vencidas." },
+      { target: "[data-tour='recurring-list']", content: "Revisa el historial a corto plazo; puedes pausar o reanudar cada programación." },
     ],
   },
   {

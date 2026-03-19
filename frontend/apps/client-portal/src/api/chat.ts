@@ -17,6 +17,15 @@ export interface ChatAnswerResponse {
   tenant_id: number;
   sources: ChatSource[];
   warnings: string[];
+  preprocess?: {
+    originalQuestion: string;
+    normalizedQuestion: string;
+    normalizedChanged: boolean;
+    intent: string;
+    dispatchStrategy: string;
+    providerSkippedToSaveCredits: boolean;
+    reasons: string[];
+  } | null;
 }
 
 export interface ChatQuestionRequest {

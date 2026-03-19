@@ -31,7 +31,8 @@ services:
     volumes:
       - "./odoo.conf:/etc/odoo/odoo.conf:ro"
       - "../../integration/odoo/odoo19_getupsoft_do_localization:/mnt/getupsoft-addons:ro"
-      - "${CHEFALITAS_ROOT:-C:/Users/yoeli/Documents/Chefalitas}/addons:/mnt/chefalitas-addons:ro"
+      - "/mnt/c/Users/yoeli/Documents/cell_odoo/addons/enterprise:/mnt/enterprise-addons:ro"
+      - "${CHEFALITAS_ROOT:-/mnt/c/Users/yoeli/Documents/Chefalitas}/addons:/mnt/chefalitas-addons:ro"
       - "../../scripts/automation/odoo19_chefalitas:/mnt/project-scripts:ro"
       - "odoo19_chefalitas_data:/var/lib/odoo"
     command: ["odoo", "-c", "/etc/odoo/odoo.conf"]

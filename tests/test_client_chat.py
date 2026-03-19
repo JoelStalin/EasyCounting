@@ -100,6 +100,8 @@ def test_chatbot_answers_with_tenant_scoped_invoice_data(monkeypatch) -> None:
     assert "E310000000001" in body["answer"]
     assert body["sources"][0]["encf"] == "E310000000001"
     assert body["sources"][0]["track_id"] == "TRACK-UNO"
+    assert body["preprocess"]["dispatchStrategy"] == "local_only"
+    assert body["preprocess"]["intent"] == "operational_lookup"
 
 
 def test_chatbot_does_not_leak_other_tenant_invoice(monkeypatch) -> None:

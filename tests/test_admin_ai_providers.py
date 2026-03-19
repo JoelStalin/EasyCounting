@@ -186,7 +186,7 @@ def test_chatbot_uses_default_platform_ai_provider(monkeypatch) -> None:
 
     response = client.post(
         "/api/v1/cliente/chat/ask",
-        json={"question": "Dame el estado del comprobante E310000000777"},
+        json={"question": "Analiza el riesgo operativo del comprobante E310000000777 y explica si requiere seguimiento."},
         headers=_tenant_headers(tenant_id),
     )
     app.dependency_overrides.clear()
@@ -195,5 +195,69 @@ def test_chatbot_uses_default_platform_ai_provider(monkeypatch) -> None:
     body = response.json()
     assert body["engine"] == "openai"
     assert "Respuesta cloud controlada" in body["answer"]
+    assert body["preprocess"]["dispatchStrategy"] == "provider_preferred"
     assert captured["url"] == "https://api.openai.com/v1/chat/completions"
     assert captured["headers"]["Authorization"] == "Bearer sk-platform-9999"
+
+
+def test_chatbot_skips_external_provider_for_operational_question(monkeypatch) -> None:
+    client, SessionLocal = _client_with_sqlite()
+    monkeypatch.setattr(settings, "llm_chat_enabled", True)
+    monkeypatch.setattr(settings, "llm_provider", "local")
+
+    with SessionLocal() as session:
+        tenant = Tenant(
+            name="Empresa AI Local",
+            rnc="12345678901",
+            env="PRECERT",
+            dgii_base_ecf="https://dgii.mock/precert/recepcion",
+            dgii_base_fc="https://dgii.mock/precert/rfce",
+        )
+        session.add(tenant)
+        session.flush()
+        session.add(
+            Invoice(
+                tenant_id=tenant.id,
+                encf="E310000000778",
+                tipo_ecf="E31",
+                xml_path="/tmp/local.xml",
+                xml_hash="hash-local",
+                estado_dgii="ACEPTADO",
+                total=Decimal("520.00"),
+                fecha_emision=datetime.now(timezone.utc).replace(tzinfo=None),
+            )
+        )
+        session.add(
+            PlatformAIProvider(
+                display_name="ChatGPT Produccion",
+                provider_type="openai",
+                enabled=True,
+                is_default=True,
+                model="gpt-platform-live",
+                encrypted_api_key=encrypt_secret("sk-platform-9999"),
+                timeout_seconds=12,
+                max_completion_tokens=450,
+            )
+        )
+        session.commit()
+        tenant_id = tenant.id
+
+    def fail_post(*_args, **_kwargs):
+        raise AssertionError("No debe llamarse al proveedor externo para consultas operativas")
+
+    monkeypatch.setattr("app.application.tenant_chat.httpx.post", fail_post)
+
+    response = client.post(
+        "/api/v1/cliente/chat/ask",
+        json={"question": "dame   el estado   del comprobante e310000000778"},
+        headers=_tenant_headers(tenant_id),
+    )
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["engine"] == "local"
+    assert "E310000000778" in body["answer"]
+    assert body["preprocess"]["dispatchStrategy"] == "local_only"
+    assert body["preprocess"]["providerSkippedToSaveCredits"] is True
+    assert body["warnings"]

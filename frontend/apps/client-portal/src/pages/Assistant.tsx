@@ -31,6 +31,10 @@ export function AssistantPage() {
             Este chatbot solo responde con informacion del tenant autenticado. No puede acceder a comprobantes,
             facturas ni datos de otras empresas o clientes.
           </p>
+          <p className="max-w-3xl text-xs text-slate-500">
+            Las consultas operativas se preprocesan y, cuando es posible, se resuelven localmente antes de consumir
+            creditos del proveedor IA.
+          </p>
         </header>
 
         <section className="grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.9fr)]">
@@ -73,6 +77,25 @@ export function AssistantPage() {
             {chat.isError ? (
               <div className="rounded-xl border border-rose-900/60 bg-rose-950/30 p-4 text-sm text-rose-200">
                 No se pudo procesar la consulta del asistente.
+              </div>
+            ) : null}
+
+            {chat.data?.preprocess ? (
+              <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4 text-xs text-slate-300">
+                <p>
+                  <span className="font-semibold text-slate-100">Preproceso:</span>{" "}
+                  {chat.data.preprocess.dispatchStrategy === "local_only"
+                    ? "resuelta localmente antes de consumir creditos"
+                    : "escalada al proveedor IA"}
+                </p>
+                <p>
+                  <span className="font-semibold text-slate-100">Intencion detectada:</span>{" "}
+                  {chat.data.preprocess.intent}
+                </p>
+                <p>
+                  <span className="font-semibold text-slate-100">Consulta normalizada:</span>{" "}
+                  {chat.data.preprocess.normalizedQuestion}
+                </p>
               </div>
             ) : null}
           </form>
