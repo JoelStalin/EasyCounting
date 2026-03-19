@@ -1,0 +1,69 @@
+{
+  "generated_at": "2026-03-18T21:04:46.376150+00:00",
+  "total_cases": 20592,
+  "streams": {
+    "functional": 9648,
+    "regression": 7488,
+    "unit": 3456
+  },
+  "areas": {
+    "admin": 5544,
+    "auth": 1320,
+    "billing": 528,
+    "client": 2904,
+    "dgii": 2640,
+    "frontend_admin": 792,
+    "frontend_client": 1056,
+    "infra": 528,
+    "odoo": 1320,
+    "odoo_reports": 1584,
+    "recepcion": 792,
+    "security": 1320,
+    "storage": 264
+  },
+  "scenarios": {
+    "boundary_max": 1872,
+    "boundary_min": 1872,
+    "cross_tenant": 1872,
+    "duplicate_request": 1872,
+    "external_timeout": 1872,
+    "happy_path": 1872,
+    "invalid_format": 1872,
+    "missing_required": 1872,
+    "regression_route_guard": 1872,
+    "security_abuse": 1872,
+    "unauthorized": 1872
+  },
+  "roles": {
+    "anonymous": 2574,
+    "internal_service": 2574,
+    "odoo_operator": 2574,
+    "platform_admin": 2574,
+    "platform_auditor": 2574,
+    "portal_user": 2574,
+    "tenant_billing": 2574,
+    "tenant_user": 2574
+  },
+  "source_families": {
+    "dgii_ecf_docs": 3432,
+    "dgii_formats": 2112,
+    "local_repo": 13464,
+    "odoo_portal_docs": 528,
+    "owasp_asvs": 1056
+  },
+  "pytest_summary": "53 passed in 37.34s",
+  "catalog_files": {
+    "csv": "docs\\qa\\2026-03-18_use_case_catalog.csv",
+    "jsonl": "docs\\qa\\2026-03-18_use_case_catalog.jsonl"
+  },
+  "source_urls": {
+    "local_repo": "Repository routes, tests, components, addons and notes",
+    "dgii_ecf_docs": "https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Paginas/documentacionSobreE-CF.aspx",
+    "dgii_ecf_types": "https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Paginas/TipoyEstructurae-CF.aspx",
+    "dgii_formats": "https://dgii.gov.do/cicloContribuyente/obligacionesTributarias/remisionInformacion/Paginas/formatoEnvioDatos.aspx",
+    "odoo_portal_docs": "https://www.odoo.com/documentation/19.0/applications/general/users/user_portals.html",
+    "odoo_portal_access": "https://www.odoo.com/documentation/19.0/applications/general/users/user_portals/portal_access.html",
+    "owasp_asvs": "https://owasp.org/www-project-application-security-verification-standard/",
+    "iso_repo_baseline": "docs/compliance/2026-03-18_iso_cleanliness_baseline.md"
+  }
+}

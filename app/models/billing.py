@@ -5,7 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
 
-from sqlalchemy import ForeignKey, Numeric, String
+from sqlalchemy import ForeignKey, Index, Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, utcnow
@@ -33,6 +33,10 @@ class UsageRecord(Base):
     """Registro de cargos por utilización de e-CF."""
 
     __tablename__ = "billing_usage_records"
+    __table_args__ = (
+        Index("ix_usage_records_tenant_fecha", "tenant_id", "fecha"),
+        Index("ix_usage_records_track_id", "track_id"),
+    )
 
     tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id", ondelete="CASCADE"))
     plan_id: Mapped[Optional[int]] = mapped_column(ForeignKey("billing_plans.id", ondelete="SET NULL"))

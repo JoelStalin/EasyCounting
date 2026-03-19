@@ -21,6 +21,8 @@ from app.api.router import api_router
 from app.dgii.jobs import start_dispatcher, stop_dispatcher
 from app.routers.admin import router as admin_router
 from app.routers.cliente import router as cliente_router
+from app.routers.odoo import router as odoo_router
+from app.routers.partner import router as partner_router
 from app.db import check_database_connection
 from app.infra.logging import configure_logging
 from app.infra.settings import settings
@@ -103,7 +105,20 @@ def create_app() -> FastAPI:
         app.state.metrics_configured = True
 
     app.add_middleware(GZipMiddleware, minimum_size=1024)
-    trusted_hosts = sorted({*settings.dgii_allowed_hosts, "localhost", "127.0.0.1", "testserver", "test"})
+    trusted_hosts = sorted(
+        {
+            *settings.dgii_allowed_hosts,
+            "localhost",
+            "127.0.0.1",
+            "testserver",
+            "test",
+            "getupsoft.com.do",
+            "api.getupsoft.com.do",
+            settings.admin_portal_domain,
+            settings.client_portal_domain,
+            settings.partner_portal_domain,
+        }
+    )
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=trusted_hosts)
 
     setup_security(app, allowed_origins=settings.cors_allow_origins)
@@ -119,10 +134,14 @@ def create_app() -> FastAPI:
     app.include_router(portal_me_router, prefix="/api/v1", tags=["portal-auth"])
     app.include_router(admin_router, prefix="/api/v1")
     app.include_router(cliente_router, prefix="/api/v1")
+    app.include_router(odoo_router, prefix="/api/v1")
+    app.include_router(partner_router, prefix="/api/v1")
 
     # Legacy paths (kept for existing tests/integrations)
     app.include_router(admin_router, prefix="/api")
     app.include_router(cliente_router, prefix="/api")
+    app.include_router(odoo_router, prefix="/api")
+    app.include_router(partner_router, prefix="/api")
 
     app.include_router(api_router, prefix="/api")
     app.include_router(api_router, prefix="/api/1")

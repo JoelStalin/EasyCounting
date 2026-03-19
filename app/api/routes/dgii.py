@@ -2,16 +2,32 @@
 from __future__ import annotations
 
 import uuid
-from fastapi import APIRouter, Depends, HTTPException
+from typing import AsyncIterator
+
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.domain.models.acecf import ACECF
 from app.domain.models.arecf import ARECF
 from app.domain.models.ecf import ECF
 from app.domain.models.rfce import RFCE
+from app.infra.settings import settings
 from app.security.xml import validate_with_xsd
-from app.services.dgii_client import DGIIClient, get_dgii_client
+from app.dgii.client import DGIIClient
 
-router = APIRouter()
+def _ensure_compat_enabled() -> None:
+    if not settings.compat_api_enabled:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
+
+
+router = APIRouter(dependencies=[Depends(_ensure_compat_enabled)])
+
+
+async def get_dgii_client() -> AsyncIterator[DGIIClient]:
+    client = DGIIClient()
+    try:
+        yield client
+    finally:
+        await client.close()
 
 
 @router.post("/auth/token")
@@ -33,28 +49,28 @@ async def compat_recepcion_status(track_id: str) -> dict[str, str]:
 async def send_ecf(payload: ECF, client: DGIIClient = Depends(get_dgii_client)) -> dict[str, str]:
     xml_bytes = payload.to_xml()
     validate_with_xsd(xml_bytes, "xsd/ecf.xsd")
-    return await client.send_document(xml_bytes, document_type="ecf")
+    return await client.send_ecf(xml_bytes)
 
 
 @router.post("/rfce/send")
 async def send_rfce(payload: RFCE, client: DGIIClient = Depends(get_dgii_client)) -> dict[str, str]:
     xml_bytes = payload.to_xml()
     validate_with_xsd(xml_bytes, "xsd/rfce.xsd")
-    return await client.send_document(xml_bytes, document_type="rfce")
+    return await client.send_rfce(xml_bytes)
 
 
 @router.post("/acecf/send")
 async def send_acecf(payload: ACECF, client: DGIIClient = Depends(get_dgii_client)) -> dict[str, str]:
     xml_bytes = payload.to_xml()
     validate_with_xsd(xml_bytes, "xsd/acecf.xsd")
-    return await client.send_document(xml_bytes, document_type="acecf")
+    return await client.send_acecf(xml_bytes)
 
 
 @router.post("/arecf/send")
 async def send_arecf(payload: ARECF, client: DGIIClient = Depends(get_dgii_client)) -> dict[str, str]:
     xml_bytes = payload.to_xml()
     validate_with_xsd(xml_bytes, "xsd/arecf.xsd")
-    return await client.send_document(xml_bytes, document_type="arecf")
+    return await client.send_arecf(xml_bytes)
 
 
 @router.get("/status/{track_id}")

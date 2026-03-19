@@ -5,6 +5,7 @@ const NAV = [
   { to: "/dashboard", label: "Dashboard", permissions: ["PLATFORM_TENANT_VIEW", "PLATFORM_PLAN_CRUD"] },
   { to: "/companies", label: "Compañías", permissions: ["PLATFORM_TENANT_VIEW"] },
   { to: "/plans", label: "Planes", permissions: ["PLATFORM_PLAN_CRUD"] },
+  { to: "/ai-providers", label: "Agentes IA", permissions: ["PLATFORM_AI_PROVIDER_MANAGE"] },
   { to: "/audit-logs", label: "Auditoría", permissions: ["PLATFORM_AUDIT_VIEW"] },
   { to: "/users", label: "Usuarios", permissions: ["PLATFORM_USER_MANAGE"] },
 ];

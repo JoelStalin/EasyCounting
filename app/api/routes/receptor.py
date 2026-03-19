@@ -1,8 +1,15 @@
-from fastapi import APIRouter, Request, Response, Depends
+from fastapi import APIRouter, Request, Response, Depends, HTTPException, status
+from app.dgii.client import DGIIClient
 from app.dgii.validation import get_validator_for
+from app.infra.settings import settings
 from app.services.dgii_client import DGIIClient
 
-router = APIRouter()
+def _ensure_compat_enabled() -> None:
+    if not settings.compat_api_enabled:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not Found")
+
+
+router = APIRouter(dependencies=[Depends(_ensure_compat_enabled)])
 
 
 def _has_root_tag(xml_bytes: bytes, tag: bytes) -> bool:

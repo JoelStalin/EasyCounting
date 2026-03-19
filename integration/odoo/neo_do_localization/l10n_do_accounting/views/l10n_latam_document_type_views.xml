@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_l10n_do_exp_date_update_wizard" model="ir.actions.act_window">
+        <field name="name">Update NCF Expiration Date</field>
+        <field name="res_model">account.expiration.date.update_wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_document_type_id': active_id}</field>
+    </record>
+
+    <record id="view_document_type_form" model="ir.ui.view">
+        <field name="name">l10n_latam.document.type.form</field>
+        <field name="model">l10n_latam.document.type</field>
+        <field name="inherit_id" ref="l10n_latam_invoice_document.view_document_type_form"/>
+        <field name="arch" type="xml">
+            <field name='doc_code_prefix' position="after">
+                <field name="l10n_do_use_in"/>
+                <field name="l10n_do_auto_sequence" attrs="{'invisible': [('l10n_do_use_in', '!=', 'purchase')]}"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_document_type_tree" model="ir.ui.view">
+        <field name="name">l10n_latam.document.type.tree</field>
+        <field name="model">l10n_latam.document.type</field>
+        <field name="inherit_id" ref="l10n_latam_invoice_document.view_document_type_tree"/>
+        <field name="arch" type="xml">
+            <field name='doc_code_prefix' position="after">
+                <field name="l10n_do_use_in"/>
+                <field name="l10n_do_auto_sequence" attrs="{'invisible': [('l10n_do_use_in', '!=', 'purchase')]}"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

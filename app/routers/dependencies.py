@@ -5,7 +5,7 @@ from typing import AsyncIterator
 
 from fastapi import Depends, Header, HTTPException, status
 
-from app.dgii.clients import DGIIClient
+from app.dgii.client import DGIIClient
 from app.core.config import settings
 from app.core.logging import bind_request_context
 
@@ -38,3 +38,4 @@ def bind_request_headers(
 
 BearerToken = Depends(get_bearer_token)
 DGIIClientDep = Depends(get_dgii_client)
+

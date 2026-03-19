@@ -5,12 +5,12 @@ from fastapi import APIRouter, Depends, status
 
 from app.core.config import settings
 from app.core.logging import bind_request_context
-from app.dgii.clients import DGIIClient
+from app.dgii.client import DGIIClient
 from app.dgii.schemas import ACECFPayload, SubmissionResponse
 from app.dgii.signing import sign_ecf
 from app.dgii.validation import validate_xml
 from app.routers.dependencies import BearerToken, DGIIClientDep, bind_request_headers
-from app.routers.recepcion import _build_submission_response
+from app.application.ecf_submission import build_submission_response
 
 router = APIRouter(prefix="/dgii/aprobacion", tags=["DGII ACECF"])
 
@@ -28,4 +28,5 @@ async def enviar_acecf(
     signed_xml = sign_ecf(xml, str(settings.dgii_cert_p12_path), settings.dgii_cert_p12_password)
     bind_request_context(encf=document.encf, tipo_ecf="ACECF")
     result = await client.send_acecf(signed_xml, token)
-    return _build_submission_response(result)
+    return build_submission_response(result)
+

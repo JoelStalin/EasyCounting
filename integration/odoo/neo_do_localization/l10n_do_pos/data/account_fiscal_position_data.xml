@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- P. Física de Servicios -->
+        <record id="l10n_do.position_person" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+        <!-- P. Jurídica de Servicios -->
+        <record id="l10n_do.position_service_moral" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+        <!-- P. Jurídica de Vigilancia -->
+        <record id="l10n_do.position_security_moral" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice" eval="True"/>
+        </record>
+        <!-- Proveedor Informal de Bienes -->
+        <record id="l10n_do.position_nonformal" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+        <!-- Servicios del Exterior -->
+        <record id="l10n_do.position_exterior" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+        <!-- Gubernamental -->
+        <record id="l10n_do.position_gov" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+        <!-- No Lucrativa de Servicios -->
+        <record id="l10n_do.position_nonprofit" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+        <!-- Regímenes Especiales -->
+        <record id="l10n_do.position_especial" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+        <!-- Restaurantes -->
+        <record id="l10n_do.position_restaurant" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+        <!-- Para Llevar -->
+        <record id="l10n_do.position_restaurant_takeout" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+        <!-- Consumidor Final -->
+        <record id="l10n_do_accounting.final_consumer" model="account.fiscal.position.template">
+            <field name="l10n_do_to_invoice">True</field>
+        </record>
+
+        <!-- Pisiciones propias -->
+        <!-- Posicion especial para evitar el 'to invoice' en el POS -->
+        <record id="l10n_do_pos_special" model="account.fiscal.position.template">
+            <field name="chart_template_id" ref="l10n_do.do_chart_template"/>
+            <field name="name">Position POS</field>
+            <field name="l10n_do_to_invoice">False</field>
+        </record>
+
+    </data>
+</odoo>

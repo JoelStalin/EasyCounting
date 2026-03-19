@@ -12,6 +12,8 @@ from app.models import (
     audit,
     accounting,
     billing,
+    platform_ai,
+    partner,
 )
 
 __all__ = [
@@ -27,4 +29,6 @@ __all__ = [
     "audit",
     "accounting",
     "billing",
+    "platform_ai",
+    "partner",
 ]

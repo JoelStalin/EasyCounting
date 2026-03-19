@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="getupsoft_l10n_do_accounting_report_inherit_account_tax_form" model="ir.ui.view">
+        <field name="name">getupsoft_l10n_do_accounting_report.inherit.account.tax.form</field>
+        <field name="model">account.tax</field>
+        <field name="inherit_id" ref="account.view_tax_form"/>
+        <field name="arch" type="xml">
+            <field name="type_tax_use" position="after">
+                <field name="purchase_tax_type" widget="radio"
+                     invisible="(type_tax_use != 'purchase')"/>
+                <field name="isr_retention_type"
+                     invisible="(purchase_tax_type != 'isr')" required="(purchase_tax_type == 'isr')"/>
+            </field>
+        </field>
+    </record>
+</odoo>

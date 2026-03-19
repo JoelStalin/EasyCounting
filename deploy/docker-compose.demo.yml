@@ -1,0 +1,32 @@
+services:
+  web_demo:
+    build: .
+    image: dgii-ecf-web:latest
+    env_file: ${ENV_FILE:-.env}
+    environment:
+      DATABASE_URL: postgresql+asyncpg://dgii:dgii@db:5432/${DEMO_DATABASE_NAME:-dgii_demo_lab}
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./xsd:/app/xsd:ro
+      - ./alembic:/app/alembic:ro
+      - ./secrets:/secrets:ro
+    ports:
+      - "${DEMO_API_PORT:-28180}:8000"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 10s

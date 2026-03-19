@@ -2,16 +2,20 @@ from __future__ import annotations
 
 from datetime import datetime, timezone
 from decimal import Decimal
+from typing import Iterator
 
 from fastapi.testclient import TestClient
-from sqlalchemy import delete
-from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
+import app.models  # noqa: F401
 from app.main import app
-from app.db import get_sync_session
+from app.models.base import Base
 from app.models.invoice import Invoice
 from app.models.tenant import Tenant
 from app.models.accounting import InvoiceLedgerEntry, TenantSettings
+from app.shared.database import get_db
 from app.shared.security import create_jwt
 
 
@@ -28,10 +32,25 @@ def _create_tenant(session: Session, name: str, rnc: str) -> Tenant:
     return tenant
 
 
-def _clear_tables() -> None:
-    with get_sync_session() as session:
-        for model in (InvoiceLedgerEntry, TenantSettings, Invoice, Tenant):
-            session.execute(delete(model))
+def _client_with_sqlite() -> tuple[TestClient, sessionmaker]:
+    engine = create_engine(
+        "sqlite://",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
+    )
+    SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False, class_=Session)
+    Base.metadata.create_all(engine)
+
+    def override_get_db() -> Iterator[Session]:
+        session = SessionLocal()
+        try:
+            yield session
+            session.commit()
+        finally:
+            session.close()
+
+    app.dependency_overrides[get_db] = override_get_db
+    return TestClient(app), SessionLocal
 
 
 def _admin_headers() -> dict[str, str]:
@@ -40,8 +59,8 @@ def _admin_headers() -> dict[str, str]:
 
 
 def test_accounting_summary_returns_totals() -> None:
-    _clear_tables()
-    with get_sync_session() as session:
+    client, SessionLocal = _client_with_sqlite()
+    with SessionLocal() as session:
         tenant = _create_tenant(session, "Empresa Demo", "12345678901")
         invoices = [
             Invoice(tenant_id=tenant.id, encf="E3100001", tipo_ecf="E31", xml_path="/tmp/a.xml", xml_hash="hash1", estado_dgii="ACEPTADO", total=Decimal("1000.00"), contabilizado=True, accounted_at=datetime.now(timezone.utc).replace(tzinfo=None), asiento_referencia="AS-001"),
@@ -51,11 +70,12 @@ def test_accounting_summary_returns_totals() -> None:
         session.add_all(invoices)
         session.commit()
 
-    client = TestClient(app)
     response = client.get(
         f"/api/admin/tenants/{tenant.id}/accounting/summary",
         headers=_admin_headers(),
     )
+    app.dependency_overrides.clear()
+
     assert response.status_code == 200
     data = response.json()
     assert data["totales"]["total_emitidos"] == 3
@@ -64,8 +84,8 @@ def test_accounting_summary_returns_totals() -> None:
 
 
 def test_create_ledger_entry_marks_invoice() -> None:
-    _clear_tables()
-    with get_sync_session() as session:
+    client, SessionLocal = _client_with_sqlite()
+    with SessionLocal() as session:
         tenant = _create_tenant(session, "Empresa Ledger", "10987654321")
         invoice = Invoice(
             tenant_id=tenant.id,
@@ -79,7 +99,6 @@ def test_create_ledger_entry_marks_invoice() -> None:
         session.add(invoice)
         session.commit()
 
-    client = TestClient(app)
     payload = {
         "invoiceId": invoice.id,
         "referencia": "AS-2024-001",
@@ -99,19 +118,21 @@ def test_create_ledger_entry_marks_invoice() -> None:
     assert body["invoiceId"] == invoice.id
     assert body["referencia"] == "AS-2024-001"
 
-    with get_sync_session() as session:
+    with SessionLocal() as session:
         updated_invoice = session.get(Invoice, invoice.id)
         assert updated_invoice is not None
         assert updated_invoice.contabilizado is True
         assert updated_invoice.asiento_referencia == "AS-2024-001"
 
+    app.dependency_overrides.clear()
+
 
 def test_update_tenant_settings_roundtrip() -> None:
-    _clear_tables()
-    with get_sync_session() as session:
+    client, SessionLocal = _client_with_sqlite()
+    with SessionLocal() as session:
         tenant = _create_tenant(session, "Empresa Config", "10293847561")
+        session.commit()
 
-    client = TestClient(app)
     payload = {
         "moneda": "USD",
         "cuenta_ingresos": "701-VENT",
@@ -136,6 +157,8 @@ def test_update_tenant_settings_roundtrip() -> None:
         f"/api/admin/tenants/{tenant.id}/settings",
         headers=_admin_headers(),
     )
+    app.dependency_overrides.clear()
+
     assert get_response.status_code == 200
     fetched = get_response.json()
     assert fetched["correo_facturacion"] == "facturas@empresa.do"

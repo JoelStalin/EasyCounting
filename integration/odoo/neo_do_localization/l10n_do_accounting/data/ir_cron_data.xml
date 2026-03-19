@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="ir_cron_ncf_auto_verifier_expired" model="ir.cron">
+        <field name="name">DO Accounting; Verifica y da alerta sobre la fecha de expiracion de los NCF.</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="nextcall" eval="(DateTime.now().replace(hour=10, minute=0) + timedelta(days=1)).strftime('%Y-%m-%d %H:%M:%S')" />
+        <field name="doall" eval="False"/>
+        <field name="model_id" ref="model_ncf_control_manager"/>
+        <field name="code">model._ncf_auto_verifier_expired()</field>
+        <field name="state">code</field>
+    </record>
+</odoo>

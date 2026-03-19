@@ -3,9 +3,10 @@ from __future__ import annotations
 
 import json
 from functools import lru_cache
+from pathlib import Path
 from typing import List, Literal, Set
 
-from pydantic import AliasChoices, AnyUrl, Field, computed_field, constr, field_validator
+from pydantic import AliasChoices, AnyUrl, Field, computed_field, constr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 
@@ -30,20 +31,52 @@ class Settings(BaseSettings):
         default="admin.getupsoft.com.do",
         validation_alias=AliasChoices("ADMIN_PORTAL_DOMAIN"),
     )
+    partner_portal_domain: str = Field(
+        default="socios.getupsoft.com.do",
+        validation_alias=AliasChoices("PARTNER_PORTAL_DOMAIN", "SELLER_PORTAL_DOMAIN"),
+    )
     rate_limit_per_minute: int = Field(default=100, ge=1)
 
     jwt_secret: str = Field(default="change-me", validation_alias=AliasChoices("JWT_SECRET", "SECRET_KEY"))
     jwt_access_exp_minutes: int = Field(default=15, ge=5, le=60, validation_alias=AliasChoices("JWT_ACCESS_EXP_MINUTES", "ACCESS_TOKEN_EXP_MINUTES"))
     refresh_token_exp_minutes: int = Field(default=60 * 24 * 7, validation_alias=AliasChoices("REFRESH_TOKEN_EXP_MINUTES", "JWT_REFRESH_EXP_MINUTES"))
     mfa_enabled: bool = Field(default=False, validation_alias=AliasChoices("MFA_ENABLED"))
+    compat_api_enabled: bool = Field(default=True, validation_alias=AliasChoices("COMPAT_API_ENABLED"))
+    hmac_service_secret: str = Field(default="dev-hmac", validation_alias=AliasChoices("HMAC_SERVICE_SECRET"))
+    log_level: str = Field(default="INFO", validation_alias=AliasChoices("LOG_LEVEL"))
+    tls_enabled: bool = Field(default=True, validation_alias=AliasChoices("TLS_ENABLED"))
+    tracing_header: str = Field(default="X-Trace-ID", validation_alias=AliasChoices("TRACING_HEADER"))
+    request_id_header: str = Field(default="X-Request-ID", validation_alias=AliasChoices("REQUEST_ID_HEADER"))
+    metrics_enabled: bool = Field(default=True, validation_alias=AliasChoices("METRICS_ENABLED"))
+    storage_bucket: str = Field(default="local", validation_alias=AliasChoices("STORAGE_BUCKET"))
+    storage_base_path: Path = Field(default=Path("/var/getupsoft/storage"), validation_alias=AliasChoices("STORAGE_BASE_PATH"))
+    odoo_rnc_catalog_path: Path = Field(
+        default=Path("integration/odoo/getupsoft_do_localization/local_rnc_directory.json"),
+        validation_alias=AliasChoices("ODOO_RNC_CATALOG_PATH"),
+    )
+    llm_chat_enabled: bool = Field(default=True, validation_alias=AliasChoices("LLM_CHAT_ENABLED"))
+    llm_provider: Literal["local", "openai_compatible"] = Field(
+        default="local",
+        validation_alias=AliasChoices("LLM_PROVIDER"),
+    )
+    llm_model: str = Field(default="tenant-rules-v1", validation_alias=AliasChoices("LLM_MODEL"))
+    llm_api_base_url: str | None = Field(default=None, validation_alias=AliasChoices("LLM_API_BASE_URL"))
+    llm_api_key: str | None = Field(default=None, validation_alias=AliasChoices("LLM_API_KEY"))
+    llm_timeout_seconds: float = Field(default=20.0, gt=1.0, le=120.0, validation_alias=AliasChoices("LLM_TIMEOUT_SECONDS"))
+    llm_max_context_invoices: int = Field(default=60, ge=5, le=200, validation_alias=AliasChoices("LLM_MAX_CONTEXT_INVOICES"))
+    llm_max_completion_tokens: int = Field(default=500, ge=64, le=4000, validation_alias=AliasChoices("LLM_MAX_COMPLETION_TOKENS"))
 
     bootstrap_admin_email: str = Field(
-        default="admin@getupsoft.local",
+        default="admin@getupsoft.com.do",
         validation_alias=AliasChoices("BOOTSTRAP_ADMIN_EMAIL"),
     )
     bootstrap_admin_password: str = Field(
         default="ChangeMe123!",
         validation_alias=AliasChoices("BOOTSTRAP_ADMIN_PASSWORD"),
+    )
+    bootstrap_admin_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("BOOTSTRAP_ADMIN_ENABLED"),
     )
     bootstrap_admin_role: str = Field(
         default="platform_admin",
@@ -64,6 +97,7 @@ class Settings(BaseSettings):
 
     dgii_env: Literal["PRECERT", "CERT", "PROD"] = Field(default="PRECERT", validation_alias=AliasChoices("DGII_ENV", "ENV"))
     dgii_allowed_hosts_raw: str | None = Field(default=None, validation_alias=AliasChoices("DGII_ALLOWED_HOSTS"))
+    dgii_rnc: str = Field(default="131415161", validation_alias=AliasChoices("DGII_RNC"))
 
     # Official DGII services (base URLs by environment)
     dgii_auth_base_url_precert: AnyUrl = Field(
@@ -145,14 +179,16 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("DGII_CONSULTA_RESULTADO_BASE_URL_PROD"),
     )
 
-    dgii_timeout: float = Field(default=5.0, gt=0)
+    dgii_timeout: float = Field(default=5.0, gt=0, validation_alias=AliasChoices("DGII_TIMEOUT", "DGII_HTTP_TIMEOUT_SECONDS"))
     dgii_conn_timeout: float = Field(default=2.0, gt=0)
-    dgii_max_retries: int = Field(default=3, ge=0)
+    dgii_max_retries: int = Field(default=3, ge=0, validation_alias=AliasChoices("DGII_MAX_RETRIES", "DGII_HTTP_RETRIES"))
     dgii_circuit_breaker_threshold: int = Field(default=5, ge=1)
     dgii_circuit_breaker_window: int = Field(default=60, ge=1)
 
-    dgii_p12_path: str = Field(default="/secrets/cert.p12")
-    dgii_p12_password: str = Field(default="changeit")
+    dgii_cert_p12_path: Path = Field(default=Path("/secrets/cert.p12"), validation_alias=AliasChoices("DGII_CERT_P12_PATH", "DGII_P12_PATH"))
+    dgii_cert_p12_password: str = Field(default="changeit", validation_alias=AliasChoices("DGII_CERT_P12_PASSWORD", "DGII_P12_PASSWORD"))
+    ri_qr_base_url: AnyUrl = Field(default="https://ri.mock/qr", validation_alias=AliasChoices("RI_QR_BASE_URL"))
+    jobs_enabled: bool = Field(default=True, validation_alias=AliasChoices("JOBS_ENABLED"))
 
     enfc_require_bearer_token: bool = Field(default=False, validation_alias=AliasChoices("ENFC_REQUIRE_BEARER_TOKEN"))
     enfc_token_ttl_seconds: int = Field(default=900, ge=60, le=86400, validation_alias=AliasChoices("ENFC_TOKEN_TTL_SECONDS"))
@@ -183,13 +219,33 @@ class Settings(BaseSettings):
             return stripped
         return f"https://{stripped}"
 
+    @model_validator(mode="after")
+    def _validate_security(self) -> "Settings":
+        env = str(self.environment).lower()
+        if env in {"production", "prod"}:
+            if self.jwt_secret in {"change-me", "dev-secret", ""}:
+                raise ValueError("JWT_SECRET must be set to a non-default value in production")
+            if self.bootstrap_admin_enabled:
+                default_passwords = {"ChangeMe123!", "change-me", "dev-secret", ""}
+                if self.bootstrap_admin_password in default_passwords:
+                    raise ValueError("BOOTSTRAP_ADMIN_PASSWORD must be set in production or disable bootstrap")
+                if self.bootstrap_admin_email == "admin@getupsoft.com.do":
+                    raise ValueError("BOOTSTRAP_ADMIN_EMAIL must be set in production or disable bootstrap")
+        return self
+
     @computed_field
     @property
     def cors_allow_origins(self) -> List[str]:
         if self.cors_allow_origins_raw is None:
             origins = [
-                "https://api.dgii.getupsoft.com.do",
-                "https://staging.dgii.getupsoft.com.do",
+                "https://api.getupsoft.com.do",
+                "https://admin.getupsoft.com.do",
+                "https://cliente.getupsoft.com.do",
+                "https://socios.getupsoft.com.do",
+                "http://api.getupsoft.com.do",
+                "http://admin.getupsoft.com.do",
+                "http://cliente.getupsoft.com.do",
+                "http://socios.getupsoft.com.do",
             ]
         else:
             origins = self._parse_csv_or_json_array(self.cors_allow_origins_raw)
@@ -197,6 +253,7 @@ class Settings(BaseSettings):
         portal_origins = [
             self._normalize_origin(self.client_portal_domain),
             self._normalize_origin(self.admin_portal_domain),
+            self._normalize_origin(self.partner_portal_domain),
         ]
         for origin in portal_origins:
             if origin and origin not in origins:
@@ -281,6 +338,45 @@ class Settings(BaseSettings):
         if self.dgii_env == "CERT":
             return str(self.dgii_consulta_resultado_base_url_cert)
         return str(self.dgii_consulta_resultado_base_url_prod)
+
+    @computed_field
+    @property
+    def dgii_p12_path(self) -> str:
+        return str(self.dgii_cert_p12_path)
+
+    @computed_field
+    @property
+    def dgii_p12_password(self) -> str:
+        return self.dgii_cert_p12_password
+
+    @computed_field
+    @property
+    def dgii_http_timeout_seconds(self) -> int:
+        return int(self.dgii_timeout)
+
+    @computed_field
+    @property
+    def dgii_http_retries(self) -> int:
+        return int(self.dgii_max_retries)
+
+    def resolve_service_urls(self) -> dict[str, str]:
+        """Return the base URLs for the active DGII environment."""
+
+        return {
+            "auth": self.dgii_auth_base_url,
+            "recepcion": self.dgii_recepcion_base_url,
+            "recepcion_fc": self.dgii_recepcion_fc_base_url,
+            "directorio": self.dgii_consulta_directorio_base_url,
+        }
+
+    def url_for(self, service: str) -> str:
+        """Return the base URL for the given DGII service."""
+
+        mapping = self.resolve_service_urls()
+        try:
+            return mapping[service]
+        except KeyError as exc:  # pragma: no cover
+            raise KeyError(f"Servicio DGII desconocido: {service}") from exc
 
     @computed_field
     @property

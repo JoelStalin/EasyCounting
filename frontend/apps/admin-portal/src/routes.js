@@ -1,7 +1,7 @@
 import { jsx as _jsx } from "react/jsx-runtime";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
-import { RequireAuth, RequireScope } from "./auth/guards";
+import { RequireAuth, RequirePermission, RequireScope } from "./auth/guards";
 import { DashboardPage } from "./pages/Dashboard";
 import { CompaniesPage } from "./pages/Companies";
 import { CompanyCertificatesTab, CompanyDetailLayout, CompanyInvoicesTab, CompanyOverviewTab, CompanyAccountingTab, CompanyPlansTab, CompanySettingsTab, CompanyUsersTab, } from "./pages/CompanyDetail";
@@ -11,6 +11,7 @@ import { AuditLogsPage } from "./pages/AuditLogs";
 import { PlatformUsersPage } from "./pages/Users";
 import { LoginPage } from "./pages/Login";
 import { MFAPage } from "./pages/MFA";
+import { AIProvidersPage } from "./pages/AIProviders";
 export const router = createBrowserRouter([
     {
         path: "/",
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
             {
                 path: "plans",
                 element: _jsx(PlansPage, {}),
+            },
+            {
+                path: "ai-providers",
+                element: (_jsx(RequirePermission, { anyOf: ["PLATFORM_AI_PROVIDER_MANAGE"], children: _jsx(AIProvidersPage, {}) })),
             },
             {
                 path: "plans/new",

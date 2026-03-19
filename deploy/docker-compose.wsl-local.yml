@@ -1,0 +1,15 @@
+services:
+  web:
+    ports: !override []
+
+  nginx:
+    ports: !override
+      - "127.0.0.1:28080:80"
+    volumes: !override
+      - ./ops/nginx.local.conf:/etc/nginx/conf.d/default.conf:ro
+
+  db:
+    ports: !override []
+
+  redis:
+    ports: !override []

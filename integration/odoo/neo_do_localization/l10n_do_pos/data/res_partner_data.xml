@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record id="consumer_contact_default" model="res.partner" forcecreate="1">
+            <field name="name">Default Client</field>
+            <field name="country_id" ref="base.do"/>
+            <field name="property_account_position_id" ref="l10n_do_accounting.final_consumer"/>
+        </record>
+    </data>
+</odoo>

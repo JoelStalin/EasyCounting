@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from app.core.config import Settings, settings
 from app.core.logging import bind_request_context
-from app.dgii.clients import DGIIClient
+from app.dgii.client import DGIIClient
 from app.models.invoice import Invoice
 from app.shared.database import session_scope
 
@@ -95,3 +95,4 @@ async def start_dispatcher() -> None:
 
 async def stop_dispatcher() -> None:
     await dispatcher.stop()
+

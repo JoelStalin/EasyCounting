@@ -1,0 +1,284 @@
+<html style="height: 100%;"><head>
+    
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>Bienvenido
+    </title>
+    <link rel="stylesheet" href="/css/style-04-10-2004_3720af7e10c3d44a269aa67ddc50c9c1.css" type="text/css">
+<link rel="stylesheet" href="/css/anacreon_style_437b2ec2b70985f73865b6f3c19df60c.css" type="text/css">
+
+    <!-- UI INCLUDES -->
+
+<style type="text/css">
+
+
+@import url(/css/reset_762f3043edc3daf929f4480327035f44.css);
+
+
+@import url(/css/obstyles_59279490f809077dd7e8d4d84376eb69.css);
+
+
+@import url(/css/obstyles-tax_2eafbaf2c89c50360e7e4722cc4f4cd9.css);
+</style>
+
+
+<script src="/js/commons-ui_c0b9b718de1a8705b68a09698808e574.js" type="text/javascript"></script>
+
+
+<script src="/js/ui-utils_7901094434664c160c5a88d890884b66.js" type="text/javascript"></script>
+<!-- /UI INCLUDES -->
+    <style type="text/css">
+        
+
+@import url(/css/obstyles-generalsettings_afc0d91db7d88f225a0d60da1f253a1e.css);
+        
+
+@import url(/css/ui-ob-styles_b4a879ad9492e5283fac8cb4c6f72b09.css);
+    </style>
+    
+
+<script src="/js/functions_3de37654bd0b11a39017d132be6e935a.js" type="text/javascript"></script>
+
+    
+    <script language="javascript">
+        function linkOfForgotPasswd()
+        {
+            document.loginform.action = '/ForgotPassword.jsp?pid=668252&from=splashpage&username=' + $('#login-username').val();
+            document.loginform.submit();
+            return false;
+        }
+
+        function hideNoJsWarning()
+        {
+            document.getElementById("no-js-warning").style.display = "none";
+        }
+
+    </script>
+    
+</head>
+
+<body style="height: 100%;" class="login-page-body stick-footer">
+<div style="position: relative;height: auto !important;min-height: 100%;min-width: 520px;">
+
+
+
+
+
+
+<script src="/js/jquery/obox/jquery.min_4cc2fc7aa46fd1f7eba91c2d00e22f12.js" type="text/javascript"></script>
+
+
+<script src="/js/jquery/obox/jquery.qtip.min_e94755e544bdbd76e0a7b902023d797d.js" type="text/javascript"></script>
+
+
+<script src="/js/jquery.watermark.min_ed1695dd82707450e65ae64ec4697d95.js" type="text/javascript"></script>
+
+
+<script src="/js/cp-global_ff6622897e4e800c266b8a61e0e320c1.js" type="text/javascript"></script>
+
+
+<script src="/js/csrftoken_ca996e444cf376a52617acfe85bf9a96.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    var TOKEN_NAME = 'OWASP_CSRFTOKEN';
+    var TOKEN_VALUE = '2GHD-0S3M-G0PQ-GBSX-Y8A2-JZMT-ZYZE-0H6T';
+
+    function addHeader(xhr, url) {
+        if (isSameDomain(url)) {
+            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            xhr.setRequestHeader(TOKEN_NAME, TOKEN_VALUE);
+        }
+    }
+    var ajaxSetupObj = {
+        beforeSend: function (xhr, settings) {
+            addHeader(xhr, settings.url);
+        }
+    };
+
+    function setupHeadersForAjax(i) {
+        try {
+            if (i != null ) {
+                i(document).ready(function () {
+                    i.ajaxSetup(ajaxSetupObj);
+                });
+            }
+        } catch (e) {
+
+        }
+    }
+
+    setupHeadersForAjax($);
+    setupHeadersForAjax(jQuery);
+    setupHeadersForAjax($global);
+
+
+</script>
+
+<script type="text/javascript" src="/JavaScriptServlet"></script>
+
+
+
+
+
+
+<table id="tblheader" border="0" cellpadding="0" cellspacing="0" width="100%">
+
+    
+        <tbody><tr width="100%" bgcolor="">
+            <td align="left" width="100%" colspan="3">
+                <img border="0" src="/logos/668252_header_logo.png" height="81">
+            </td>
+        </tr>
+    
+    
+
+
+</tbody></table>
+
+
+<div class="mainnav-header" id="control-panel-header">
+    <div class="login-top-separator"></div>
+</div>
+    
+
+
+
+
+
+<!-- CONTENT SEPARATOR -->
+<span id="loading">
+    <table class="content_separator_table" align="center">
+        <tbody>
+        <tr class="loading">
+            <td width="100%">&nbsp;</td>
+        </tr>
+        </tbody>
+    </table>
+
+</span>
+<!-- END CONTENT SEPARATOR -->
+<div align="center">
+
+    <script language="Javascript">
+        function ValidateForm(emailID, errmsg)
+        {
+            if (!echeck(emailID.value, errmsg))
+            {
+                emailID.value = ""
+                emailID.focus()
+                return false
+            }
+            return true
+        }
+    </script>
+    <!--Content Start -->
+    <div>
+
+
+        <div id="no-js-warning" style="display: none;">
+            <p>JavaScript has currently been disabled in your browser. For an optimum experience, please enable
+                JavaScript.</p>
+        </div>
+        <script type="text/javascript">
+            hideNoJsWarning();
+        </script>
+
+        <!-- Login Start -->
+
+        <div class="login-container">
+
+            <div class="heading">
+                <h2>Control Panel Login</h2>
+            </div>
+
+
+            <!-- Login Form Start -->
+            <form name="loginform" action="/servlet/AuthServlet" method="post" onsubmit="return ValidateForm(this.username,'Error en Usuario. Debe ser un Correo electrónico.')">
+                <div class="storefront-login-container">
+                    
+
+                    <input type="hidden" name="pid" value="668252">
+                    <input type="hidden" name="currenturl" value="https://cp.midominio.do">
+
+                    <input type="hidden" name="logo_url" value="668252_header_logo.png">
+                    <input type="hidden" name="logo_height" value="81">
+                    <input type="hidden" name="tablebackground" value="">
+                    <input type="hidden" name="languageCode" value="e1">
+
+                    <!-- Username -->
+                    <input id="login-username" type="text" name="username" data-defaulttext="Correo electrónico" placeholder="Correo electrónico  ">
+
+                    <!-- Password -->
+                    <input id="login-password" type="password" autocomplete="off" name="password" data-defaulttext="Contraseña" placeholder="Contraseña  ">
+
+                    <!-- Role -->
+                    <select id="login-role" name="role">
+                        <option value="customer">Cliente
+                        </option>
+                        <option value="reseller" selected="selected">Revendedor
+                        </option>
+                    </select>
+
+                    <!-- Login Form Start -->
+
+                </div>
+
+                <!-- Form Submit -->
+                <div class="function-control">
+                    <div class="login-control">
+                        <input class="login-submit" value="Login" type="submit"><a class="forgetful" href="" onclick="return linkOfForgotPasswd()">Olvidó la contraseña
+                    </a>
+                    </div>
+                </div>
+            <input type="hidden" name="OWASP_CSRFTOKEN" value="2GHD-0S3M-G0PQ-GBSX-Y8A2-JZMT-ZYZE-0H6T"></form>
+        </div>
+        <!-- Login End -->
+
+        <!--Content End -->
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+    <div id="footer-wrapper">
+        
+
+
+<div class="language-blurb-wrp">
+    <div class="language-blurb">Idioma: <a id="global-change-language-link" data-list-languages-header="Seleccionar su idioma">Español (Latino América)
+    </a></div>
+    <div class="clear"></div>
+</div>
+
+        
+            
+                <div id="footer">Todos los derechos reservados 2016 © PUCMM.</div>
+            
+            
+        
+    </div>
+
+</div>
+
+
+<script src="/js/jquery/obox/jquery.min_4cc2fc7aa46fd1f7eba91c2d00e22f12.js" type="text/javascript"></script>
+<script type="text/javascript" charset="UTF-8">
+    $(document).ready(function ()
+                      {
+                          addWaterMark($('#login-username'), $('#login-username').data('defaulttext'), $);
+                          addWaterMark($('#login-password'), $('#login-password').data('defaulttext'), $);
+                      });
+
+
+</script>
+
+</body></html>

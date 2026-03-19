@@ -16,7 +16,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.infra.settings import settings
-from app.models import anecf, approval, audit, base, billing, invoice, receipt, rfce, storage, tenant, user
+from app import models as _models  # noqa: F401
+from app.models import base
 
 config = context.config
 

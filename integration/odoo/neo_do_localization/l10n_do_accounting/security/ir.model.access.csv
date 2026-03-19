@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+l10n_do_accounting.access_account_move_cancel,access_account_move_cancel,l10n_do_accounting.model_account_move_cancel,base.group_user,1,1,1,1
+l10n_do_accounting.access_account_expiration_date_update_wizard,access_account_expiration_date_update_wizard,l10n_do_accounting.model_account_expiration_date_update_wizard,base.group_user,1,1,1,1
+l10n_do_accounting.access_ncf_control_manager,access_ncf_control_manager,l10n_do_accounting.model_ncf_control_manager,base.group_user,1,1,1,1

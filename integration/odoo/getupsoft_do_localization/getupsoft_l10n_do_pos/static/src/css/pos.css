@@ -1,0 +1,25 @@
+.pos-receipt .dotted_ticket_title {
+    border: 1px dashed black;
+    border-left: none;
+    border-right: none;
+    padding: .5em 0;
+    margin: .9em 0 0 0;
+}
+
+.pos-receipt .orderlines .receipt-orderlines {
+    width: 100%;
+}
+
+.pos-receipt .orderlines .receipt-orderlines > thead > tr > th.th-description {
+    text-align: left;
+}
+.pos-receipt .orderlines .receipt-orderlines > thead > tr > th.th-value {
+    text-align: right;
+}
+
+.pos-receipt .orderlines .receipt-orderlines > tbody > tr > td {
+    padding: 5px 0 5px 0;
+}
+.pos-receipt .orderlines .receipt-orderlines > tbody > tr:last-child {
+    border-bottom: 1px dashed black;
+}

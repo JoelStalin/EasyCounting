@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_do_account_report_inherit_view_account_form" model="ir.ui.view">
+        <field name="name">l10n_do_account_report.inherit.account.account.form</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='group_id']" position="after">
+                <field name="account_fiscal_type"/>
+                <field name="isr_retention_type"
+                       attrs="{'invisible': [('account_fiscal_type', '!=', 'ISR')]}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

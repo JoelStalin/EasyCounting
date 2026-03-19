@@ -6,7 +6,7 @@ from datetime import datetime
 from fastapi import APIRouter, Depends
 
 from app.core.logging import bind_request_context
-from app.dgii.clients import DGIIClient
+from app.dgii.client import DGIIClient
 from app.dgii.schemas import TokenResponse
 from app.routers.dependencies import DGIIClientDep, bind_request_headers
 
@@ -29,3 +29,4 @@ async def obtain_token(
 def _parse_datetime(value: str) -> datetime:
     value = value.replace("Z", "+00:00")
     return datetime.fromisoformat(value)
+

@@ -1,0 +1,15 @@
+tunnel: 80297212-52f4-4f4e-b0dd-11bcd2307399
+credentials-file: C:\Users\yoeli\.cloudflared\80297212-52f4-4f4e-b0dd-11bcd2307399.json
+
+ingress:
+  - hostname: getupsoft.com.do
+    service: http://127.0.0.1:18083
+  - hostname: api.getupsoft.com.do
+    service: http://127.0.0.1:28080
+  - hostname: admin.getupsoft.com.do
+    service: http://127.0.0.1:18081
+  - hostname: cliente.getupsoft.com.do
+    service: http://127.0.0.1:18082
+  - hostname: socios.getupsoft.com.do
+    service: http://127.0.0.1:18184
+  - service: http_status:404

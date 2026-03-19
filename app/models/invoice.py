@@ -4,7 +4,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Numeric, String
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Numeric, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base, utcnow
@@ -15,6 +15,11 @@ class Invoice(Base):
     """Representa un e-CF emitido por la plataforma."""
 
     __tablename__ = "invoices"
+    __table_args__ = (
+        UniqueConstraint("tenant_id", "encf", name="ux_invoices_tenant_encf"),
+        Index("ix_invoices_estado", "estado_dgii"),
+        Index("ix_invoices_track_id", "track_id"),
+    )
 
     tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id", ondelete="CASCADE"))
     encf: Mapped[str] = mapped_column(String(20), index=True)

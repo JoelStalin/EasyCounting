@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="getupsoft_l10n_do_pos_inherit_view_pos_payment_form" model="ir.ui.view">
+        <field name="name">getupsoft_l10n_do_pos.inherit.pos.payment.form</field>
+        <field name="model">pos.payment</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_payment_form"/>
+        <field name="arch" type="xml">
+            <field name="session_id" position="after">
+              <field name="note"/>
+              <field name="credit_note_id"/>
+            </field>
+        </field>
+    </record>
+  
+    <record id="getupsoft_l10n_do_pos_inherit_view_pos_pos_form" model="ir.ui.view">
+        <field name="name">getupsoft_l10n_do_pos.inherit.pos.pos.form</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="model">pos.order</field>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='extra']" position="inside">
+                <group string="Fiscal info">
+                    <field name="l10n_latam_document_number" readonly="1"/>
+                    <field name="l10n_do_ncf_expiration_date" readonly="1"/>
+                    <field name="l10n_latam_document_type_id" readonly="1"/>
+                    <field name="l10n_do_is_return_order"/>
+
+                    <field name="l10n_do_origin_ncf" readonly="1"/>
+                </group>
+            </xpath>
+
+            
+            <xpath expr="//page[@name='extra']" position="before">
+                <page string="Credit Notes">
+                    <field name="l10n_do_payment_credit_note_ids" nolabel="1">
+                        <tree string="Credit Notes" create="false" delete="false"
+                              editable="bottom">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="account_move_id" readonly="1"/>
+                            <field name="amount" readonly="1"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

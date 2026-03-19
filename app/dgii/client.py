@@ -355,6 +355,7 @@ class DGIIClient:
         params: Optional[Dict[str, Any]] = None,
     ) -> httpx.Response:
         self._ensure_breaker_available()
+        self._ensure_allowed_host(url)
         logger = bind_request_context(url=url, method=method)
         retries = self._cfg.dgii_max_retries
         async for attempt in async_retry(retries):
@@ -385,6 +386,12 @@ class DGIIClient:
                     raise DGIIRetryableError("Error de comunicación con DGII") from exc
 
         raise RuntimeError("Reintentos agotados para llamada DGII")  # pragma: no cover
+
+    def _ensure_allowed_host(self, url: str) -> None:
+        parsed = httpx.URL(url)
+        host = parsed.host
+        if not host or host not in self.config.dgii_allowed_hosts:
+            raise DGIIRetryableError("Host no permitido para DGII")
 
     def _auth_headers(self, token: str) -> Dict[str, str]:
         return {"Authorization": f"Bearer {token}"}

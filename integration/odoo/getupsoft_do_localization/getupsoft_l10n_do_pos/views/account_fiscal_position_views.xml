@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_account_position_form_inherit_getupsoft_l10n_do_pos" model="ir.ui.view">
+            <field name="name">account.fiscal.position.form.inherit.l10n.do.pos</field>
+            <field name="model">account.fiscal.position</field>
+            <field name="inherit_id" ref="account.view_account_position_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="l10n_do_to_invoice"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_account_position_tree_inherit_getupsoft_l10n_do_pos" model="ir.ui.view">
+            <field name="name">account.fiscal.position.tree.inherit.l10n.do.pos</field>
+            <field name="model">account.fiscal.position</field>
+            <field name="inherit_id" ref="account.view_account_position_tree"/>
+            <field name="arch" type="xml">
+                <field name="company_id" position="after">
+                    <field name="l10n_do_to_invoice"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

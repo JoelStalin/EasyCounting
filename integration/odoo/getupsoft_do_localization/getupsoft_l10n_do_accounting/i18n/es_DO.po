@@ -1,0 +1,869 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* getupsoft_l10n_do_accounting
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-05-27 04:54+0000\n"
+"PO-Revision-Date: 2022-05-27 04:54+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "01 - Operational Incomes"
+msgstr "01 - Ingresos Operacionales"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "01 - Personal"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "01 - Pre-printed Invoice Impairment"
+msgstr "01 - Deterioro Factura Preimpresa"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "02 - Financial Incomes"
+msgstr "02 - Ingresos Financieros"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "02 - Printing Errors (Pre-printed Invoice)"
+msgstr "02 - Errores de impresión (Factura preimpresa)"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "02 - Work, Supplies and Services"
+msgstr "02 - Obras, Suministros y Servicios"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "03 - Defective Printing"
+msgstr "03 - Impresión defectuosa"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "03 - Extraordinary Incomes"
+msgstr "03 - Ingresos Extraordinarios"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "03 - Leasing"
+msgstr "03 - Arrendamiento"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "04 - Correction of Product Information"
+msgstr "04 - Corrección de Información del Producto"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "04 - Fixed Assets"
+msgstr "04 - Activos Fijos"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "04 - Leasing Incomes"
+msgstr "04 - Rentas por arrendamiento"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "05 - Income for Selling Depreciable Assets"
+msgstr "05 - Renta por Venta de Bienes Depreciables"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "05 - Product Change"
+msgstr "05 - Cambio de producto"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "05 - Representation"
+msgstr "05 - Representación"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "06 - Admitted Deductions"
+msgstr "06 - Deducciones Admitidas"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "06 - Other Incomes"
+msgstr "06 - Otros Ingresos"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "06 - Product Return"
+msgstr "06 - Devolución de productos"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "07 - Financial Expenses"
+msgstr "07 - Gastos Financieros"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "07 - Product Omission"
+msgstr "07 - Omisión de producto"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "08 - Extraordinary Expenses"
+msgstr "08 - Gastos Extraordinarios"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "08 - NCF Sequence Errors"
+msgstr "08 - Errores de secuencia NCF"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "09 - Cost & Expenses part of Sales"
+msgstr "09 - Costos y gastos parte de Ventas"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "09 - For Cessation of Operations"
+msgstr "09 - Por Cese de Operaciones"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "10 - Assets Acquisitions"
+msgstr "10 - Adquisiciones de Activos"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "10 - Lossing or Hurting Of Counterfoil"
+msgstr "10 - Pérdida o daño de la matriz"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/res_partner.py:0
+#, python-format
+msgid "11 - Insurance Expenses"
+msgstr "11 - Gastos de Seguro"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_account_chart_template
+msgid "Account Chart Template"
+msgstr "Plantilla de Plan de Cuentas"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_account_expiration_date_update_wizard
+msgid "Account Expiration Date Update Wizard"
+msgstr "Asistente para actualizar la fecha de caducidad de la cuenta"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_account_move_reversal
+msgid "Account Move Reversal"
+msgstr "Revocación de movimiento en cuenta"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_needaction
+msgid "Action Needed"
+msgstr "Accion necesaria"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting.selection__l10n_latam_document_type__l10n_do_use_in__both
+msgid "Ambos"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_debit_note.py:0
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_move_reversal.py:0
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_reversal__amount
+#, python-format
+msgid "Amount"
+msgstr "Monto"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_debit_note.py:0
+#, python-format
+msgid "Apply debit"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_attachment_count
+msgid "Attachment Count"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_l10n_latam_document_type__l10n_do_auto_sequence
+msgid "Auto sequence"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_journal.py:0
+#, python-format
+msgid "Bonds or Gift Certificate"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:res.groups,name:getupsoft_l10n_do_accounting.group_l10n_do_fiscal_invoice_cancel
+msgid "Can cancel Fiscal Invoices"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:res.groups,name:getupsoft_l10n_do_accounting.group_l10n_do_debit_note
+msgid "Can create Debit Notes"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:res.groups,name:getupsoft_l10n_do_accounting.group_l10n_do_fiscal_credit_note
+msgid "Can create Fiscal Credit Notes"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:res.groups,name:getupsoft_l10n_do_accounting.group_l10n_do_edit_fiscal_partner
+msgid "Can modify partner fiscal fields"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.account_expiration_date_update_wizard_form
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.account_move_cancel_view
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: getupsoft_l10n_do_accounting
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.account_move_cancel_view
+msgid "Cancel Invoice"
+msgstr "Cancelar factura"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.actions.act_window,name:getupsoft_l10n_do_accounting.action_account_move_cancel
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.account_move_cancel_view
+msgid "Cancel Selected Invoice"
+msgstr "Cancelar factura seleccionada"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_account_move_cancel
+msgid "Cancel the Selected Invoice"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.view_move_form
+msgid ""
+"Cancellation Reason:\n"
+"                    <br/>"
+msgstr ""
+"Razon de cancelacion:\n"
+"                     <br/>"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_bank_statement_line__l10n_do_cancellation_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move__l10n_do_cancellation_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_cancel__l10n_do_cancellation_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_payment__l10n_do_cancellation_type
+msgid "Cancellation Type"
+msgstr "Tipo de cancelación"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_journal.py:0
+#, python-format
+msgid "Cash"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_journal.py:0
+#, python-format
+msgid "Check / Transfer"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_res_company
+msgid "Companies"
+msgstr "Compañías"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__company_id
+msgid "Company"
+msgstr "Empresa"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_ncf_control_manager__company_id
+msgid "Company related to this journal"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting.selection__l10n_latam_document_type__l10n_do_use_in__purchase
+msgid "Compras"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting.selection__account_fiscal_position__l10n_do_ncf_type__b13
+msgid "Comprobante para Gastos Menores"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting.selection__account_fiscal_position__l10n_do_ncf_type__b14
+msgid "Comprobante para Regímenes Especiales"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting.selection__account_fiscal_position__l10n_do_ncf_type__b15
+msgid "Comprobantes Gubernamentales"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting.selection__account_fiscal_position__l10n_do_ncf_type__b11
+msgid "Comprobantes de Compras"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_res_partner
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_bank_statement_line__l10n_do_expense_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move__l10n_do_expense_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_payment__l10n_do_expense_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_res_partner__l10n_do_expense_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_res_users__l10n_do_expense_type
+msgid "Cost & Expense Type"
+msgstr "Tipo de costo y gasto"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_res_partner__country_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_res_users__country_id
+msgid "Country"
+msgstr "País"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_reversal__country_code
+msgid "Country Code"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard__create_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_cancel__create_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__create_uid
+msgid "Created by"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard__create_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_cancel__create_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__create_date
+msgid "Created on"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_journal.py:0
+#, python-format
+msgid "Credit"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_journal.py:0
+#, python-format
+msgid "Credit Card"
+msgstr "Tarjeta de crédito"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard__display_name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_cancel__display_name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__display_name
+msgid "Display Name"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.view_account_journal_form
+msgid "Document Types"
+msgstr "Tipos de documentos"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard__document_type_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__l10n_latam_document_type_id
+msgid "Document type"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_debit_note.py:0
+#, python-format
+msgid "Draft debit"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__l10n_do_ncf_expiration_date
+msgid "Expiration date"
+msgstr "Fecha de caducidad"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_l10n_latam_document_type__l10n_do_use_in
+msgid "Facilita el filtrado de NCF para los diferente acosos de uso."
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_account_fiscal_position
+msgid "Fiscal Position"
+msgstr "Posición fiscal"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "Fiscal invoices require partner fiscal type"
+msgstr ""
+"Las facturas fiscale requiren que el cliente tenga una posicion fiscal."
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_resequence.py:0
+#, python-format
+msgid "Fiscal invoices resequence is not allowed."
+msgstr "No se permite la resecuencia de facturas fiscales."
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_follower_ids
+msgid "Followers"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_partner_ids
+msgid "Followers (Partners)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_move_reversal.py:0
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_move_reversal.py:0
+#, python-format
+msgid "Full Refund"
+msgstr "Reembolso completo"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard__id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_cancel__id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__id
+msgid "ID"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_needaction
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_unread
+msgid "If checked, new messages require your attention."
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_has_error
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_bank_statement_line__l10n_do_income_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move__l10n_do_income_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_payment__l10n_do_income_type
+msgid "Income Type"
+msgstr "Tipo de ingresos"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_is_follower
+msgid "Is Follower"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_account_journal
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__journal_id
+msgid "Journal"
+msgstr "Diario"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento contable"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_bank_statement_line__l10n_do_ncf_is_required
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move__l10n_do_ncf_is_required
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_payment__l10n_do_ncf_is_required
+msgid "L10N Do Ncf Is Required"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard____last_update
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_cancel____last_update
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager____last_update
+msgid "Last Modified on"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard__write_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_cancel__write_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__write_uid
+msgid "Last Updated by"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard__write_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_cancel__write_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__write_date
+msgid "Last Updated on"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_l10n_latam_document_type
+msgid "Latam Document Type"
+msgstr "Tipo de Comprobante"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_main_attachment_id
+msgid "Main Attachment"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_bank_statement_line__l10n_latam_manual_document_number
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move__l10n_latam_manual_document_number
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_payment__l10n_latam_manual_document_number
+msgid "Manual Number"
+msgstr "Número Manual"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard__l10n_do_ncf_max_number
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__l10n_do_ncf_max_number
+msgid "Max number"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_has_error
+msgid "Message Delivery error"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_ids
+msgid "Messages"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_bank_statement_line__l10n_do_origin_ncf
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move__l10n_do_origin_ncf
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_payment__l10n_do_origin_ncf
+msgid "Modifies"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/l10n_latam_document_type.py:0
+#, python-format
+msgid "NCF %s doesn't have the correct structure"
+msgstr "NCF %s no tiene la estructura correcta"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_ncf_control_manager
+msgid "NCF Control Manager"
+msgstr "Administrador de Control NCF"
+
+#. module: getupsoft_l10n_do_accounting
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.view_account_position_form_inherit_getupsoft_l10n_do_accounting
+msgid "NCF Mapping"
+msgstr "Mapeo NCF"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_fiscal_position__l10n_do_ncf_ids
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_fiscal_position_template__l10n_do_ncf_ids
+msgid "NCF Types"
+msgstr "Tipos de NCF"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_journal__l10n_do_ncf_control_manager_ids
+msgid "NCFs"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_expiration_date_update_wizard__l10n_do_ncf_expiration_date
+msgid "New Expiration date"
+msgstr "Nueva fecha de caducidad"
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_debit_note.py:0
+#, python-format
+msgid "No invoice found for this operation"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_needaction_counter
+msgid "Number of Actions"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_has_error_counter
+msgid "Number of errors"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_unread_counter
+msgid "Number of unread messages"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "Numero maximo de NCF alcanzado para '%s'"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_journal.py:0
+#, python-format
+msgid "Other Sale Type"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_move_reversal.py:0
+#, python-format
+msgid "Partial Refund"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_journal__l10n_do_payment_form
+msgid "Payment Form"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_debit_note.py:0
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_move_reversal.py:0
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_reversal__percentage
+#, python-format
+msgid "Percentage"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "Refund"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_reversal__refund_action
+msgid "Refund Action"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move_reversal__refund_type
+msgid "Refund Type"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_account_resequence_wizard
+msgid "Remake the sequence of Journal Entries."
+msgstr "Haz de nuevo la secuencia de asientos de diario."
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_move_cancel.py:0
+#, python-format
+msgid ""
+"Selected invoice(s) cannot be cancelled as they are already in 'Cancelled' "
+"state."
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_move_cancel.py:0
+#, python-format
+msgid ""
+"Selected invoice(s) cannot be cancelled as they are already in 'Paid' state."
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_journal.py:0
+#, python-format
+msgid "Swap"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_res_partner__l10n_do_dgii_tax_payer_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_res_users__l10n_do_dgii_tax_payer_type
+msgid "Taxpayer Type"
+msgstr "Tipo de contribuyente"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_account_move_reversal__country_code
+msgid "Technical field used to hide/show fields regarding the localization"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model,name:getupsoft_l10n_do_accounting.model_account_fiscal_position_template
+msgid "Template for Fiscal Position"
+msgstr "Plantilla de posición fiscal"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_l10n_latam_document_type__l10n_do_auto_sequence
+msgid ""
+"Tenemos casos de NCF de compras que debemos llevar la secuencia.\n"
+" Para dichos casos existe este flag."
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_fiscal_position__l10n_do_ncf_type
+msgid "Tipo de NCF"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_unread
+msgid "Unread Messages"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.account_expiration_date_update_wizard_form
+msgid "Update"
+msgstr "Actualizar"
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.actions.act_window,name:getupsoft_l10n_do_accounting.action_l10n_do_exp_date_update_wizard
+msgid "Update NCF Expiration Date"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_l10n_latam_document_type__l10n_do_use_in
+msgid "Use in"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.view_account_move_reversal_inherited
+msgid ""
+"Use this option if you want to fully apply a credit note.\n"
+"                        The credit note will be created, validated and reconciled\n"
+"                        with the invoice. You will not be able to modify the credit note."
+msgstr ""
+"Utilice esta opción si desea aplicar completamente una nota de crédito.\n"
+"                         La nota de crédito será creada, validada y conciliada\n"
+"                         con la factura. No podrá modificar la nota de crédito."
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_bank_statement_line__l10n_do_ncf_expiration_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_move__l10n_do_ncf_expiration_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_account_payment__l10n_do_ncf_expiration_date
+msgid "Valid until"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting.selection__l10n_latam_document_type__l10n_do_use_in__sale
+msgid "Ventas"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting.field_ncf_control_manager__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting.field_ncf_control_manager__website_message_ids
+msgid "Website communication history"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "You are not allowed to cancel Fiscal Invoices"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_debit_note.py:0
+#, python-format
+msgid "You are not allowed to issue Debit Notes"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "You are not allowed to issue Fiscal Credit Notes"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "You cannot cancel multiple fiscal invoices at a time."
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_move_reversal.py:0
+#, python-format
+msgid "You cannot create Credit Notes from multiple documents at a time."
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_debit_note.py:0
+#, python-format
+msgid "You cannot create Debit Notes from multiple documents at a time."
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/models/account_move.py:0
+#, python-format
+msgid "You cannot delete fiscal invoice which have been posted before"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_debit_note.py:0
+#, python-format
+msgid "You cannot issue Credit/Debit Notes for %s document type"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: code:addons/getupsoft_l10n_do_accounting/wizard/account_expiration_date_update_wizard.py:0
+#, python-format
+msgid "You must set a date later than the current one"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting.view_account_move_reversal_inherited
+msgid ""
+"You will be able to edit and validate this\n"
+"                        credit note directly or keep it draft."
+msgstr ""
+"Podrá editar y validar esta\n"
+"                         nota de crédito directamente o mantenerla como borrador."

@@ -89,3 +89,26 @@ class InvoiceDetailResponse(InvoiceListItem):
     contabilizado: bool
     accounted_at: Optional[datetime] = None
     asiento_referencia: Optional[str] = None
+
+
+class ChatQuestionRequest(BaseModel):
+    question: str = Field(..., min_length=4, max_length=1500)
+    max_sources: int = Field(default=3, ge=1, le=8)
+
+
+class ChatSource(BaseModel):
+    invoice_id: int
+    encf: str
+    track_id: Optional[str] = None
+    estado_dgii: str
+    total: Decimal
+    fecha_emision: datetime
+    snippet: str
+
+
+class ChatAnswerResponse(BaseModel):
+    answer: str
+    engine: str
+    tenant_id: int
+    sources: List[ChatSource]
+    warnings: List[str] = Field(default_factory=list)

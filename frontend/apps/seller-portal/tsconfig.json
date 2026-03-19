@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "@getupsoft/ui": ["../../packages/ui/src"],
+      "@getupsoft/api-client": ["../../packages/api-client/src"]
+    }
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../../packages/ui" },
+    { "path": "../../packages/api-client" }
+  ]
+}

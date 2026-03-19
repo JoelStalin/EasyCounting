@@ -1,0 +1,10 @@
+A browser window should have opened at the following URL:
+
+https://dash.cloudflare.com/argotunnel?aud=&callback=https%3A%2F%2Flogin.cloudflareaccess.org%2FgS_2MAr3WcQTONzMjj8zxuF26s8JLCkbAQTqzqiurg0%3D
+
+If the browser failed to open, please visit the URL above directly in your browser.
+2026-03-19T01:05:47Z INF Waiting for login...
+2026-03-19T01:05:49Z INF You have successfully logged in.
+If you wish to copy your credentials to a server, they have been saved to:
+C:\Users\yoeli\.cloudflared\cert.pem
+

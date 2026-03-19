@@ -1,0 +1,2618 @@
+<html><head>
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        
+
+
+
+<link rel="stylesheet" href="/css/style-rules_d18445c69bdfe2260db07e5a70dc944e.css" type="text/css">
+        <script type="text/javascript" src="/js/menu/milonic_src_a030264fed9f7955ceab5b7716ba2805.js"></script><style>.milonic{width:1px;visibility:hidden;position:absolute}</style><script type="text/javascript">if(ns4)_d.write("<scr"+"ipt language=JavaScript src=/js/menu/mmenuns4_c5eae03d2e3d9d38fe452836f3634d23.js><\/scr"+"ipt>");else _d.write("<scr"+"ipt language=JavaScript src=/js/menu/mmenudom_1358d8976f7cbbde78b0da5df17dc927.js><\/scr"+"ipt>");</script><script language="JavaScript" src="/js/menu/mmenudom_1358d8976f7cbbde78b0da5df17dc927.js"></script><script>function $9(ap){return 0}</script>
+<script language="JavaScript" src="/js/menu/milonic_globalconfig_46575878f7250dd92a752d68c893a3d4.js"></script>
+
+
+    <link rel="stylesheet" href="/css/style-04-10-2004_3720af7e10c3d44a269aa67ddc50c9c1.css" type="text/css">
+<link rel="stylesheet" href="/css/anacreon_style_437b2ec2b70985f73865b6f3c19df60c.css" type="text/css">
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <style type="text/css" rel="stylesheet" id="custom-mfe-style">
+        .wp .order-wrapper {
+            padding: 0;
+            margin: 0;
+        }
+        .wp .wp-body .wp-routes .wp-order-management{
+            background-color: transparent;
+        }
+        .wp .wp-body .wp-routes .wp-order-management .wp-order-management-products .order-wrapper{
+            width: 100%;
+        }
+        .wpp-mfe-root{
+            background: none;
+        }
+        .order-wrapper .domain-section{
+            margin-left: 0;
+            background: url(/images/bg-h2.gif) repeat-x left bottom;
+            padding-bottom: 15px;
+        }
+        .order-wrapper .row{
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .order-wrapper .row .widget-border{
+            padding-left: 0;
+            padding-right: 0;
+            margin-top: 10px;
+        }
+        .order-wrapper .row .widget-border .row{
+            margin-left: 0;
+            margin-right: 0;
+        }
+        .order-wrapper .row .widget-border .order-suspension-alert-wrapper{
+            margin: 0;
+        }
+        .order-wrapper .row .widget-border .row>div:first-child{
+            margin: 0;
+        }
+        .order-wrapper .row .widget-border .row .order{
+            margin: 0;
+            padding: 10px;
+            border: 1px solid #e9e9eb;
+        }
+    </style>
+    <style type="text/css">
+        
+
+@import url(/css/global_8235ec831b54c33b3de43fd6595b07c0.css);
+        
+
+@import url(/css/change-domain_65485c0577407b32ed025f32f4bbf726.css);
+        
+
+@import url(/css/cp-style_e5d5e1c56446f0561d156df6f292f4b0.css);
+        
+
+@import url(/css/auto-renewal_31f2d5108967da865119a5ec4fb3d095.css);
+
+        
+
+@import url(/css/dps-upsell_225b5b4c5a5d8b1257d7d36e17aaef2a.css);
+        
+
+@import url(/css/hosting-order-deletion-survey_2df2c2532fb4944e45c155a3c910077c.css);
+        
+
+@import url(/css/dps-otp-modal_51e74ffa1423cfd93c2374758b8b2373.css);
+    </style>
+    <title>Manage getupsoft.com.do</title>
+    
+
+
+
+
+
+
+<script language="Javascript1.2">
+// These functions are used for the dynamic loading of the state select box.
+
+var dataXml;
+var xmldocument;
+var selectedCountryCode;
+var selectedCountryOfCitizenship;
+
+if (window.ActiveXObject)
+{
+    try
+    {
+        request = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    catch(e)
+    {
+        document.write('<script language="javascript" src="/GetStateData.jsp">');
+        document.write('<\/script>');
+    }
+}
+if (!window.XMLHttpRequest && !window.ActiveXObject)  //this seems like Opera
+{
+    document.write('<script language="javascript" src="/GetStateData.jsp">');
+    document.write('<\/script>');
+}
+
+function showHideOtherState(stateListBox)
+{
+    if (stateListBox.value == '0' && stateListBox.options[stateListBox.selectedIndex]
+            .text == 'Otro')
+    {
+        document.getElementById('other_state_text').innerHTML = "<br>Other State: <input type='text' name='other_state' class='input' value=''>";
+    }
+    else
+    {
+        document.getElementById('other_state_text').innerHTML = "";
+    }
+}
+
+function loadXMLDoc(url)
+{
+    if (window.XMLHttpRequest)
+    {
+        req = new XMLHttpRequest();
+        req.onreadystatechange = processReqChange;
+        req.open("GET", url, true);
+        req.send(null);
+    }
+    else if (window.ActiveXObject)
+    {
+        try
+        {
+            req = new ActiveXObject("Microsoft.XMLHTTP");
+            if (req)
+            {
+                req.onreadystatechange = processReqChange;
+                req.open("GET", url, true);
+                req.send(null);
+            }
+            else
+            {
+                addToForm(stateList[getStateList(selectedCountryCode)]);
+            }
+        }
+        catch(ex)
+        {
+            addToForm(stateList[getStateList(selectedCountryCode)]);
+        }
+    }
+}
+
+function processReqChange()
+{
+    if (req.readyState == 4)
+    {
+        if (req.status == 200)
+        {
+            xmldocument = req.responseXML;
+            buildStateList(xmldocument);
+            addToForm(dataXml);
+            loadingDataMess("off");
+        }
+        else
+        {
+            alert("Sin conexión");
+            loadingDataMess("off");
+        }
+    }
+    else
+    {
+        loadingDataMess("on");
+    }
+}
+
+// This function for the country - state Generation
+// xml is parsed and the data is kept in array dataXml
+function buildStateList(data)
+{
+    dataXml = new Array();
+    var items = xmldocument.getElementsByTagName("state");
+    for (var i = 0; i < items.length; i++)
+    {
+        dataXml[i] = new Array();
+
+        stateTag = items.item(i);
+        nameTag = stateTag.firstChild.firstChild;
+        // ie. name tag's child which is the text node
+        idTag = stateTag.firstChild.nextSibling.firstChild;
+        // ie. id tag's child which is the text node
+        //alert("nameTag name: "+nameTag.nodeName + " = "+ nameTag.nodeValue);
+        //alert("idTag name:"+idTag.nodeName+" = " + idTag.nodeValue);
+
+        dataXml[i][0] = nameTag.nodeValue;
+        dataXml[i][1] = idTag.nodeValue;
+    }
+}
+
+// This function makes visbility of 'loadMess' on/off
+function loadingDataMess(state)
+{
+    if (state == "on")
+    {
+        document.getElementById('loadMess').style.visibility = "visible";
+    }
+    else if (state == "off")
+    {
+        document.getElementById('loadMess').style.visibility = "hidden";
+    }
+}
+
+// This function adds the data from dataXml array to the 'stateSelect'
+// element
+function addToForm(stateData)
+{
+    handle = document.getElementsByName("state")[0];
+    not_applicable = document.getElementsByName("not_applicable")[0];
+    cnt = stateData.length;
+    handle.length = 0;
+
+    str = "";
+    if (cnt <= 0)
+    {
+        handle.options[0] = new Option("No aplicable", "0");
+        handle.options[1] = new Option("Otro", "0");
+        //             handle.disabled=true;
+        not_applicable.value = "true";
+    }
+    else
+    {
+        handle.disabled = false;
+        not_applicable.value = "false";
+        for (i = 0; i < cnt; i++)
+        {
+            handle.options[i] = new Option(stateData[i][0], stateData[i][1]);
+        }
+    }
+}
+
+function change_country(countrycode)
+{
+    //alert(countrycode);
+    if (countrycode != "")
+    {
+        selectedCountryCode = countrycode;
+        document.getElementById('other_state_text').innerHTML = "";
+        url = "/servlet/StateXMLServlet?countrycode=" + countrycode;
+        loadXMLDoc(url);
+    }
+    else
+    {
+        return false;
+    }
+}
+
+function change_EU_country(countrycode)
+{
+    if (countrycode != "")
+    {
+        selectedCountryOfCitizenship = countrycode;
+        url = "/servlet/StateXMLServlet?countrycode=" + countrycode;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+function change_country_new(form, countrycode)
+{
+    if (countrycode != "")
+    {
+        loadingDataMessNew(form, 'on');
+        $.ajax({
+                   url:"/servlet/StateXMLServlet?countrycode=" + countrycode,
+                   cache : false,
+                   success:function(result)
+                   {
+                       fillStateList(form, $(result));
+                       loadingDataMessNew(form, 'off');
+                   },
+                   error:function()
+                   {
+                       loadingDataMessNew(form, 'off');
+                   }
+               });
+    }
+    else
+    {
+        return false;
+    }
+}
+
+function fillStateList(form, data)
+{
+    var items = $(data).find('statelist');
+
+    var stateList = items[0];
+    var stateNames = [];
+    $(stateList).children().each(function()
+                                 {
+                                     stateNames.push('<option value ="' + $(this).children('id').text() + '">' + $(this)
+                                             .children('name').text() + '</option>');
+                                 });
+    if ($(stateNames).length == 0)
+    {
+        stateNames.push('<option value ="-1">Select State</option>');
+        stateNames.push('<option value ="0">Other</option>');
+    }
+
+    handle = $('#' + form.id + ' [name=state]');
+    $(handle).html(stateNames.join(''));
+
+    $('#' + form.id + ' [id=other_state_text]').html('');
+}
+
+function loadingDataMessNew(form, state)
+{
+    if (state == "on")
+    {
+        $('#' + form.id + ' [id=loadMess]').css('visibility', 'visible');
+    }
+    else if (state == "off")
+    {
+        $('#' + form.id + ' [id=loadMess]').css('visibility', 'hidden');
+    }
+}
+
+function showHideOtherStateField(form, stateListBox)
+{
+    if (stateListBox.value == '0' && stateListBox.options[stateListBox.selectedIndex]
+            .text == 'Otro')
+    {
+        $('#' + form.id + ' [id=other_state_text]').html("<br>Other State: <input type='text' name='other_state' class='input' value=''>");
+    }
+    else
+    {
+        $('#' + form.id + ' [id=other_state_text]').html('');
+    }
+}
+
+function showHideOtherStateFieldAndRemoveOtherStateError(form, stateListBox)
+{
+    if (stateListBox.value == '0' && stateListBox.options[stateListBox.selectedIndex]
+                    .text == 'Otro')
+    {
+        $('#' + form.id + ' [id=other_state_text]').html("<br>Other State: <input type='text' name='other_state' class='input' value=''>");
+        addWaterMark($('#other_state'), $('#other_state').data('defaulttext'), $);
+    }
+    else
+    {
+        $('#' + form.id + ' [id=other_state_text]').html('');
+        $('#' + form.id + ' [id=other_state-error]').html('');
+    }
+}
+</script>
+
+
+
+    
+
+<script src="/js/jquery/obox/jquery.min_4cc2fc7aa46fd1f7eba91c2d00e22f12.js" type="text/javascript"></script>
+    
+
+<script src="/js/jquery.qtip.min_b55214df873bc1437a206772e118f5a5.js" type="text/javascript"></script>
+    
+
+<script src="/js/change-domain_b3fd67cd1f42cc7112f6c0e96a136d47.js" type="text/javascript"></script>
+    <style type="text/css">
+        .ajax-spinner {
+            top: 60px;
+        }
+
+        .error-msg {
+            background: url("/images/ui-exclamation.png") no-repeat scroll 7px 9px #FBD0CD;
+            border: 2px solid #CE7873;
+            margin-bottom: 15px;
+            padding: 10px 10px 10px 27px;
+        }
+
+        .hd-submit-overlay {
+            z-index: 9999;
+            width: 97% !important;
+            height: 96% !important;
+            left: 7px;
+            top: 7px;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+        }
+
+        .modal-box-blurb.modal-box-blurb-secure
+        {
+            background: rgba(110,135,95,0.7);
+        }
+
+    </style>
+</head>
+<body onload="suffixComponentTag(false,
+        'domorder');">
+<div class="page-wrapper">
+
+
+
+
+
+
+<script src="/js/jquery/obox/jquery.min_4cc2fc7aa46fd1f7eba91c2d00e22f12.js" type="text/javascript"></script>
+
+
+<script src="/js/jquery/obox/jquery.qtip.min_e94755e544bdbd76e0a7b902023d797d.js" type="text/javascript"></script>
+
+
+<script src="/js/jquery.watermark.min_ed1695dd82707450e65ae64ec4697d95.js" type="text/javascript"></script>
+
+
+<script src="/js/cp-global_ff6622897e4e800c266b8a61e0e320c1.js" type="text/javascript"></script>
+
+
+<script src="/js/csrftoken_ca996e444cf376a52617acfe85bf9a96.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    var TOKEN_NAME = 'OWASP_CSRFTOKEN';
+    var TOKEN_VALUE = 'ZDM8-AYXV-T6IZ-S4FY-1T42-NPYI-2COB-39M5';
+
+    function addHeader(xhr, url) {
+        if (isSameDomain(url)) {
+            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            xhr.setRequestHeader(TOKEN_NAME, TOKEN_VALUE);
+        }
+    }
+    var ajaxSetupObj = {
+        beforeSend: function (xhr, settings) {
+            addHeader(xhr, settings.url);
+        }
+    };
+
+    function setupHeadersForAjax(i) {
+        try {
+            if (i != null ) {
+                i(document).ready(function () {
+                    i.ajaxSetup(ajaxSetupObj);
+                });
+            }
+        } catch (e) {
+
+        }
+    }
+
+    setupHeadersForAjax($);
+    setupHeadersForAjax(jQuery);
+    setupHeadersForAjax($global);
+
+
+</script>
+
+<script type="text/javascript" src="/JavaScriptServlet"></script>
+
+
+
+
+
+
+<table id="tblheader" border="0" cellpadding="0" cellspacing="0" width="100%">
+
+    
+        <tbody><tr width="100%" bgcolor="">
+            <td align="left" width="100%" colspan="3">
+                <img border="0" src="/logos/668252_header_logo.png" height="81">
+            </td>
+        </tr>
+    
+    
+
+
+</tbody></table>
+
+
+
+
+
+
+
+<div class="mainnav-header" id="control-panel-header">
+    <div id="control-panel-header-user-email" class="lfloat">
+        Área de administración para joelstalin2105@gmail.com
+    </div>
+    <div class="rfloat" style="padding: 2px 0;">
+        
+        
+        
+        
+            
+
+            
+
+                
+                    
+                        
+
+
+
+
+
+<div id="manage-profile-widget" style="position:relative;" title="Perfil">
+    <ul>
+        <li class="profile">
+            <div id="manage-profile-holder" class="manage-profile-holder">
+                <a class="profile-image-normal" id="profile-image"></a>
+                <ul id="profile-blurb" class="menu-blurb" style="display: none;">
+                    <li class="dropdown-arrow">
+                        <span class="arrow-outer"></span>
+                        <span class="arrow-inner"></span>
+                    </li>
+                    <li class="profile-menu-user-name-li">
+                        <div class="profile-menu-user-name">joelstalin2105@gmail.com
+                            <div class="profile-menu-user-id">ID del cliente: 30154860</div>
+                        </div>
+                    </li>
+                    <li class="profile-menu-element">
+                        <a href="/servlet/ModifyCustomerProfileServlet">Su Cuenta y Seguridad</a>
+                    </li>
+                    <li class="profile-menu-element-signout">
+                        <a href="https://www.foundationapi.com/servlet/LogoutServlet?currenturl=https://cp.midominio.do">Salir</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>
+    
+
+
+                    
+                    
+                
+            
+        
+
+    </div>
+    <div class="clear"></div>
+</div>
+<table id="control-panel-menu" border="0" cellspacing="0" cellpadding="0" width="100%">
+    <tbody><tr>
+        <td style="background:#1b608e url('/images/cp-menu-bg-new.png') repeat-x;">
+            <script type="text/javascript" src="/menu/menufiles/ACFCE0FA987EC1E4703C8CF468CADA80_customer_es_newmenu.js" charset="UTF-8"></script><script type="text/javascript" language="JavaScript">drawMenus();</script><div class="mmenu" onmouseout="$I()" onmouseover="$J(0)" onselectstart="return 0" id="menu0" style="padding: 0px; background: transparent; border: 0px solid rgb(255, 255, 255); z-index: 999; visibility: visible; width: 567px;"><table class="milonictable" border="0" cellpadding="0" cellspacing="0" style="line-height:normal;padding:0px" id="tbl0"><tbody><tr><td id="el0" onmouseover="h$(0)" class="menu-home" style="padding:0px;background-image:url(/images/cp-menu-bg-new.png);height:100%;;"><table class="milonictable" border="0" cellpadding="0" cellspacing="0" style="line-height:normal;padding:0px" width="100%" height="100%" id="MTbl0"><tbody><tr id="td0"><td id="_imgO0"><img onload="_p2(0,this)" border="0" style="display:block" alt="Inicio" id="img0" src="/images/home-menu.png"></td></tr></tbody></table></td><td id="sep0" style="padding:0px;width:1px;;background-image:url(/images/cp-menu-div-new-one.png);"><table class="milonictable" border="0" cellpadding="0" cellspacing="0" style="line-height:normal;padding:0px" width="1"><tbody><tr><td style="padding:0px;"></td></tr></tbody></table></td><td nowrap="" id="el1" onmouseover="h$(1)" style=";padding:16px;height:100%;background-image:url(/images/cp-menu-bg-new.png);"><a name="mM1" onfocus="_iF0C(1)" href="javascript:void(0)" id="lnk1" style="border:none;background:transparent;display:block;color:#FFFFFF;font-Family:Arial,tahoma, verdana, Tahoma;font-Weight:bold;font-Style:normal;font-Size:14px;text-Decoration:none;">Administrar pedidos</a></td><td id="sep1" style="padding:0px;width:1px;;background-image:url(/images/cp-menu-div-new-one.png);"><table class="milonictable" border="0" cellpadding="0" cellspacing="0" style="line-height:normal;padding:0px" width="1"><tbody><tr><td style="padding:0px;"></td></tr></tbody></table></td><td nowrap="" id="el2" onmouseover="h$(2)" style=";padding:16px;height:100%;background-image:url(/images/cp-menu-bg-new.png);"><a name="mM1" onfocus="_iF0C(2)" href="javascript:void(0)" id="lnk2" style="border:none;background:transparent;display:block;color:#FFFFFF;font-Family:Arial,tahoma, verdana, Tahoma;font-Weight:bold;font-Style:normal;font-Size:14px;text-Decoration:none;">Mis cuentas</a></td><td id="sep2" style="padding:0px;width:1px;;background-image:url(/images/cp-menu-div-new-one.png);"><table class="milonictable" border="0" cellpadding="0" cellspacing="0" style="line-height:normal;padding:0px" width="1"><tbody><tr><td style="padding:0px;"></td></tr></tbody></table></td><td nowrap="" id="el3" onmouseover="h$(3)" style=";padding:16px;height:100%;background-image:url(/images/cp-menu-bg-new.png);"><a name="mM1" onfocus="_iF0C(3)" href="javascript:void(0)" id="lnk3" style="border:none;background:transparent;display:block;color:#FFFFFF;font-Family:Arial,tahoma, verdana, Tahoma;font-Weight:bold;font-Style:normal;font-Size:14px;text-Decoration:none;">Configuraciones</a></td><td id="sep3" style="padding:0px;width:1px;;background-image:url(/images/cp-menu-div-new-one.png);"><table class="milonictable" border="0" cellpadding="0" cellspacing="0" style="line-height:normal;padding:0px" width="1"><tbody><tr><td style="padding:0px;"></td></tr></tbody></table></td><td nowrap="" id="el4" onmouseover="h$(4)" style=";padding:16px;height:100%;background-image:url(/images/cp-menu-bg-new.png);"><a name="mM1" onfocus="_iF0C(4)" href="javascript:void(0)" id="lnk4" style="border:none;background:transparent;display:block;color:#FFFFFF;font-Family:Arial,tahoma, verdana, Tahoma;font-Weight:bold;font-Style:normal;font-Size:14px;text-Decoration:none;">Ayuda</a></td></tr></tbody></table> <a name="mM1" id="mmlink0" href="#" onmouseout="hidetip()" onclick="return $K(this._itemRef)" onmouseover="_p1(this);_mot=$P(_mot)" style="line-height:normal;background:transparent;text-decoration:none;height:1px;width:1px;overflow:hidden;position:absolute;"></a></div><div class="mmpadding-off" onmouseout="$I()" onmouseover="$J(1)" onselectstart="return 0" id="menu1" style="padding:0px;background:#034987;border:0px solid #4996D3;z-index:999;visibility:hidden;position:absolute;top:-999px;;"></div><div class="mmpadding-off" onmouseout="$I()" onmouseover="$J(2)" onselectstart="return 0" id="menu2" style="padding:0px;background:#034987;border:0px solid #4996D3;z-index:999;visibility:hidden;position:absolute;top:-999px;;"></div><div class="mmpadding-off" onmouseout="$I()" onmouseover="$J(3)" onselectstart="return 0" id="menu3" style="padding:0px;background:#034987;border:0px solid #4996D3;z-index:999;visibility:hidden;position:absolute;top:-999px;;"></div><div class="mmpadding-off" onmouseout="$I()" onmouseover="$J(4)" onselectstart="return 0" id="menu4" style="padding:0px;background:#034987;border:0px solid #4996D3;z-index:999;visibility:hidden;position:absolute;top:-999px;;"></div><div class="mmpadding-off" onmouseout="$I()" onmouseover="$J(5)" onselectstart="return 0" id="menu5" style="padding:0px;background:#034987;border:0px solid #4996D3;z-index:999;visibility:hidden;position:absolute;top:-999px;;"></div><div class="mmpadding-off" onmouseout="$I()" onmouseover="$J(6)" onselectstart="return 0" id="menu6" style="padding:0px;background:#034987;border:0px solid #4996D3;z-index:999;visibility:hidden;position:absolute;top:-999px;;"></div><div class="mmpadding-off" onmouseout="$I()" onmouseover="$J(7)" onselectstart="return 0" id="menu7" style="padding:0px;background:#034987;border:0px solid #4996D3;z-index:999;visibility:hidden;position:absolute;top:-999px;;"></div><div class="mmpadding-off" onmouseout="$I()" onmouseover="$J(8)" onselectstart="return 0" id="menu8" style="padding:0px;background:#034987;border:0px solid #4996D3;z-index:999;visibility:hidden;position:absolute;top:-999px;;"></div>
+        </td>
+    </tr>
+</tbody></table>
+
+<div style="position: relative;">
+    <div id="store-buy-button" class="store-buy-button-background" style="display: block;">
+        <div class="store-buy-cart store-buy-cart-holder"></div>
+        <div class="buy-button-text">Comprar</div>
+    </div>
+</div>
+<table border="0" cellspacing="0" cellpadding="0" width="100%" id="navigation-shadow">
+    <tbody><tr>
+        <td>&nbsp;</td>
+    </tr>
+</tbody></table>
+<div id="page-container">
+
+
+
+
+    
+    
+        
+    
+
+<script src="https://assets.dstack.tech/static/js/solitude.js"></script>
+<script>window.SolitudeSDK?.Initialize({apiVersion:"2024-01-01",gateway:"https://gateway.dstack.tech",callbacks:{getSession:()=>new Promise(function(e,i){$.post({url:"/servlet/ViewAccessTokenServlet",dataType:"json",success:e,error:(e,s,t)=>i(t)})})}});</script>
+
+
+<div id="domain-overview-page">
+    
+        
+            
+        
+        
+        
+    
+    
+        
+            
+        
+        
+    
+    
+    
+    
+    
+    
+    
+        
+            
+        
+        
+    
+    
+    
+    <div id="page-header" class="bdr-bottom">
+        
+
+
+
+
+
+<div id="header-navigation" class="rfloat">
+    
+    
+        
+    
+    <form name="ManagementConsole" id="ManagementConsole">
+        <input type="hidden" name="websitename" value="getupsoft.com.do">
+        <input type="hidden" name="websiteid" value="">
+        <input type="hidden" name="order_id" value="117405401">
+        <input type="hidden" name="order_ids" value="117405401">
+        
+        
+        
+
+
+        
+        
+            
+            <span class="inline-block">
+                <a href="#" class="font-small" onclick="return loadOverviewActions('/servlet/MoveWebsiteServlet?validatenow=false&amp;dualbarproductkey=movedomain',document.ManagementConsole)">
+                    Mover Servicios
+                </a>
+            </span>
+            
+        
+     <span id="header-ui-button">
+        <span class="inline-block ui-button-link" onclick="showUiMenu('action-boxid');">Acciones <span class="ui-down-arrow"></span>
+        <span class="page-header-menu box" id="action-boxid" style="display: none;">
+
+                  <ul>
+                      <li>
+                          <a onclick="return loadOverviewActions('/servlet/ListActionsServlet?listpendingactions=true&amp;orderid=117405401',document.ManagementConsole);">
+                              Acciones actuales</a></li>
+                      <li>
+                          <a onclick="return loadOverviewActions('/servlet/ListArchiveActionsServlet?listactionhistory=true&amp;orderid=117405401',document.ManagementConsole);">
+                              Acciones Archivadas</a></li>
+                  </ul>
+                </span>
+
+                </span>
+        <span class="inline-block ui-button-link" onclick="showUiMenu('transaction-boxid');">
+            Transacciones <span class="ui-down-arrow"></span>
+    <span class="page-header-menu box" id="transaction-boxid" style="display: none;">
+
+                  <ul>
+                      <li>
+                          <a onclick="return loadOverviewActions('/servlet/WebsiteServlet?formaction=View&amp;listonlyinvoice=true',document.ManagementConsole);">
+                              Facturas Pendientes</a></li>
+                      <li>
+                          <a onclick="return loadOverviewActions('/servlet/ViewOrderServlet?listtrans=true&amp;productkey=list_trans&amp;orderid=117405401',document.ManagementConsole);">
+                              Todas las Transacciones</a></li>
+                  </ul>
+                </span>
+    </span>
+    </span>
+    <input type="hidden" name="OWASP_CSRFTOKEN" value="ZDM8-AYXV-T6IZ-S4FY-1T42-NPYI-2COB-39M5"></form>
+
+    
+        <form action="/servlet/ListAllOrdersServlet">
+    <span class="inline-block">
+        <input type="text" class="input input-value" name="searchstring" placeholder="Ir a Nombre de Dominio">
+        <input type="hidden" name="formaction" value="listOrders">
+        <input type="hidden" name="searchfor" value="domain">
+        <input type="hidden" name="showchildorders" value="checked">
+        <input type="hidden" name="redirect-to-vieworderpage" value="true">
+        </span>
+    <span class="inline-block">
+        <input type="submit" class="ui-button-link ui-button-link-2" value="Ir">
+
+        </span>
+        <input type="hidden" name="OWASP_CSRFTOKEN" value="ZDM8-AYXV-T6IZ-S4FY-1T42-NPYI-2COB-39M5"></form>
+    
+</div>
+
+<div id="reseller-chain-div" style="display:none;">
+    <div class="modal-box-blurb" style="top: 75px;">
+        <div class="modal-box-wrapper">
+            <div class="modal-box-header">
+                <div class="modal-close" id="reseller-chain-close"><a class="modal-close-icon reseller-chain-close"></a>
+                </div>
+                <div id="reseller-chain-header"></div>
+                <div class="modal-box-top-arrow" style="left: 118px;"></div>
+            </div>
+            <div class="modal-box-content">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+    
+
+    
+        <h1>
+        
+            
+            
+                getupsoft.com.do
+            
+        
+        </h1>
+    
+
+
+<script type="text/javascript">
+    bindToolBarFunctions();
+
+    function bindToolBarFunctions()
+    {
+        $('.reseller-chain-close').click(function ()
+                                         {
+                                             $('#reseller-chain-close').parent().parent().parent().parent()
+                                                     .css('display',
+                                                          'none');
+                                         });
+
+        $(document).click(function (e)
+                          {
+                              closeChildDetailsModal(e.target);
+                          });
+    }
+</script>
+
+
+<script src="/js/WebsiteToolBar_0965fbdcf0b442c46fd1035b9ce24730.js" type="text/javascript"></script>
+
+    </div>
+    <div id="page-bar" class="rfloat">
+        
+
+
+
+
+
+<div id="page-bar-links">
+    <div class="page-bar-head-bg"></div>
+    <ul>
+        
+        
+        
+            
+        
+            
+                
+                
+                
+                
+                <li class="pb-li-list pb-active-link" category="domorder">
+                    <a href="#domorder" class="anchorLink" onclick="isOpera('domorder'); return false;">
+                        <span class="icon-pb-domorder" style=""></span>
+                        Registro de Dominio
+                    </a>
+                </li>
+                
+
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                
+                
+                
+                
+                <li class="pb-li-list" category="domainfwd">
+                    <a href="#domainfwd" class="anchorLink" onclick="isOpera('domainfwd'); return false;">
+                        <span class="icon-pb-domainfwd" style=""></span>
+                        Reenvió de Dominios <sup style="vertical-align:super;color:red;font-size:9px;">Gratis</sup>
+                    </a>
+                </li>
+                
+
+            
+        
+            
+                
+                
+                
+                
+                <li class="pb-li-list" category="dnsbox">
+                    <a href="#dnsbox" class="anchorLink" onclick="isOpera('dnsbox'); return false;">
+                        <span class="icon-pb-dnsbox" style=""></span>
+                        Administración de DNS <sup style="vertical-align:super;color:red;font-size:9px;">Gratis</sup>
+                    </a>
+                </li>
+                
+
+            
+        
+    </ul>
+</div>
+
+    </div>
+    <div id="page-content">
+        
+        <div class="header-gutterspace"></div>
+        
+        
+        
+        
+            
+        
+            
+                
+                <a id="domorder" name="domorder" style="display: block;"></a>
+                
+                
+                
+                
+                    
+                    
+                        <div id="domorder-information" style="position: relative;" class="scroll-wrap-whole">
+                            <div class="h2-header icon-h2-domorder" style="">
+                                
+                                    
+                                        <div class="h2-help-note rfloat">
+                                    <span id="domorder-life-span" class="inline-block vmiddle font-small aright">January 24, 2025<br>January 24, 2027</span>&nbsp;
+                                            
+                                            
+                                    <span class="inline-block vmiddle font-small">
+                                        
+                                        
+                                        
+                                            
+                                            
+                                            <input type="submit" name="renew" value="Renovar" class="ui-button ui-button-2" id="domorder-renew-button" onclick="renewOrderAndFetchUpsellData(this,'domorder', 'RenewOrderServlet', 'getupsoft.com.do', '30154860', 'customer','[&quot;dedicatedserverlinuxus&quot;,&quot;dedicatedserverlinuxin&quot;,&quot;dedicatedserverlinuxhk&quot;,&quot;managedserverlinuxus&quot;,&quot;dedicatedserverwindowsus&quot;,&quot;dedicatedserverwindowshk&quot;,&quot;dedicatedserverwindowsin&quot;,&quot;virtualserverlinuxus&quot;,&quot;bluehostvpslinuxus&quot;,&quot;bluehostdedicatedserverlinuxus&quot;,&quot;virtualserverwindowsus&quot;,&quot;hostgatorhostingsharedlinuxus&quot;,&quot;hostgatordedicatedserverlinuxus&quot;,&quot;cloudsiteslinuxus&quot;,&quot;businesscloudlinuxus&quot;,&quot;cloudsiteslinuxin&quot;,&quot;virtualserverlinuxin&quot;,&quot;acronisbackupasia&quot;,&quot;designservices&quot;,&quot;office365gbl&quot;,&quot;titanmailindia&quot;,&quot;titanmailglobal&quot;,&quot;wordpresscloudindia&quot;,&quot;exposedresellerlinuxhostingusa&quot;,&quot;office365in&quot;,&quot;optimizedhostingforwordpressusa&quot;,&quot;airtel&quot;,&quot;baremetalserverwindows&quot;,&quot;backorderservice&quot;,&quot;hostgatorhostinglinuxusa&quot;,&quot;projectexposelinuxusa&quot;,&quot;webuzo&quot;,&quot;hostgatorhostinglinuxuk&quot;,&quot;acronisbackupus&quot;,&quot;exposedmultidomainhostingusa&quot;,&quot;projectexposelinuxindia&quot;,&quot;baremetalserverlinux&quot;,&quot;cloudserverswholesalein&quot;,&quot;wordpresshostingindia&quot;,&quot;microsoft365sea&quot;,&quot;cloudserverswholesaleus&quot;,&quot;themepluginlogo&quot;,&quot;gappsgbl&quot;,&quot;managedseo&quot;,&quot;blockstorageus&quot;,&quot;gappsse&quot;,&quot;blockstoragein&quot;,&quot;testxml&quot;,&quot;procloudasia&quot;,&quot;weebly&quot;,&quot;gappsin&quot;,&quot;wordpresshostingusa&quot;,&quot;eigidedicatedlinuxserverusa&quot;]');">
+
+                                        
+                                        
+                                        </span>
+                                            
+                                        </div>
+                                    
+                                
+                                <h2><span class="icon-h2-domorder"></span>
+                                    Registro de Dominio
+                                    
+                                <span class="icon-eye font-normal" id="icon-eye-domorder" title="Ver Información del Pedido">More</span>
+                                        <span class="icon-eye font-normal" style="visibility: hidden" id="icon-help-domorder">Ayuda</span>
+
+                                        <div class="h2-note" id="domorder-plan-name" style="display: none;"></div>
+                                    
+                                </h2>
+                            </div>
+                            <div id="domorder-content">
+
+                                
+                                    
+                                        
+                                        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        <div class="box-wrapper-content">
+            <input type="hidden" name="domorderorderid" id="domorderorderid" value="117405401">
+            <input type="hidden" name="domorderrenewheader" id="domorderrenewheader" value="Renovar Dominio">
+
+            <div id="domorder-order-information" style="display:none;">
+                <table class="table-form-details" cellspacing="0" cellpadding="0" border="0" width="">
+                    <tbody>
+                    <tr>
+                        <th>
+                            ID del Pedido</th>
+                        <td>117405401</td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Creado el</th>
+                        <td>January 24, 2025</td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Expira el</th>
+                        <td>January 24, 2027</td>
+                    </tr>
+                    </tbody>
+                </table>
+                
+            </div>
+
+            
+
+            
+
+            
+
+            
+
+            
+            
+                
+
+
+
+
+    
+    
+        
+            
+            
+                
+            
+        
+    
+
+
+
+
+
+
+
+
+
+
+            
+            <input type="hidden" name="domorder-expirydate" id="domorder-expirydate" value="1800823474">&nbsp;&nbsp;
+            
+                <input type="hidden" name="domorder-currentordertenureinyears" id="domorder-currentordertenureinyears" value="1">
+            
+            <ul class="ul-list-float"><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Detalles del Contacto" onclick="return loadModalUrl(this,'/servlet/ModifyDomainContactServlet?validatenow=false','domorder')"><h4><span>Detalles del Contacto</span> <span id="modcontact"></span></h4><div>Administre los contactos relacionados con este Dominio.</div></div><input type="hidden" class="modal-header" value="Administrar Detalles del Contacto"></li><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Nombre de Servidores" onclick="return loadModalUrl(this,'/servlet/ManageNsServlet?validatenow=false','domorder')"><h4><span>Nombre de Servidores</span> <span id="modns"></span></h4><div>Administre los servidores de nombres que utiliza este Dominio</div></div><input type="hidden" class="modal-header" value="Administrar Nombre de Servidores"></li><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Child Name Servers" onclick="return loadModalUrl(this,'/servlet/ManageCnsNewServlet?validatenow=false','domorder')"><h4><span>Child Name Servers</span> <span id="managecns"></span></h4><div>Administre los Child Name Servers de su Dominio</div></div><input type="hidden" class="modal-header" value="Administre los Child Name Servers"></li><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Dominio Secreto" onclick="return loadDomainSecretInModalWindowOnHttps()"><h4><span>Dominio Secreto</span> <span id="moddomsecret"></span></h4><div>Establezca el código autorización para transferir el Nombre de Dominio</div></div><input type="hidden" class="modal-header" value="Administre Dominio Secreto"></li><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Protección contra robo" onclick="return loadModalUrl(this,'/servlet/TheftProtectionServlet?validatenow=false','domorder')"><h4><span>Protección contra robo</span> <span id="theft_protection" class="icon-active-states" title="Proteccion de robo es Habilitado"></span></h4><div>Proteja su Dominio de los robos y las transferencias accidentales</div></div><input type="hidden" class="modal-header" value="Administrar protección contra el robo"></li><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Protección de Privacidad" onclick="return loadModalUrl(this,'/servlet/PrivacyProtectionServlet?validatenow=false','domorder')"><h4><span>Protección de Privacidad</span> <span id="privacyprotection" class="icon-disable-states" title="Protección privada esDeshabilitado"></span></h4><div>Protéjase contra el spam, robo de identidad y fraude.</div></div><input type="hidden" class="modal-header" value="Administrar protección de privacidad"></li><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Domain Protect+" onclick="return loadModalUrl(this,'/servlet/ManageDomainProtectionServiceServlet?validatenow=false','domorder')"><h4><span>Domain Protect+</span> <span id="domainprotectionservice" class="icon-disable-states" title="Domain protect+ isDisabled"></span><span id="dps-new-icon" class="dps-new-icon"></span></h4><div>Secure your personal information, your domain, and your website</div></div><input type="hidden" class="modal-header" value="Manage Domain Protect+"></li></ul>
+
+            
+                
+            
+            
+
+            <div id="orderstatus-information" class="bwc-overlay" style="display:none">
+                <div class="bwc-overlay-top-bdr"></div>
+                <div class="bwc-overlay-bg"></div>
+                <div class="bwc-overlay-container">
+                    <div class="bwc-overlay-wrapper">
+                        <div>
+                            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="expiry-details" style="display: none;">
+    <div class="bwc-overlay-notice-message"></div>
+    <div class="ui-gutterspace-2"></div>
+    <div class="bwc-overlay-message-bdr-1 clear"></div>
+    <div class="bwc-overlay-message-bdr-2"></div>
+</div>
+
+<div class="bwc-overlay-message">
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+    
+    
+    <div class="ajax-div-overlay-2"></div>
+</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ajax-div-overlay-4"></div>
+                <div class="bwc-overlay-bottom-bdr"></div>
+            </div>
+        </div>
+    
+    
+
+<script type="text/javascript">
+    bindDomainFunctions();
+
+    function hideAutoRenewButton(element)
+    {
+        if ($(element) != null)
+            $(element).css('display', 'none');
+    }
+
+    function disableAutoRenewButton(element)
+    {
+        if ($(element) != null)
+            $(element).removeClass('on-off-switch').addClass('on-off-switch-disabled');
+    }
+
+    function enableAutoRenewButton(element)
+    {
+        if ($(element) != null)
+            $(element).removeClass('on-off-switch-disabled').addClass('on-off-switch');
+    }
+
+    function bindDomainFunctions()
+    {
+        if (true)
+        {
+            if (false)
+            {
+                $("#domorder-auto-renew-button .on-off-switch-disabled").removeClass('off-activated').addClass('on-activated');
+                $("#domorder-auto-renew-button .on-off-switch-disabled").find('.on').removeClass('addleftmargin');
+                $("#domorder-auto-renew-button .on-off-switch-disabled").find('.off').addClass('addleftmargin');
+                $("#domorder-auto-renew-button .on-off-switch-disabled").find('.slider').css('left', '36px');
+            }
+
+
+            if (true)
+            {
+                if (isRenewable())
+                {
+                    $("#domorder-renew-button").removeAttr('disabled');
+                    $("#domorder-renew-button").removeClass('disable-button');
+                    $("#domorder-renew-button").addClass('ui-button');
+                    $("#domorder-renew-button").addClass('ui-button-2');
+                }
+                else
+                {
+                    $("#domorder-renew-button").addClass('disable-button');
+                    $("#domorder-renew-button").removeClass('ui-button');
+                    $("#domorder-renew-button").removeClass('ui-button-2');
+                }
+                enableAutoRenewButton("#domorder-auto-renew-button .on-off-switch-disabled");
+            }
+            else
+            {
+                $("#domorder-renew-button").addClass('disable-button');
+                $("#domorder-renew-button").removeClass('ui-button');
+                $("#domorder-renew-button").removeClass('ui-button-2');
+                disableAutoRenewButton("#domorder-auto-renew-button .on-off-switch");
+            }
+
+            if(false)
+            {
+                $("#domorder-renew-button").addClass('disable-button');
+                $("#domorder-renew-button").removeClass('ui-button');
+                $("#domorder-renew-button").removeClass('ui-button-2');
+            }
+        }
+        else
+        {
+            $("#domorder-renew-button").css('visibility', 'hidden');
+            $("#icon-eye-domorder").css('visibility', 'hidden');
+            hideAutoRenewButton($("#domorder-auto-renew-button"));
+        }
+
+        if (true)
+        {
+            if (false)
+            {
+                $("#privacyprotection").addClass("icon-active-states");
+                $("#privacyprotection").attr('title',
+                                             'Protección privada es' +
+                                             'Habilitado');
+            }
+            else
+            {
+                $("#privacyprotection").addClass("icon-disable-states");
+                $("#privacyprotection").attr('title',
+                                             'Protección privada es' +
+                                             'Deshabilitado');
+            }
+            if (false)
+            {
+                $("<span id='pprenew' class='unbold inline-note' style='margin-left:5px'>Renew</span>").insertAfter("#privacyprotection");
+            }
+        }
+
+        if (true)
+        {
+            if (false)
+            {
+                $("#domainprotectionservice").addClass("icon-active-states");
+                $("<span id='dps-new-icon' class='dps-new-icon'></span>").insertAfter("#domainprotectionservice");
+                $("#domainprotectionservice").attr('title',
+                                                   'Domain protect+ is' +
+                                                           'Enabled');
+            }
+            else
+            {
+                $("#domainprotectionservice").addClass("icon-disable-states");
+                $("<span id='dps-new-icon' class='dps-new-icon'></span>").insertAfter("#domainprotectionservice");
+                $("#domainprotectionservice").attr('title',
+                                                   'Domain protect+ is' +
+                                                           'Disabled');
+            }
+        }
+
+        if (true)
+        {
+            $("#theft_protection").addClass("icon-active-states");
+            $("#theft_protection").attr('title',
+                                        'Proteccion de robo es' +
+                                        ' Habilitado');
+        }
+        else
+        {
+            $("#theft_protection").addClass("icon-disable-states");
+            $("#theft_protection").attr('title',
+                                        'Proteccion de robo es' +
+                                        ' Deshabilitar');
+        }
+
+        var lockIcon = $('#domorder-content').find('.icon-manage-access');
+        if (false)
+        {
+            $(lockIcon).addClass('icon-manage-suspend');
+            $("#manageaccess")
+                    .html('Suspender Pedido');
+        }
+        else if (false)
+        {
+            $("#manageaccess")
+                    .html('Bloquear Pedido');
+        }
+        else
+        {
+            $(lockIcon).addClass('icon-manage-unlock');
+        }
+
+        if (true)
+        {
+            $('#domorder-life-span').html('January 24, 2025<br>January 24, 2027');
+        }
+
+        if (false)
+        {
+            if (false)
+            {
+                $("#premiumdns").addClass("icon-active-states");
+                $("<span id='premiumdns-new-icon' class='premiumdns-new-icon'></span>").insertAfter("#premiumdns");
+                $("#premiumdns").attr('title',
+                        '&lt;msg: domains.web.orders.dom.PremiumDNS.premium_dns_label&gt;' +
+                        'Enabled');
+            }
+            else
+            {
+                $("#premiumdns").addClass("icon-disable-states");
+                $("<span id='premiumdns-new-icon' class='premiumdns-new-icon'></span>").insertAfter("#premiumdns");
+                $("#premiumdns").attr('title',
+                        '&lt;msg: domains.web.orders.dom.PremiumDNS.premium_dns_label&gt;' +
+                        'Disabled');
+            }
+            if (false)
+            {
+                $("<span id='pprenew' class='unbold inline-note' style='margin-left:5px'>Renew</span>").insertAfter("#privacyprotection");
+            }
+        }
+
+
+        $('.ul-list-float li').hover(function ()
+                                     {
+
+
+                                         $(this).children('.ul-list-float-block').children('h4')
+                                                 .children().eq(0).css('text-decoration',
+                                                                       'underline');
+                                     },
+                                     function ()
+                                     {
+
+                                         $(this).children('.ul-list-float-block').children('h4')
+                                                 .children().eq(0).css('text-decoration',
+                                                                       'none');
+                                     });
+    }
+
+    function isExpiryInSixtyDays(endTime)
+    {
+        var currentTime = new Date().getTime() / 1000;
+        return (endTime <= currentTime + (60* 24* 3600));
+    }
+
+    function isExpiryInNinetyDays(endTime)
+    {
+        var currentTime = new Date().getTime() / 1000;
+        return (endTime <= currentTime + (90 * 24* 3600));
+    }
+
+    function isExpiryInOneYear(endTime)
+    {
+        var currentTime = new Date().getTime() / 1000;
+        return (endTime <= currentTime + (365* 24* 3600));
+    }
+
+    function isOrderInAGP(creationTime)
+    {
+        var currentTime = new Date().getTime() / 1000;
+        return (currentTime < creationTime + (7* 24* 3600));
+    }
+
+    function isOrderInRGPForZACR(endTime)
+    {
+        var currentTime = new Date().getTime() / 1000;
+        return (currentTime > endTime + (10* 24* 3600));
+    }
+
+    function isProductRenewableOnlyInLastSixtyDays(productKey)
+    {
+        return ["dotru", "dotnl", "dotit", "thirdleveldotat", "dotch", "dotat"].indexOf(productKey) >= 0;
+    }
+
+    function isProductRenewableOnlyInLastNinetyDays(productKey)
+    {
+        return ["thirdleveldotau","dotau"].indexOf(productKey) >= 0;
+    }
+
+    function isRenewable()
+    {
+        var productKey = "thirdleveldotdo";
+        var endTime = 1800823474;
+        var creationTime = 1737751473;
+        var zacrProducts = ["dotafrica", "dotcapetown", "dotdurban", "dotjoburg"];
+
+        if (isProductRenewableOnlyInLastSixtyDays(productKey) && !isExpiryInSixtyDays(endTime))
+        {
+            return false;
+        }
+        else if (isProductRenewableOnlyInLastNinetyDays(productKey) && !isExpiryInNinetyDays(endTime))
+        {
+            return false;
+        }
+        else if(zacrProducts.includes(productKey) && isOrderInRGPForZACR(endTime))
+        {
+            return false;
+        }
+        else if(productKey === "dotcoza" && (!isExpiryInOneYear(endTime) || isOrderInAGP(creationTime)))
+        {
+            return false;
+        }
+        else if(false)
+        {
+            return false;
+        }
+        return true;
+    }
+
+</script>
+
+
+                                    
+                                    
+                                
+                            </div>
+                        </div>
+                    
+                
+
+
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+        
+            
+                
+                <a id="domainfwd" name="domainfwd" style="display: block;"></a>
+                
+                
+                
+                
+                    
+                    
+                        <div id="domainfwd-information" style="position: relative;" class="scroll-wrap-whole">
+                            <div class="h2-header icon-h2-domainfwd" style="">
+                                
+                                <h2><span class="icon-h2-domainfwd"></span>
+                                    Reenvió de Dominios <sup style="vertical-align:super;color:red;font-size:9px;">Gratis</sup>
+                                    
+                                </h2>
+                            </div>
+                            <div id="domainfwd-content"><div class="box-wrapper-content">
+    
+    
+        
+        
+            <div class="info-message"> Su servicio de reenvío de dominio no está activo! Al hacer clic en el enlace "Manage Domain Forwarding" en el enlace a continuación, se activará el servicio de reenvío de dominio para el dominio.</div>
+            
+        
+    
+    
+    
+    <ul class="ul-list-float"><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Administrar la redireccion de dominio" onclick="return loadManageFreeDomainForwardService('/servlet/ManageFreeServiceServlet','domainfwd',false, 1050,600)"><h4><span>Administrar la redireccion de dominio</span> <span id="manageservice"></span></h4><div>Reenviar su Nombre de Dominio actual y sus sub-dominios a otro Nombres de Dominio</div></div></li></ul>
+</div>
+
+<script type="text/javascript">
+    bindDomainForwardFunctions();
+    function bindDomainForwardFunctions()
+    {
+        if (false)
+        {
+            $('#domainfwd-content div ul li div').children().click(function ()
+                                                                   {
+                                                                       $("#domainfwd-content").html(showInActiveDomainFwdMessage());
+                                                                   });
+        }
+        else if (false)
+        {
+            $('#domainfwd-content div ul li div').children().click(function ()
+                                                                   {
+                                                                       $("#domainfwd-content").html(showConflictingProductMessage(
+                                                                               false,
+                                                                               false));
+                                                                   });
+        }
+        else
+        {
+            if (false)
+            {
+                $('#domainfwd-notification-msg').css('display', 'block');
+            }
+            $('.ul-list-float li').hover(function ()
+                                         {
+
+
+                                             $(this).children('.ul-list-float-block').children('h4')
+                                                     .children().eq(0).css('text-decoration',
+                                                                           'underline');
+                                         },
+                                         function ()
+                                         {
+
+                                             $(this).children('.ul-list-float-block').children('h4')
+                                                     .children().eq(0).css('text-decoration',
+                                                                           'none');
+                                         });
+        }
+    }
+
+    function showInActiveDomainFwdMessage()
+    {
+        var message = '<div class="bwc-overlay-top-bdr"></div>' +
+                '<div class="bwc-overlay-bg" style="height:75%;"></div>' +
+                '<div class="bwc-overlay-container"><div class="bwc-overlay-wrapper">' +
+                '<div class="icon-bwc-overlay-warnning lfloat"></div>' +
+                '<div class="bwc-overlay-message">' +
+                '<p><strong>Your free Domain Forwarding service needs at least one paid product to work.</strong></p>' +
+                '</div></div></div>';
+        return message;
+    }
+
+    function loadDomainForwardDetails(element)
+    {
+        setHeader($(element).siblings('.modal-header').val(), '');
+        var x = $(window).scrollTop();
+        $('.modal-box-blurb').css('top', 75 + x);
+        setMinSizeOfModalBox($('#overview-modal-content'), '150px', '500px');
+        $("#overview-modal-content").html('<div class="ajax-spinner"></div>');
+        showModalBox();
+        var Url = "/orders/domainfwd/NameServerInformation.jsp";
+        $.ajax({
+                   url:Url,
+                   type:"POST",
+                   data:$('#domainfwdform').serialize(),
+                   success:function (result)
+                   {
+                       setAjaxResponseWithScriptTags(result, $("#overview-modal-content"), "#childpage-content");
+                   },
+                   error:function ()
+                   {
+                       $("#overview-modal-content").html('Oops something went wrong.Please try again later.');
+                   }
+               });
+    }
+    function showConflictingProductMessage(isHostingCategory, isWebsiteBuilderCategory)
+    {
+        var message = '<div class="bwc-overlay-top-bdr"></div>' +
+                '<div class="bwc-overlay-bg" style="height:75%;"></div>' +
+                '<div class="bwc-overlay-container"><div class="bwc-overlay-wrapper">' +
+                '<div class="icon-bwc-overlay-warnning lfloat"></div>' +
+                '<div class="bwc-overlay-message">' +
+                '<p><strong>Producto en Conflicto</strong></p>' +
+                '<p><strong>El Redireccionamiento de Dominio no puede ser activado para este nombre de dominio, ya que hay un servicio de Alojamiento Web asociado él.<strong></p>' +
+                '</div></div></div>';
+        if (isWebsiteBuilderCategory)
+        {
+            message = '<div class="bwc-overlay-top-bdr"></div>' +
+                    '<div class="bwc-overlay-bg" style="height:75%;"></div>' +
+                    '<div class="bwc-overlay-container"><div class="bwc-overlay-wrapper">' +
+                    '<div class="icon-bwc-overlay-warnning lfloat"></div>' +
+                    '<div class="bwc-overlay-message">' +
+                    '<p><strong>Producto en Conflicto</strong></p>' +
+                    '<p><strong>Reenvío de Dominio no se puede activar para este nombre de dominio, ya que hay un servicio activo de Constructor de Sitio Web activado en este.</strong></p>' +
+                    '</div></div></div>';
+        }
+        return message;
+    }
+</script></div>
+                        </div>
+                    
+                
+
+
+            
+        
+            
+                
+                <a id="dnsbox" name="dnsbox" style="display: block;"></a>
+                
+                
+                
+                
+                    
+                    
+                        <div id="dnsbox-information" style="position: relative;" class="scroll-wrap-whole">
+                            <div class="h2-header icon-h2-dnsbox" style="">
+                                
+                                <h2><span class="icon-h2-dnsbox"></span>
+                                    Administración de DNS <sup style="vertical-align:super;color:red;font-size:9px;">Gratis</sup>
+                                    
+                                </h2>
+                            </div>
+                            <div id="dnsbox-content"><style type="text/css">
+    .sidebar-blurb.sidebar-upsell-premium-dns{
+        margin-top: 0px !important;
+        margin-left: 10px;
+    }
+
+</style>
+
+<div class="box-wrapper-content">
+    
+    
+        
+            
+        
+        
+    
+    
+    
+        <div id="dns-notification-msg" class="relative" style="display: block;">
+            
+                <form method="GET" name="dnsform" id="dnsform">
+                    
+                        <input type="hidden" name="defaultNameserver" value="dns4.midominio.do">
+                    
+                        <input type="hidden" name="defaultNameserver" value="dns3.midominio.do">
+                    
+                        <input type="hidden" name="defaultNameserver" value="dns2.midominio.do">
+                    
+                        <input type="hidden" name="defaultNameserver" value="dns1.midominio.do">
+                    
+                </form>
+            
+
+            <div class="ajax-div-overlay-3"></div>
+        </div>
+    
+    
+    <ul class="ul-list-float"><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Gestionar DNS" onclick="return loadManageFreeServices('/servlet/ManageFreeServiceServlet','dnsbox',false)"><h4><span>Gestionar DNS</span> <span id="manageservice"></span></h4><div>Asignar de su Nombre de Dominio a un servicio de Alojamiento Web y correo electrónico, configurar Alias ​​de Dominio, etc</div></div></li><li class="null "><div class="ul-list-float-icon lfloat "></div><div class="ul-list-float-block" title="Detalles Servidor de Nombres" onclick="return loadNameServerDetails(this)"><h4><span>Detalles Servidor de Nombres</span> <span id="displayrec"></span></h4><div>Requerido para usar nuestro servicio de administración de DNS con su nombre de dominio</div></div><input type="hidden" class="modal-header" value="Detalles Servidor de Nombres"></li></ul>
+</div>
+<script type="text/javascript">
+    bindDNSFunctions();
+    function bindDNSFunctions() {
+        if (false) {
+            $('#dnsbox-content div ul li div').children().click(function () {
+                $("#dnsbox-content").html(showInActiveDNSMessage());
+            });
+        }
+        else {
+            if (true) {
+                $('#dns-notification-msg').css('display', 'block');
+            }
+            $('.ul-list-float li').hover(function () {
+
+
+                        $(this).children('.ul-list-float-block').children('h4')
+                                .children().eq(0).css('text-decoration',
+                                'underline');
+                    },
+                    function () {
+
+                        $(this).children('.ul-list-float-block').children('h4')
+                                .children().eq(0).css('text-decoration',
+                                'none');
+                    });
+        }
+    }
+
+    function showInActiveDNSMessage() {
+        var message = '<div class="bwc-overlay-top-bdr"></div>' +
+                '<div class="bwc-overlay-bg" style="height:75%;"></div>' +
+                '<div class="bwc-overlay-container"><div class="bwc-overlay-wrapper">' +
+                '<div class="icon-bwc-overlay-warnning lfloat"></div>' +
+                '<div class="bwc-overlay-message">' +
+                '<p><strong>Your free DNS Management service needs at least one paid product to work.</strong></p>' +
+                '</div></div></div>';
+        return message;
+    }
+
+    function loadNameServerDetails(element) {
+        setHeader($(element).siblings('.modal-header').val(), 'getupsoft.com.do');
+        var x = $(window).scrollTop();
+        $('.modal-box-blurb').css('top', 75 + x);
+        setMinSizeOfModalBox($('#overview-modal-content'), '150px', '500px');
+        $("#overview-modal-content").html('<div class="ajax-spinner"></div>');
+        showModalBox();
+        var Url = "/orders/dnsbox/NameServerInformation.jsp";
+        $.ajax({
+            url: Url,
+            type: "POST",
+            data: $('#dnsform').serialize(),
+            success: function (result) {
+                setAjaxResponseWithScriptTags(result, $("#overview-modal-content"), "#childpage-content");
+            },
+            error: function () {
+                $("#overview-modal-content").html('Oops something went wrong.Please try again later.');
+            }
+        });
+    }
+</script></div>
+                        </div>
+                    
+                
+
+
+            
+        
+        <div style="height:250px"></div>
+    </div>
+</div>
+<div class="modal-box-sticky" id="overview-modal-div" style="display: block;">
+    <div class="modal-box-sticky-background"></div>
+    <div class="modal-box-blurb" id="overview-modal-blurb" style="top: 75px;">
+        <div class="modal-box-wrapper">
+            <div class="modal-box-header">
+                <div class="modal-close"><a class="modal-close-icon close_modal_box"></a></div>
+                <div id="overview-modal-div-header"><h5>Detalles Servidor de Nombres</h5><span class="inline-label">getupsoft.com.do</span></div>
+            </div>
+            <div id="overview-modal-content" style="min-height: 150px; min-width: 500px;">
+<div class="modal-box-content  modal-box-content-2">
+        <table cellspacing="0" cellpadding="0" border="0" width="100%" class="ob-v2-datatable">
+            <tbody>
+            <tr class="toHightlight">
+                <td dataformhelp="help3" class="formGroup" valign="top">
+                    <div class="modal-box-block relative">
+                     <p>Administre sus DNS con nosotros mediante el cambio de los servidores de nombre de su  dominio a los nuestros.</p>
+                        <div class="ui-gutterspace-2"></div>
+                        <div class="collapse-block">
+                    
+                        <div id="our-nameservers" class="collapse-block-content">
+                            <h4>Nuestros Servidores de Nombres</h4>
+                            <ul class="list-item ul-bullet-list">
+                                
+                                    <li><span>dns4.midominio.do</span></li>
+                                
+                                    <li><span>dns3.midominio.do</span></li>
+                                
+                                    <li><span>dns2.midominio.do</span></li>
+                                
+                                    <li><span>dns1.midominio.do</span></li>
+                                
+                            </ul>
+                        </div>
+                    
+                            </div>
+                        </div>
+                </td>
+                <td width="150" valign="top" id="help3" class="right-bg formHelp">
+                        <p>Debe realizar estos cambios desde el Panel de Control de su nombre de Dominio. Consulte con su proveedor de nombres de dominio para obtener información detallada al respecto.</p>
+                        <p style="border-top:1px solid #CDCDCD">Estos cambios requieren de 24 a 72 horas para tener efecto.</p>
+
+                    <div class="ui-gutterspace-2"></div>
+                </td>
+            </tr>
+        </tbody></table>
+    </div>
+    </div>
+        </div>
+    </div>
+</div>
+<div id="order-information" style="display:none;">
+    <div class="modal-box-blurb" style="top: 75px;">
+        <div class="modal-box-wrapper">
+            <div class="modal-box-header">
+                <div class="modal-close" id="close-order-information"><a class="modal-close-icon"></a></div>
+                <h5>Información del Pedido</h5>
+
+                <div class="modal-box-top-arrow"></div>
+            </div>
+            <div class="modal-box-content">
+                <div id="order-information-content"></div>
+                <div class="ui-gutterspace-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="rfloat" id="renew-div" style="display:none;">
+    <div class="modal-box-blurb" style="top: 75px;">
+        <div class="modal-box-wrapper">
+            <div class="modal-box-header">
+                <div class="modal-close" id="renew-modal-close"><a class="modal-close-icon"></a></div>
+                <div id="renew-modal-box-header"></div>
+            </div>
+            <div class="modal-box-content" style="padding:0;"></div>
+        </div>
+    </div>
+</div>
+<div id="ajax-spinner" class="ajax-spinner" style="top:30px;display:none;"></div>
+
+<div class="rfloat" id="recurring-div" style="display: none">
+    <div class="modal-box-blurb" style="top: 75px;">
+        <div class="modal-box-wrapper">
+            <div class="modal-box-header">
+                <div class="modal-close" id="recurring-modal-close"><a class="modal-close-icon"></a></div>
+                <div id="recurring-modal-box-header"><h5>Auto Renewal</h5></div>
+            </div>
+            <div class="modal-box-content modal-box-content-2">
+                <div class="auto-renewal-switch">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="auto-renewal-switch-content" style="display: none">
+        
+            
+            
+            <p class="info-para">Su orden sera renovada automaticamente teniendo en cuenta el balance o metodos de pago descritos en su cuenta</p>
+
+                <p class="info-para" id="#payment-billing-agreement-info" style="display:none;">
+                    You need to approve auto-renewal once by logging in or signing up at the gateway enabled by your parent.
+                </p>
+            
+        
+    <input type="submit" class="submit-button enable-auto-renew-button" value="Enable Auto-Renewal" name="renew">
+    <a class="auto-renewal-cancel" onclick="closeAutoRenewModal();">Cancel</a>
+</div>
+
+<div class="auto-renewal-switch-content-warning" style="display: none">
+    <p>Are you sure you want to <span style="color:#9b031b;font-weight:bold;">disable</span> Auto-Renewal ?</p>
+
+    <div class="error-msg global-msg">
+        <ul>
+            <li>It is recommended to keep this setting ON to avoid losing orders due to expiry.</li>
+        </ul>
+    </div>
+    <input type="submit" name="renew" value="Disable Auto-Renewal" class="submit-button" id="domorder-renew-button">
+    <a class="auto-renewal-cancel" onclick="closeAutoRenewModal();">Cancel</a>
+</div>
+
+
+
+<script src="/js/OrderOverview_8b7b80ac78af73f668e200c59ed0196d.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function ()
+                      {
+                          var autoRenewalTipMessage = 'Habilitando esto, su orden se renovara automaticamente con su balance o los detalles de pago antes de que expire.';
+                          makeProductNavigationLinksNotClickable();
+                          if (false)
+                          {
+                              loadOverviewForResellerRole(false,
+                                      [117405401]);
+                              autoRenewalTipMessage =
+                                      "habilitando esto, su orden se renovara automaticamente teniendo en cuenta el balance de su cuenta y los detalles de pago";
+                          }
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          loadFreeProductSection('domainfwd', 'getupsoft.com.do', '668252',
+                                                 '117405401',
+                                                 'true',
+                                  false,
+                                  false);
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          loadFreeProductSection('dnsbox', 'getupsoft.com.do', '668252',
+                                                 '117405401',
+                                                 'true',
+                                  false,
+                                  false);
+                          
+                          
+                          
+                          
+                          
+                          applyTextDecorationOnManagementLinksOnHover();
+                          unbindAjaxStop();
+                          
+                          
+                          
+                          
+                          
+                          
+                          bindIconEyeForActiveOrders('domorder');
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+                          
+
+                          $('.auto-renewal-span').each(function (index, elem)
+                                                       {
+                                                           $global(this).qtip({content:autoRenewalTipMessage,
+                                                                                  show:'mouseover',
+                                                                                  hide:'mouseout',
+                                                                                  style:{
+                                                                                      classes:'ui-tooltip ui-tooltip-dark ',
+                                                                                      tip:true
+                                                                                  },
+                                                                                  position:{
+                                                                                      at:'top center',
+                                                                                      my:'bottom center'
+                                                                                  },
+                                                                                  adjust:{
+                                                                                      method:'shift flip'
+                                                                                  }
+
+                                                                              });
+                                                       });
+                      });
+    $(document).click(function (e)
+                      {
+                          var event = e.target;
+                          closeOrderInformationBlock(event);
+                          closeActionMenus(event);
+                          closeRenewModal(event);
+                          closeModal(event, 'auto-renew', 'recurring-div');
+                      });
+    function loadManageFreeServices(Url, productCategory, refresh)
+    {
+        loadFreeServicesManagementSections(Url, productCategory, 'getupsoft.com.do', '30154860', '668252',
+                                           refresh, '117405401',
+                                           'true', '',
+                                           '');
+    }
+
+    function loadManageFreeDomainForwardService(Url, productCategory, refresh, width, height)
+    {
+        loadFreeDomainForwardManagementSection(Url, productCategory, 'getupsoft.com.do', '30154860', '668252',
+                                           refresh, '117405401',
+                                           'true', '',
+                                           '', width, height);
+    }
+    function loadModalUrl(event, Url, productCategory)
+    {
+        if ($(event).attr('title') == 'Premium DNS')
+        {
+            $('.modal-box-header').addClass('pdns-modal-hide');
+        }
+        else
+        {
+            $('.modal-box-header').removeClass('pdns-modal-hide');
+            $('#manage-pdns-modal-blurb').closest('.modal-box-blurb').removeClass('manage-pdns-modal-width-set');
+        }
+        loadGeneralModal(event, 'getupsoft.com.do', Url, productCategory);
+    }
+    function loadModalUrlForDomainChange(event, Url, productCategory)
+    {
+        loadModalForDomainChange('getupsoft.com.do', Url, productCategory);
+    }
+    function loadManageAccessModalUrl(event, Url, productCategory)
+    {
+        loadManageAccessModal(event, 'getupsoft.com.do', Url, productCategory);
+    }
+    function loadDomainSecretInModalWindowOnHttps()
+    {
+        loadDomainSecretOnHttps(
+                'getupsoft.com.do', 'Administre Dominio Secreto');
+    }
+    function loadActions(url, productcategory, isNewWindow)
+    {
+        return loadActionsForProductCategory(url, productcategory, isNewWindow, 'getupsoft.com.do', '', 800,
+                                             600);
+    }
+    function loadActionsInNewWindow(url, productcategory)
+    {
+        return loadActionsForProductCategory(url, productcategory, true, 'getupsoft.com.do', '',
+                                             getPercentageWidthInPixels(70), getPercentageHeightInPixels(70));
+    }
+    function openPopCertificate(url, productCategory)
+    {
+        url =
+                url + '&orderid=' + getHiddenValue(productCategory + 'orderid') + '&domainname=getupsoft.com.do';
+        openInPopUpWindow(url, 1000, 800)
+    }
+    function loadProductSections(productCategory, orderId, activeLocations, domainOrderId)
+    {
+        makeAjaxCall('/servlet/ViewDomainServlet?productcategory=' + productCategory + '&domainname=getupsoft.com.do&orderid=' +
+                             orderId + '&fromoverviewpage=true'+ '&orderidOfDomain=' + domainOrderId + '&should_eelite_upgrade=' +
+                false,
+                     productCategory);
+
+    }
+    function changePwdClick(productKey, orderid)
+    {
+        changePasswordClick(productKey, orderid, 'https://www.foundationapi.com',
+                            '¡Oops! Algo salió mal. Por favor, inténtelo más tarde.');
+    }
+</script>
+
+</div>
+
+
+<script src="/js/ViewOrder_b3af8370b2333b6ad20ea7488fea41a4.js" type="text/javascript"></script>
+
+
+<script src="/js/SlidingBar_3c49ef954ce14d7596082060dcc1f96d.js" type="text/javascript"></script>
+
+
+<script src="/js/functions_3de37654bd0b11a39017d132be6e935a.js" type="text/javascript"></script>
+
+
+
+
+
+
+
+    <div id="footer-wrapper">
+        
+
+
+<div class="language-blurb-wrp">
+    <div class="language-blurb">Idioma: <a id="global-change-language-link" data-list-languages-header="Seleccionar su idioma">Español
+    </a></div>
+    <div class="clear"></div>
+</div>
+
+        
+            
+                <div id="footer">Todos los derechos reservados 2016 © PUCMM.</div>
+            
+            
+        
+    </div>
+
+<div class="OverLay" style="opacity: 0.1;"></div>
+<div class="rfloat" id="orderdeletionfeedback-div" style="display:none;">
+    <div class="modal2-blurb">
+
+        
+
+        <div style="position: relative;">
+            <div class="ajax-div-overlay hd-submit-overlay" style="display:none;"></div>
+            <div class="modal2-top"></div>
+            <div class="modal2-content"></div>
+            <div class="modal2-bottom"></div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+</body></html>

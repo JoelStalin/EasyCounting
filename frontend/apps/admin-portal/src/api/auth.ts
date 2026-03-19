@@ -26,7 +26,7 @@ export function useLoginMutation() {
   const { setSession } = useAuth();
   return useMutation({
     mutationFn: async (payload: LoginPayload) => {
-      const { data } = await api.post<LoginResponse>("/auth/login", payload);
+      const { data } = await api.post<LoginResponse>("/api/v1/auth/login", payload);
       return data;
     },
     onSuccess: (data) => {
@@ -55,7 +55,7 @@ export function useProfileQuery(enabled: boolean) {
     queryKey: ["me"],
     enabled,
     queryFn: async () => {
-      const { data } = await api.get<LoginResponse>("/me");
+      const { data } = await api.get<LoginResponse>("/api/v1/me");
       const session: AuthSession = {
         accessToken: data.access_token,
         refreshToken: data.refresh_token,

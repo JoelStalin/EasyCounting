@@ -1,0 +1,1671 @@
+﻿# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* getupsoft_l10n_do_accounting_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0+e\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-07-16 15:47+0000\n"
+"PO-Revision-Date: 2022-11-03 07:03-0400\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: es_DO\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.2\n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__fiscal_status
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_account_move__fiscal_status
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_account_payment__fiscal_status
+msgid ""
+"* The 'Grey' status means invoice isn't fully reported and may appear in other "
+"report if a withholding is applied.\n"
+"* The 'Green' status means invoice is fully reported.\n"
+"* The 'Red' status means invoice is included in a non sent DGII report.\n"
+"* The blank status means that the invoice havenot been included in a report."
+msgstr ""
+"* El estado \"Gris\" significa que la factura no estÃ¡ totalmente declarada y puede "
+"aparecer en otro informe si se aplica una retenciÃ³n.\n"
+"* El estado 'Verde' significa que la factura estÃ¡ completamente reportada.\n"
+"* El estado 'Rojo' significa que la factura estÃ¡ incluida en un informe de la DGII "
+"no enviado.\n"
+"* El estado en blanco significa que la factura no ha sido incluida en un informe."
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "606"
+msgstr "606"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__purchase_binary
+msgid "606 file"
+msgstr "Archivo 606"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+msgid "607"
+msgstr "607"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "607 Reported Operations by NCF Type"
+msgstr "Operaciones Reportadas en el 607 por Tipo de NCF"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_binary
+msgid "607 file"
+msgstr "Archivo 607"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "608"
+msgstr "608"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__cancel_binary
+msgid "608 file"
+msgstr "Archivo 608"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "609"
+msgstr "609"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__exterior_binary
+msgid "609 file"
+msgstr "Archivo 609"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "<span class=\"fa fa-lightbulb-o fa-lg\" title=\"Info\" aria-label=\"Info\"/>"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_regenerate_wizard_form
+msgid "<span class=\"fa fa-warning fa-lg\" title=\"Warning\" aria-label=\"Warning\"/>"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a08
+msgid "A08 - Otras Operaciones (Positivas)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a09
+msgid "A09 - Otras Operaciones (Negativas)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a19
+msgid "A19 - Ingresos por Operaciones (No Financieros)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a20
+msgid "A20 - Ingresos Financieros"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a21
+msgid "A21 - Ingresos Extraordinarios"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a22
+msgid "A22 - Ingresos por Arrendamientos"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a23
+msgid "A23 - Ingresos por Ventas de Activos Depreciables"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a24
+msgid "A24 - Otros Ingresos"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a26
+msgid "A26 - ITBIS Pagado en Importaciones"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a27
+msgid "A27 - ITBIS Pagado en Importaciones para la ProducciÃ³n de Bienes Exentos"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a29
+msgid "A29 - ITBIS en Bienes o Servicios sujetos a Proporcionalidad"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a30
+msgid "A30 - ITBIS en Importaciones sujetos a Proporcionalidad"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a34
+msgid "A34 - Pagos Computables por Retenciones (N08-04)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a35
+msgid "A35 - Pagos Computables por Boletos AÃ©reos (N02-05) (BSP-IATA)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a36
+msgid "A36 - Pagos Computables por otras Retenciones (N02-05)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a37
+msgid "A37 - Pagos Computables por Paquetes de Alojamiento y OcupaciÃ³n"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a38
+msgid "A38 - CrÃ©dito por retenciÃ³n realizada por Entidades del Estado"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a41
+msgid "A41 - DirecciÃ³n TÃ©cnica (N07-07)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a42
+msgid "A42 - Contrato de AdministraciÃ³n (N07-07)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a43
+msgid "A43 - AsesorÃ­as / Honorarios"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a46
+msgid "A46 - Ventas de Bienes en ConcesiÃ³n"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a47
+msgid "A47 - Ventas de Servicios en Nombre de Terceros"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a50
+msgid "A50 - Total Notas de CrÃ©dito emitidas con mÃ¡s de 30 dÃ­as"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__a51
+msgid "A51 - ITBIS llevado al Costo"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_account_account
+msgid "Account"
+msgstr "Cuenta"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_account__account_fiscal_type
+msgid "Account Fiscal Type"
+msgstr "Tipo de PosiciÃ³n FIscal"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_needaction
+msgid "Action Needed"
+msgstr "AcciÃ³n Necesaria"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__advance_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__advance_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__advance_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__advance_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__advance_itbis
+msgid "Advance Itbis"
+msgstr "ITBIS por Adelantar"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Advanced ITBIS"
+msgstr "ITBIS Adelantado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__amount
+msgid "Amount"
+msgstr "Monto"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__amount_with_isr_withholding
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__amount_with_isr_withholding
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__amount_with_isr_withholding
+msgid "Amount With Isr Withholding"
+msgstr "Monto con RetenciÃ³n ISR"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: code:addons/getupsoft_l10n_do_accounting_report/models/account_move.py:0
+#, python-format
+msgid "An invoice cannot have multiplewithholding taxes."
+msgstr "Una factura no puede tener mÃºltiples impuestos de retenciÃ³n."
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__anulation_type
+msgid "Anulation Type"
+msgstr "Tipo de AnulaciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_cancel_line_search
+msgid "Anulation type"
+msgstr "Tipo de anulaciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__service_type__03
+msgid "Arrendamientos"
+msgstr "Arrendamientos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_attachment_count
+msgid "Attachment Count"
+msgstr "Recuento de archivos adjuntos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__bank
+msgid "Bank"
+msgstr "Cheque/ Transferencia/ DepÃ³sito"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__bond
+msgid "Bond"
+msgstr "Bonos o Certificados de Regalo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_regenerate_wizard_form
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__cancel_filename
+msgid "Cancel Filename"
+msgstr "Cancelar Archivo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__cancel_records
+msgid "Cancel Records"
+msgstr "Cancelada Registro"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__card
+msgid "Card"
+msgstr "Tarjeta DÃ©bito/CrÃ©dito"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__cash
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_cash
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__cash
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__payment_form__01
+msgid "Cash"
+msgstr "Efectivo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__bank
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_bank
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__payment_form__02
+msgid "Check / Transfer / Deposit"
+msgstr "Cheque / Transferencia / DepÃ³sito"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail__code
+msgid "Code"
+msgstr "CÃ³digo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: code:addons/getupsoft_l10n_do_accounting_report/models/account_move.py:0
+#: model:ir.model.constraint,message:getupsoft_l10n_do_accounting_report.constraint_invoice_service_type_detail_code_unique
+#, python-format
+msgid "Code must be unique"
+msgstr "El cÃ³digo debe ser Ãºnico"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__company_id
+msgid "Company"
+msgstr "CompaÃ±Ã­a"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "Consumer Invoices Summary"
+msgstr "Resumen de facturas de consumo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_res_partner
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_cancel_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "Contact"
+msgstr "Contacto"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__cost_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__cost_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__cost_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__cost_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__cost_itbis
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Cost Itbis"
+msgstr "ITBIS llevado al Costo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__country_code
+msgid "Country Code"
+msgstr "PaÃ­s de Destino"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_report_regenerate_wizard__create_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__create_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__create_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__create_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__create_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__create_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__create_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail__create_uid
+msgid "Created by"
+msgstr "Creado por"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_report_regenerate_wizard__create_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__create_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__create_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__create_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__create_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__create_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__create_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail__create_date
+msgid "Created on"
+msgstr "Creado en"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__credit
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_credit
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__credit
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__payment_form__04
+msgid "Credit"
+msgstr "Venta a CrÃ©dito"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__card
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_card
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__payment_form__03
+msgid "Credit Card / Debit Card"
+msgstr "Tarjeta de CrÃ©dito / DÃ©bito"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__credit_note
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__credit_note
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__payment_form__06
+msgid "Credit Note"
+msgstr "Nota de CrÃ©dito"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__currency_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__currency_id
+msgid "Currency"
+msgstr "Moneda"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.ui.menu,name:getupsoft_l10n_do_accounting_report.marcos_account_dgii_menu
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "DGII"
+msgstr "DGII"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_dgii_reports
+msgid "DGII Report"
+msgstr "Reportes DGII"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_dgii_report_regenerate_wizard
+msgid "DGII Report Regenerate Wizard"
+msgstr "Asistente de regeneraciÃ³n de reportes DGII"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_dgii_reports_sale_summary
+msgid "DGII Report Sale Summary"
+msgstr "Reporte DGII Resumen de venta"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_dgii_reports_cancel_line
+msgid "DGII Reports Cancel Line"
+msgstr "Reporte DGII Facturas Canceladas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_dgii_reports_exterior_line
+msgid "DGII Reports Exterior Line"
+msgstr "Reporte DGII Exterior"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_dgii_reports_purchase_line
+msgid "DGII Reports Purchase Line"
+msgstr "Reporte DGII Compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_dgii_reports_sale_line
+msgid "DGII Reports Sale Line"
+msgstr "Reporte DGII VEntas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__ast_income
+msgid "Depreciable Assets Income"
+msgstr "Renta de activos depreciables"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__dgii_report_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__dgii_report_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__dgii_report_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__dgii_report_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__dgii_report_id
+msgid "Dgii Report"
+msgstr "Reporte DGII"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_report_regenerate_wizard__display_name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__display_name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__display_name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__display_name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__display_name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__display_name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__display_name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail__display_name
+msgid "Display Name"
+msgstr "Mostrar nombre"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__doc_date
+msgid "Doc Date"
+msgstr "Fecha de Documento"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__doc_number
+msgid "Doc Number"
+msgstr "NÃºmero de Documento"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: code:addons/getupsoft_l10n_do_accounting_report/models/dgii_report.py:0
+#, python-format
+msgid "Error. Date format must be MM/YYYY"
+msgstr "Error! El formato de la fecha debe ser MM/AAAA"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__expense_type
+msgid "Expense Type"
+msgstr "Tipo Bienes y Servicios Comprados"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+msgid "Expense type"
+msgstr "Tipo Bienes y Servicios Comprados"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__exterior_filename
+msgid "Exterior Filename"
+msgstr "Del Exterior"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__exterior_invoiced_amount
+msgid "Exterior Invoiced Amount"
+msgstr "Monto Facturado al Exterior"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__exterior_records
+msgid "Exterior Records"
+msgstr "Cantidad Exterior"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__exterior_withholded_isr
+msgid "Exterior Withholded Isr"
+msgstr "ISR Retenido al Exterior"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__ext_income
+msgid "Extraordinary Income"
+msgstr "Ingreso extraordinario"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__fin_income
+msgid "Financial Income"
+msgstr "Ingresos financieros"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__fiscal_invoice_id
+msgid "Fiscal Invoice"
+msgstr "Facturas fiscales"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__fiscal_invoice_number
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__fiscal_invoice_number
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__fiscal_invoice_number
+msgid "Fiscal Invoice Number"
+msgstr "NÃºmero de Comprobante Fiscal"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__fiscal_status
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__fiscal_status
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__fiscal_status
+msgid "Fiscal Status"
+msgstr "Estado fiscal"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_follower_ids
+msgid "Followers"
+msgstr "Seguidores"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Seguidores (Partners)"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__service_type__06
+msgid "Gastos Financieros"
+msgstr "Gastos Financieros"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__service_type__04
+msgid "Gastos de Activos Fijos"
+msgstr "Gastos de Activos Fijos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__service_type__01
+msgid "Gastos de Personal"
+msgstr "Gastos de Personal"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__service_type__05
+msgid "Gastos de RepresentaciÃ³n"
+msgstr "Gastos de RepresentaciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__service_type__07
+msgid "Gastos de Seguros"
+msgstr "Gastos de Seguros"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__service_type__08
+msgid "Gastos por RegalÃ­as y otros Intangibles"
+msgstr "Gastos por RegalÃ­as y otros Intangibles"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__service_type__02
+msgid "Gastos por Trabajos, Suministros y Servicios"
+msgstr "Gastos por Trabajos, Suministros y Servicios"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "General Summary of Consumer Invoices"
+msgstr "Resumen General de Facturas de Consumo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "Generate Statements"
+msgstr "Generar extractos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__dgii_reports__state__generated
+msgid "Generated"
+msgstr "Generado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__bond
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_bond
+msgid "Gift certificates or vouchers"
+msgstr "Certificados de regalo o vouchers"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__good_total_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__good_total_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__good_total_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__good_total_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__good_total_amount
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Good Total Amount"
+msgstr "Monto Facturado en Bienes"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_cancel_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "Group By"
+msgstr "Agrupar por"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__has_message
+msgid "Has Message"
+msgstr "Tiene mensajes"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__i02
+msgid "I02 - Ingresos por Exportaciones de Bienes o Servicios"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__i03
+msgid "I03 - Ingresos por ventas locales de bienes o servicios exentos"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__i04
+msgid "I04 - Ingresos por ventas de bienes o servicios exentos por destino"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__i13
+msgid "I13 - Operaciones gravadas por ventas de Activos Depreciables(categorÃ­a 2 y 3)"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__i28
+msgid "I28 - Saldos Compensables Autorizados (Otros Impuestos) y/o Reembolsos"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__i35
+msgid "I35 - Recargos"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__i36
+msgid "I36 - InterÃ©s Indemnizatorio"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__i39
+msgid "I39 - Servicios sujetos a RetenciÃ³n Personas FÃ­sicas"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_report_regenerate_wizard__id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail__id
+msgid "ID"
+msgstr "ID"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_tax__purchase_tax_type__isr
+msgid "ISR Retenido"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_account__isr_retention_type
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "ISR Withholding Type"
+msgstr "Tipo de ISR Retenudo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "ISR withholding"
+msgstr "ISR Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "IT-1"
+msgstr "IT-1"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_tax__purchase_tax_type__itbis
+msgid "ITBIS Pagado"
+msgstr "ITBIS Pagado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_tax__purchase_tax_type__ritbis
+msgid "ITBIS Retenido"
+msgstr "ITBIS Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "ITBIS withholding"
+msgstr "ITBIS Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__identification_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__identification_type
+msgid "Identification Type"
+msgstr "Tipo IdentificaciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "Identification type"
+msgstr "Tipo de identificaciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_needaction
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_unread
+msgid "If checked, new messages require your attention."
+msgstr "Si estÃ¡ marcado, los nuevos mensajes requieren su atenciÃ³n."
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_has_error
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Si estÃ¡ marcada, algunos mensajes tienen un error de entrega."
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__income_type
+msgid "Income Type"
+msgstr "Tipo de Ingreso"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__income_withholding
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__income_withholding
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__income_withholding
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__income_withholding
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__income_withholding
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Income Withholding"
+msgstr "Monto Retencion Renta"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+msgid "Income Withholding by a third"
+msgstr "Monto retenido por terceros"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "Income type"
+msgstr "Tipo de ingreso"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__invoice_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__invoice_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__invoice_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__invoice_id
+msgid "Invoice"
+msgstr "Factura"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__invoice_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__invoice_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__invoice_date
+msgid "Invoice Date"
+msgstr "Fecha de Comprobante"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__invoice_partner_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__invoice_partner_id
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__invoice_partner_id
+msgid "Invoice Partner"
+msgstr "Cliente"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_invoice_service_type_detail
+msgid "Invoice Service Type Detail"
+msgstr "Detalle del tipo de servicio facturado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__invoiced_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__invoiced_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__invoiced_amount
+msgid "Invoiced Amount"
+msgstr "Monto Facturado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_ncf_total_amount
+msgid "Invoiced Amount Total"
+msgstr "Total monto facturado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Invoiced ITBIS"
+msgstr "ITBIS Facturado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_ncf_total_itbis
+msgid "Invoiced ITBIS Total"
+msgstr "Total ITBIS Facturado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__invoiced_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__invoiced_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__invoiced_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__invoiced_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__invoiced_itbis
+msgid "Invoiced Itbis"
+msgstr "ITBIS Facturado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Invoicing"
+msgstr "FacturaciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__is_exterior
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__is_exterior
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__is_exterior
+msgid "Is Exterior"
+msgstr "Es del exterior"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_is_follower
+msgid "Is Follower"
+msgstr "Es un seguidor"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__isr_withholding_date
+msgid "Isr Withholding Date"
+msgstr "Fecha de RetenciÃ³n ISR"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__isr_withholding_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__isr_withholding_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__isr_withholding_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__isr_withholding_type
+msgid "Isr Withholding Type"
+msgstr "Tipo de Retencion en ISR"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_ncf_qty
+msgid "Issued Consumer NCF Qty"
+msgstr "NCF de Consumo emitidos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_account_move
+msgid "Journal Entry"
+msgstr "Asiento contable"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_report_regenerate_wizard____last_update
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports____last_update
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line____last_update
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line____last_update
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line____last_update
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line____last_update
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary____last_update
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail____last_update
+msgid "Last Modified on"
+msgstr "Ãšltima modificaciÃ³n en"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_report_regenerate_wizard__write_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__write_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__write_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__write_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__write_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__write_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__write_uid
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail__write_uid
+msgid "Last Updated by"
+msgstr "Ãšltima actualizaciÃ³n por"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_report_regenerate_wizard__write_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__write_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__write_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__write_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__write_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__write_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__write_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail__write_date
+msgid "Last Updated on"
+msgstr "Ãšltima actualizaciÃ³n en"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__lea_income
+msgid "Lease Income"
+msgstr "Ingresos por arrendamiento"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__legal_name
+msgid "Legal Name"
+msgstr "Nombre / RazÃ³n Social"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__legal_tip
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__legal_tip
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__legal_tip
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__legal_tip
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__legal_tip
+msgid "Legal Tip"
+msgstr "Monto Propina Legal"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_ncf_total_lgl_tip
+msgid "Legal Tip Total"
+msgstr "Total propina legal"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "Legal person"
+msgstr "Persona Legal"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Legal tip amount"
+msgstr "Cantidad de propina legal"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_cancel_line__line
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__line
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__line
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__line
+msgid "Line"
+msgstr "LÃ­nea"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "MM/YYYY"
+msgstr "MM/AAAA"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_main_attachment_id
+msgid "Main Attachment"
+msgstr "Adjuntar archivo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_has_error
+msgid "Message Delivery error"
+msgstr "Error al entregar el mensaje"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_ids
+msgid "Messages"
+msgstr "Mensajes"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__payment_form__07
+msgid "Mixed"
+msgstr "Mezclado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__modified_invoice_id
+msgid "Modified Invoice"
+msgstr "Factura Modificada"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__modified_invoice_number
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__modified_invoice_number
+msgid "Modified Invoice Number"
+msgstr "NCF o Documento Modificado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__name
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail__name
+msgid "Name"
+msgstr "Nombre"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__dgii_reports__state__draft
+msgid "New"
+msgstr "Nuevo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_tax__purchase_tax_type__none
+msgid "No Deducible"
+msgstr "No Deducible"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__res_partner__related__0
+msgid "Not Related"
+msgstr "No relacionado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__fiscal_status__blocked
+msgid "Not Sent"
+msgstr "No Enviado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid ""
+"Not setting a report as sent may throw inconsistencies\n"
+"                                regarding invoices withholding dates."
+msgstr ""
+"No configurar un informe como enviado puede generar inconsistencias\n"
+"                                 sobre fechas de retenciÃ³n de facturas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Cantidad de acciones"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_has_error_counter
+msgid "Number of errors"
+msgstr "Cantidad de errores"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_needaction_counter
+msgid "Number of messages which requires an action"
+msgstr "Cantidad de mensajes que requieren una acciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Cantidad de mensajes con error de entrega"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_unread_counter
+msgid "Number of unread messages"
+msgstr "Cantidad de mensajes sin leer"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_exterior_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "Open"
+msgstr "Abrir"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__opr_income
+msgid "Operations Income (No-Financial)"
+msgstr "Ingresos por Operaciones (No Financieras)"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "Operations Total"
+msgstr "Total de Operaciones"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "Operations by Income Type"
+msgstr "Operaciones por tipo de ingreso"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__ncf_sale_summary_ids
+msgid "Operations by NCF type"
+msgstr "Operaciones por tipo de NCF"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "Operations by Sale Type"
+msgstr "Operaciones por tipo de venta"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_others
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__others
+msgid "Other Sale Forms"
+msgstr "Otras formas de venta"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__other_taxes
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__other_taxes
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__other_taxes
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__other_taxes
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__other_taxes
+msgid "Other Taxes"
+msgstr "Otros Impuestos/Tasas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_ncf_total_othr
+msgid "Other Taxes Total"
+msgstr "Total Otros Impuestos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Other taxes"
+msgstr "Otros Impuestos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__others
+msgid "Others"
+msgstr "Otras Formas de Ventas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__otr_income
+msgid "Others Income"
+msgstr "Otros Ingresos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_tax__purchase_tax_type__rext
+msgid "Pagos al Exterior (Ley 253-12)"
+msgstr "Pagos al Exterior (Ley 253-12)"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_exterior_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "Paid"
+msgstr "Pagado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_invoice_service_type_detail__parent_code
+msgid "Parent Code"
+msgstr "CÃ³digo Principal"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__fiscal_status__normal
+msgid "Partial"
+msgstr "Parcial"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__partner_id
+msgid "Partner"
+msgstr "Socio"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__payment_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__payment_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__payment_date
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__payment_date
+msgid "Payment Date"
+msgstr "Fecha Pago"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__payment_form
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__payment_form
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__payment_form
+msgid "Payment Form"
+msgstr "Forma de Pago"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__payment_type
+msgid "Payment Type"
+msgstr "MÃ©todo de Pago"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Payment date"
+msgstr "Fecha de Pago"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Payment form"
+msgstr "Forma de Pago"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+msgid "Payment type"
+msgstr "MÃ©todo de Pago"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__perceived_isr
+msgid "Perceived Isr"
+msgstr "ISR Percibido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__perceived_itbis
+msgid "Perceived Itbis"
+msgstr "ITBIS Percibido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__name
+msgid "Period"
+msgstr "PerÃ­odo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "Physical person"
+msgstr "Persona FÃ­sica"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__presumed_income
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__presumed_income
+msgid "Presumed Income"
+msgstr "Renta Presunta"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__previous_report_pending
+msgid "Previous Report Pending"
+msgstr "Reporte anterior pendiente"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__previous_balance
+msgid "Previous balance"
+msgstr "Balance anterior"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__proportionality_tax
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__proportionality_tax
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__proportionality_tax
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__proportionality_tax
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Proportionality Tax"
+msgstr "ITBIS sujeto a Proporcionalidad (Art. 349)"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__purchase_filename
+msgid "Purchase Filename"
+msgstr "Archivo de compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__purchase_invoiced_amount
+msgid "Purchase Invoiced Amount"
+msgstr "Monto de Compras Totales"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__purchase_invoiced_itbis
+msgid "Purchase Invoiced Itbis"
+msgstr "Total ITBIS Compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__purchase_legal_tip
+msgid "Purchase Legal Tip"
+msgstr "Propina Legal Compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__purchase_other_taxes
+msgid "Purchase Other Taxes"
+msgstr "Otros Impuestos en Compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__purchase_perceived_isr
+msgid "Purchase Perceived Isr"
+msgstr "ISR Percibido en compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__purchase_perceived_itbis
+msgid "Purchase Perceived Itbis"
+msgstr "ITBIS percibido en compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__purchase_records
+msgid "Purchase Records"
+msgstr "Cantidad Compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__purchase_selective_tax
+msgid "Purchase Selective Tax"
+msgstr "Impuesto Selectivo en Compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__purchase_withholded_itbis
+msgid "Purchase Withholded Itbis"
+msgstr "ITBIS Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__purchased_service_type
+msgid "Purchased Service Type"
+msgstr "Tipo de Servicio Adquirido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__qty
+msgid "Qty"
+msgstr "Cantidad"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.actions.server,name:getupsoft_l10n_do_accounting_report.action_run_norma_recompute
+msgid "Recalcular norma 07-2018"
+msgstr "Recalcular norma 07-2018"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_regenerate_wizard_form
+msgid "Regenerate"
+msgstr "Regenerar"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.actions.act_window,name:getupsoft_l10n_do_accounting_report.dgii_report_regenerate_wizard_action
+msgid "Regenerate Report"
+msgstr "Reporte Regenerado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_regenerate_wizard_form
+msgid ""
+"Regenerate this report may cause data variation. Don't do that if you want to "
+"preserve equality\n"
+"                        between the report you sent and the data in your system."
+msgstr ""
+"Regenerar este reporte puede causar variaciÃ³n en los datos. No lo regenere si "
+"quiere mantener la igualdad entre el reporte enviado y los datos en el sistema."
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_res_partner__related
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_res_users__related
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__res_partner__related__1
+msgid "Related"
+msgstr "Relacionado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__related_part
+msgid "Related Part"
+msgstr "Parte Relacionada"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_report_regenerate_wizard__report_id
+msgid "Report"
+msgstr "Reporte"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__fiscal_status__done
+msgid "Reported"
+msgstr "Reportado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.actions.act_window,name:getupsoft_l10n_do_accounting_report.dgii_report_action
+#: model:ir.ui.menu,name:getupsoft_l10n_do_accounting_report.dgii_report_menu
+msgid "Reports"
+msgstr "Reportes"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_account__account_fiscal_type__isr
+msgid "RetenciÃ³n de Renta por Terceros"
+msgstr "RetenciÃ³n de Renta por Terceros"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__rnc_cedula
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__rnc_cedula
+msgid "Rnc Cedula"
+msgstr "RNC o Cedula"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Error de entrega de SMS"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_filename
+msgid "Sale Filename"
+msgstr "Archivo de Ventas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_invoiced_amount
+msgid "Sale Invoiced Amount"
+msgstr "Monto Bruto en Ventas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_invoiced_itbis
+msgid "Sale Invoiced Itbis"
+msgstr "ITBIS en Ventas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_legal_tip
+msgid "Sale Legal Tip"
+msgstr "Propina Legal Ventas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_other_taxes
+msgid "Sale Other Taxes"
+msgstr "Otros Impuestos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_records
+msgid "Sale Records"
+msgstr "Cantidad Ventas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_selective_tax
+msgid "Sale Selective Tax"
+msgstr "Impuestos Selectivo al Consumo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_withholded_isr
+msgid "Sale Withholded Isr"
+msgstr "ISR Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_withholded_itbis
+msgid "Sale Withholded Itbis"
+msgstr "ITBIS Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_cancel_line_search
+msgid "Search Cancel Line"
+msgstr "Buscar lÃ­neas canceladas"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+msgid "Search Purchase Line"
+msgstr "Buscar lÃ­neas de compras"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_exterior_line_search
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_search
+msgid "Search Sale Line"
+msgstr "Buscar lÃ­neas de venta"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__selective_tax
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__selective_tax
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__selective_tax
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_ncf_total_isc
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__selective_tax
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__selective_tax
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Selective Tax"
+msgstr "Impuesto Selectivo al Consumo"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__dgii_reports__state__sent
+msgid "Sent"
+msgstr "Enviar"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_summary__sequence
+msgid "Sequence"
+msgstr "Secuencia"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__service_total_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__service_total_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__service_total_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__service_total_amount
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__service_total_amount
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Service Total Amount"
+msgstr "Monto Facturado en Servicios"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__service_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__service_type
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__service_type
+msgid "Service Type"
+msgstr "Tipo de Servicio"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__service_type_detail
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__service_type_detail
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__service_type_detail
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__service_type_detail
+msgid "Service Type Detail"
+msgstr "Detalle del Servicio Adquirido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "Set as sent"
+msgstr "Marcar como enviado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__state
+msgid "State"
+msgstr "Estado"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_search_view
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_tree_view
+msgid "Statements"
+msgstr "DeclaraciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__csmr_swap
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__swap
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__swap
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__account_move__payment_form__05
+msgid "Swap"
+msgstr "Permuta"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "TXT Files"
+msgstr "Archivos TXT"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model,name:getupsoft_l10n_do_accounting_report.model_account_tax
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__tax_id
+msgid "Tax"
+msgstr "Impuesto"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__tax_id_type
+msgid "Tax Id Type"
+msgstr "Tipo ID Tributaria"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Taxes"
+msgstr "Impuestos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_form_view
+msgid "The previous report is still not marked as sent."
+msgstr "El reporte anterior no ha sido marcado como enviado."
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__third_income_withholding
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__third_income_withholding
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__third_income_withholding
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__third_income_withholding
+msgid "Third Income Withholding"
+msgstr "RetenciÃ³n Renta por Terceros"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__third_withheld_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__third_withheld_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__third_withheld_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__third_withheld_itbis
+msgid "Third Withheld Itbis"
+msgstr "ITBIS Retenido por Terceros"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: code:addons/getupsoft_l10n_do_accounting_report/models/dgii_report.py:0
+#, python-format
+msgid ""
+"This module needs pycountry to get 609 ISO 3166 country codes. Please install "
+"pycountry on your system. (See requirements file)"
+msgstr ""
+"Este mÃ³dulo necesita pycountry para obtener los cÃ³digos de paÃ­s 609 ISO 3166. "
+"Instale pycountry en su sistema. (Ver ficha de requisitos)"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_tax__purchase_tax_type
+msgid "Tipo de Impuesto en Compra"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_tax__isr_retention_type
+msgid "Tipo de RetenciÃ³n en ISR"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_exterior_report_line_tree
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_tree
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_sale_line_tree
+msgid "Total"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__income_type_total
+msgid "Total ingresos"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__sale_type_total
+msgid "Total venta"
+msgstr ""
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_unread
+msgid "Unread Messages"
+msgstr "Mensajes no leÃ­dos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__message_unread_counter
+msgid "Unread Messages Counter"
+msgstr "Cantidad de mensajes no leÃ­dos"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports__website_message_ids
+msgid "Website Messages"
+msgstr "Mensajes del sitio web"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,help:getupsoft_l10n_do_accounting_report.field_dgii_reports__website_message_ids
+msgid "Website communication history"
+msgstr "Historial de comunicaciÃ³n web"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields.selection,name:getupsoft_l10n_do_accounting_report.selection__dgii_reports__state__error
+msgid "With error"
+msgstr "Con Error"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Withheld ITBIS"
+msgstr "ITBIS Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+msgid "Withheld ITBIS by a third"
+msgstr "ITBIS Retenido por terceros"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_exterior_line_search
+msgid "Withholded ISR"
+msgstr "ISR Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_exterior_line__withholded_isr
+msgid "Withholded Isr"
+msgstr "ISR Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_bank_statement_line__withholded_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_move__withholded_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_account_payment__withholded_itbis
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_purchase_line__withholded_itbis
+msgid "Withholded Itbis"
+msgstr "ITBIS Retenido"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_supplier_form_inherited
+msgid "Withholding"
+msgstr "Retenciones"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model:ir.model.fields,field_description:getupsoft_l10n_do_accounting_report.field_dgii_reports_sale_line__withholding_date
+msgid "Withholding Date"
+msgstr "Fecha de RetenciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.invoice_form_inherited
+msgid "Withholding date"
+msgstr "Fecha de RetenciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.ui.view,arch_db:getupsoft_l10n_do_accounting_report.dgii_report_purchase_line_search
+msgid "Withholding type"
+msgstr "Tipo de RetenciÃ³n"
+
+#. module: getupsoft_l10n_do_accounting_report
+#: model_terms:ir.actions.act_window,help:getupsoft_l10n_do_accounting_report.dgii_report_action
+msgid "You can create your DGII Tax Statements here."
+msgstr "Puedes crear tus Declaraciones Tributarias DGII aquÃ­."
+
+#. module: getupsoft_l10n_do_accounting_report
+#: code:addons/getupsoft_l10n_do_accounting_report/models/dgii_report.py:0
+#: model:ir.model.constraint,message:getupsoft_l10n_do_accounting_report.constraint_dgii_reports_name_unique
+#, python-format
+msgid "You cannot have more than one report by period."
+msgstr "No se puede tener mÃ¡s de un informe por perÃ­odo."

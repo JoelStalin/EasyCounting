@@ -44,6 +44,8 @@ class AuthService:
         existing = self.repository.get_by_email(settings.bootstrap_admin_email)
         if existing:
             return existing
+        if not settings.bootstrap_admin_enabled:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Bootstrap admin deshabilitado")
 
         tenant = self.repository.db.query(Tenant).order_by(Tenant.id.asc()).first()
         if not tenant:

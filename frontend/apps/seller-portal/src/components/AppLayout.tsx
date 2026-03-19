@@ -1,0 +1,63 @@
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/use-auth";
+
+const NAV = [
+  { to: "/dashboard", label: "Dashboard", permissions: ["PARTNER_DASHBOARD_VIEW"] },
+  { to: "/clients", label: "Clientes", permissions: ["PARTNER_TENANT_VIEW"] },
+  { to: "/invoices", label: "Comprobantes", permissions: ["PARTNER_INVOICE_READ"] },
+  { to: "/emit/ecf", label: "Emitir demo", permissions: ["PARTNER_INVOICE_EMIT"] },
+  { to: "/profile", label: "Perfil", permissions: [] },
+];
+
+export function AppLayout() {
+  const { logout, user, permissions } = useAuth();
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex min-h-screen bg-slate-950 text-slate-100">
+      <aside className="hidden w-72 border-r border-slate-900 bg-slate-950/80 p-6 md:block">
+        <div className="mb-8 space-y-1">
+          <h2 className="text-xl font-semibold text-white">getupsoft Socios</h2>
+          <p className="text-xs text-slate-400">Revendedores, clientes asignados y emisiÃ³n controlada.</p>
+        </div>
+        <nav className="space-y-2 text-sm">
+          {NAV.filter((item) => item.permissions.length === 0 || item.permissions.some((perm) => permissions.includes(perm))).map(
+            (item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                className={({ isActive }) =>
+                  `block rounded-md px-3 py-2 transition ${
+                    isActive ? "bg-primary/20 text-primary" : "text-slate-300 hover:bg-slate-900"
+                  }`
+                }
+              >
+                {item.label}
+              </NavLink>
+            ),
+          )}
+        </nav>
+      </aside>
+      <main className="flex-1">
+        <header className="flex items-center justify-between border-b border-slate-900 bg-slate-950/60 px-6 py-4">
+          <div>
+            <p className="text-xs uppercase tracking-wide text-slate-400">Portal seller</p>
+            <p className="text-sm font-medium text-slate-200">{user?.email ?? "sin sesiÃ³n"}</p>
+          </div>
+          <button
+            onClick={() => {
+              logout();
+              navigate("/login", { replace: true });
+            }}
+            className="rounded-md border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-200 hover:border-primary hover:text-primary"
+          >
+            Salir
+          </button>
+        </header>
+        <div className="px-6 py-8">
+          <Outlet />
+        </div>
+      </main>
+    </div>
+  );
+}

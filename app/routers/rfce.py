@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.config import settings
 from app.core.logging import bind_request_context
-from app.dgii.clients import DGIIClient
+from app.dgii.client import DGIIClient
 from app.dgii.schemas import RFCEPayload, RFCESubmissionResponse
 from app.dgii.signing import sign_ecf
 from app.dgii.validation import validate_xml
@@ -39,3 +39,4 @@ def _build_rfce_response(payload: dict) -> RFCESubmissionResponse:
     if not estado or not codigo:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail="Respuesta RFCE incompleta")
     return RFCESubmissionResponse(codigo=codigo, estado=estado, mensajes=mensajes, encf=payload.get("encf"))
+

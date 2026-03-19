@@ -25,7 +25,7 @@ class _LoginPayload(BaseModel):
 class _UserPayload(BaseModel):
     id: str
     email: EmailStr
-    scope: Literal["PLATFORM", "TENANT"]
+    scope: Literal["PLATFORM", "TENANT", "PARTNER"]
     tenant_id: str | None
     roles: list[str]
 
@@ -46,7 +46,7 @@ class _MFAPayload(BaseModel):
 class _AuthUser(BaseModel):
     id: str
     email: EmailStr
-    scope: Literal["PLATFORM", "TENANT"]
+    scope: Literal["PLATFORM", "TENANT", "PARTNER"]
     tenantId: str | None
     roles: list[str]
 
@@ -62,20 +62,45 @@ def _is_platform_role(role: str) -> bool:
     return role.startswith("platform_")
 
 
+def _is_partner_role(role: str) -> bool:
+    return role.startswith("partner_")
+
+
 def _permissions_for(role: str) -> list[str]:
     if _is_platform_role(role):
-        return [
+        permissions = [
             "PLATFORM_TENANT_VIEW",
             "PLATFORM_PLAN_CRUD",
             "PLATFORM_AUDIT_VIEW",
             "PLATFORM_USER_MANAGE",
         ]
+        if role == "platform_superroot":
+            permissions.append("PLATFORM_AI_PROVIDER_MANAGE")
+        return permissions
+    if _is_partner_role(role):
+        permissions = [
+            "PARTNER_TENANT_VIEW",
+            "PARTNER_INVOICE_READ",
+            "PARTNER_DASHBOARD_VIEW",
+            "PARTNER_CLIENT_VIEW",
+        ]
+        if role in {"partner_reseller", "partner_operator"}:
+            permissions.extend(
+                [
+                    "PARTNER_INVOICE_EMIT",
+                    "PARTNER_CLIENT_MANAGE",
+                ]
+            )
+        if role == "partner_reseller":
+            permissions.append("PARTNER_USER_MANAGE")
+        return permissions
     return [
         "TENANT_INVOICE_READ",
         "TENANT_INVOICE_EMIT",
         "TENANT_RFCE_SUBMIT",
         "TENANT_APPROVAL_SEND",
         "TENANT_CERT_UPLOAD",
+        "TENANT_CHAT_ASSIST",
         "TENANT_PLAN_VIEW",
         "TENANT_PLAN_UPGRADE",
         "TENANT_USAGE_VIEW",
@@ -94,7 +119,7 @@ def _normalize_login_identifier(identifier: str) -> str:
     if not ident:
         return ident
 
-    # Allow short usernames for the bootstrap admin (e.g. "ceo" -> "ceo@getupsoft.local")
+    # Allow short usernames for the bootstrap admin (e.g. "admin" -> "admin@getupsoft.com.do")
     bootstrap_email = (settings.bootstrap_admin_email or "").strip()
     if bootstrap_email:
         localpart = bootstrap_email.split("@", 1)[0]
@@ -107,14 +132,20 @@ def _normalize_login_identifier(identifier: str) -> str:
 async def login(payload: _LoginPayload, service: AuthService = Depends(get_service)) -> _LoginResponse:
     email = _normalize_login_identifier(payload.email)
 
-    if email.lower() == settings.bootstrap_admin_email.lower():
+    if settings.bootstrap_admin_enabled and email.lower() == settings.bootstrap_admin_email.lower():
         service.bootstrap_admin(None)
 
     user, tokens = service.authenticate(email, payload.password)
     mfa_required = settings.mfa_enabled and bool(user.mfa_secret)
-    scope_value: Literal["PLATFORM", "TENANT"] = "PLATFORM" if _is_platform_role(user.role) else "TENANT"
+    scope_value: Literal["PLATFORM", "TENANT", "PARTNER"]
+    if _is_platform_role(user.role):
+        scope_value = "PLATFORM"
+    elif _is_partner_role(user.role):
+        scope_value = "PARTNER"
+    else:
+        scope_value = "TENANT"
     permissions = _permissions_for(user.role)
-    tenant_id_out = None if scope_value == "PLATFORM" else str(user.tenant_id)
+    tenant_id_out = str(user.tenant_id) if scope_value == "TENANT" else None
 
     if mfa_required:
         return _LoginResponse(
@@ -158,9 +189,15 @@ async def verify_mfa(payload: _MFAPayload, service: AuthService = Depends(get_se
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
 
     access_token, refresh_token = _issue_tokens(user_id=str(user.id), tenant_id=user.tenant_id, role=user.role)
-    scope_value: Literal["PLATFORM", "TENANT"] = "PLATFORM" if _is_platform_role(user.role) else "TENANT"
+    scope_value: Literal["PLATFORM", "TENANT", "PARTNER"]
+    if _is_platform_role(user.role):
+        scope_value = "PLATFORM"
+    elif _is_partner_role(user.role):
+        scope_value = "PARTNER"
+    else:
+        scope_value = "TENANT"
     permissions = _permissions_for(user.role)
-    tenant_id_out = None if scope_value == "PLATFORM" else str(user.tenant_id)
+    tenant_id_out = str(user.tenant_id) if scope_value == "TENANT" else None
 
     return _AuthSession(
         accessToken=access_token,
@@ -203,9 +240,15 @@ async def me(
     if not user_obj:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
 
-    scope_value: Literal["PLATFORM", "TENANT"] = "PLATFORM" if _is_platform_role(user_obj.role) else "TENANT"
+    scope_value: Literal["PLATFORM", "TENANT", "PARTNER"]
+    if _is_platform_role(user_obj.role):
+        scope_value = "PLATFORM"
+    elif _is_partner_role(user_obj.role):
+        scope_value = "PARTNER"
+    else:
+        scope_value = "TENANT"
     permissions = _permissions_for(user_obj.role)
-    tenant_id_out = None if scope_value == "PLATFORM" else str(user_obj.tenant_id)
+    tenant_id_out = str(user_obj.tenant_id) if scope_value == "TENANT" else None
 
     access_token, refresh_token = _issue_tokens(
         user_id=str(user_obj.id),

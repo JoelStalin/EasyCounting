@@ -1,0 +1,1 @@
+"""Portal partner / seller."""

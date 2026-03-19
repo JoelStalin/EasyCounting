@@ -5,6 +5,7 @@ import { DashboardPage } from "./pages/Dashboard";
 import { InvoicesPage } from "./pages/Invoices";
 import { InvoiceDetailPage } from "./pages/InvoiceDetail";
 import { PlansPage } from "./pages/Plans";
+import { AssistantPage } from "./pages/Assistant";
 import { EmitECFPage } from "./pages/EmitECF";
 import { EmitRFCEPage } from "./pages/EmitRFCE";
 import { ApprovalsPage } from "./pages/Approvals";
@@ -40,6 +41,7 @@ export const router = createBrowserRouter([
       { path: "invoices", element: <InvoicesPage /> },
       { path: "invoices/:id", element: <InvoiceDetailPage /> },
       { path: "plans", element: <PlansPage /> },
+      { path: "assistant", element: <AssistantPage /> },
       { path: "emit/ecf", element: <EmitECFPage /> },
       { path: "emit/rfce", element: <EmitRFCEPage /> },
       { path: "approvals", element: <ApprovalsPage /> },

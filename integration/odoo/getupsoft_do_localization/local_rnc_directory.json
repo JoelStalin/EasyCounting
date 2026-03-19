@@ -1,0 +1,28 @@
+[
+  {
+    "rnc": "101010101",
+    "name": "Empresa Fiscal Local SRL",
+    "commercial_name": "Empresa Fiscal Local",
+    "status": "ACTIVO",
+    "category": "CONTRIBUYENTE",
+    "comment": "Seed local para pruebas funcionales y autocomplete Odoo."
+  },
+  {
+    "rnc": "131415161",
+    "name": "GetUpSoft Integraciones SRL",
+    "commercial_name": "GetUpSoft Integraciones",
+    "status": "ACTIVO",
+    "category": "EMISOR",
+    "comment": "Registro local base para integracion con dgii_encf."
+  },
+  {
+    "rnc": "40212345678",
+    "name": "Juan Perez",
+    "commercial_name": "Juan Perez",
+    "status": "ACTIVO",
+    "category": "PERSONA",
+    "company_type": "person",
+    "is_company": false,
+    "comment": "Registro local de persona fisica para validaciones sin servicio externo."
+  }
+]

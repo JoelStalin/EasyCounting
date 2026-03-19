@@ -7,7 +7,7 @@ import pytest
 import respx
 
 from app.core.config import settings
-from app.dgii.clients import DGIIClient
+from app.dgii.client import DGIIClient
 from app.dgii.signing import sign_ecf
 
 
@@ -45,16 +45,16 @@ async def test_dgii_client_flow_with_retries(configured_settings) -> None:
         seed = await client.get_seed()
         signed_seed = client.sign_seed(seed)
         token_payload = await client.get_token(signed_seed)
-        result = await client.send_ecf(signed_xml, token_payload["access_token"])
+        result = await client.send_ecf(signed_xml, token=token_payload["access_token"])
         assert result["trackId"] == "TRACK-123"
         assert result["estado"] == "EN_PROCESO"
 
-        rfce_response = await client.send_rfce(rfce_xml, token_payload["access_token"])
+        rfce_response = await client.send_rfce(rfce_xml, token=token_payload["access_token"])
         assert rfce_response["codigo"] == "00"
 
-        await client.send_anecf(anecf_xml, token_payload["access_token"])
-        await client.send_acecf(acecf_xml, token_payload["access_token"])
-        await client.send_arecf(arecf_xml, token_payload["access_token"])
+        await client.send_anecf(anecf_xml, token=token_payload["access_token"])
+        await client.send_acecf(acecf_xml, token=token_payload["access_token"])
+        await client.send_arecf(arecf_xml, token=token_payload["access_token"])
 
         status = await client.get_status("TRACK-123", token_payload["access_token"])
         assert status["estado"] == "ACEPTADO"
@@ -63,3 +63,5 @@ async def test_dgii_client_flow_with_retries(configured_settings) -> None:
     assert len(send_route.calls) == 2
     idempotency_header = send_route.calls[1].request.headers.get("Idempotency-Key")
     assert idempotency_header is not None
+
+

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from pydantic import BaseModel, Field
 from pydantic.alias_generators import to_camel
@@ -178,6 +178,49 @@ class PlatformUserItem(BaseModel):
     email: str
     role: str
     scope: str
+
+
+class PlatformAIProviderPayload(BaseModel):
+    display_name: str = Field(..., max_length=120)
+    provider_type: Literal["openai", "gemini", "openai_compatible"]
+    enabled: bool = True
+    is_default: bool = False
+    base_url: Optional[str] = Field(default=None, max_length=255)
+    model: str = Field(..., max_length=160)
+    api_key: Optional[str] = Field(default=None, max_length=4096)
+    clear_api_key: bool = False
+    organization_id: Optional[str] = Field(default=None, max_length=120)
+    project_id: Optional[str] = Field(default=None, max_length=120)
+    api_version: Optional[str] = Field(default=None, max_length=64)
+    system_prompt: Optional[str] = Field(default=None, max_length=4000)
+    extra_headers: Optional[dict[str, str]] = None
+    timeout_seconds: float = Field(default=20.0, gt=1.0, le=120.0)
+    max_completion_tokens: int = Field(default=500, ge=64, le=4000)
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+
+class PlatformAIProviderItem(BaseModel):
+    id: int
+    display_name: str
+    provider_type: str
+    enabled: bool
+    is_default: bool
+    base_url: Optional[str]
+    model: str
+    api_key_configured: bool
+    api_key_masked: Optional[str] = None
+    organization_id: Optional[str] = None
+    project_id: Optional[str] = None
+    api_version: Optional[str] = None
+    system_prompt: Optional[str] = None
+    extra_headers: dict[str, str] = Field(default_factory=dict)
+    timeout_seconds: float
+    max_completion_tokens: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
 
 class DashboardKpisResponse(BaseModel):
