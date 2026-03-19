@@ -7,5 +7,5 @@
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 min-h-screen font-sans;
+  @apply bg-background text-foreground min-h-screen font-sans;
 }

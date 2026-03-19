@@ -5,10 +5,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        ink: "#0f172a",
-        sand: "#f6f1e7",
-        accent: "#0f766e",
-        ember: "#c2410c",
+        border: "#1e3a8a",
+        input: "#1e3a8a",
+        background: "#0A192F",
+        foreground: "#ffffff",
       },
       fontFamily: {
         sans: ["IBM Plex Sans", "Segoe UI", "sans-serif"],

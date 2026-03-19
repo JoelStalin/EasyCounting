@@ -35,29 +35,38 @@ export function EmitECFPage() {
     <div className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
       <Card>
         <CardHeader className="space-y-2">
-          <CardTitle>EmisiÃ³n demo controlada</CardTitle>
+          <CardTitle>Emisión demo controlada</CardTitle>
           <p className="text-sm text-slate-300">
-            El seller solo puede generar documentos demo para tenants que tenga asignados con permiso de emisiÃ³n.
+            El socio solo puede generar documentos demo para clientes que tenga asignados con permiso de emisión.
           </p>
         </CardHeader>
         <CardContent>
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="tenantId">Cliente</Label>
-              <select
-                id="tenantId"
-                className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100"
-                value={tenantId}
-                onChange={(event) => setTenantId(event.target.value)}
-                required
-              >
-                <option value="">Selecciona un cliente</option>
-                {availableTenants.map((tenant: PartnerTenantItem) => (
-                  <option key={tenant.id} value={tenant.id}>
-                    {tenant.name} · {tenant.rnc}
-                  </option>
-                ))}
-              </select>
+              {tenantsQuery.isLoading ? (
+                <div
+                  aria-live="polite"
+                  className="flex min-h-10 items-center rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-slate-300"
+                >
+                  <Spinner label="Cargando clientes habilitados" />
+                </div>
+              ) : (
+                <select
+                  id="tenantId"
+                  className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-slate-100"
+                  value={tenantId}
+                  onChange={(event) => setTenantId(event.target.value)}
+                  required
+                >
+                  <option value="">Selecciona un cliente</option>
+                  {availableTenants.map((tenant: PartnerTenantItem) => (
+                    <option key={tenant.id} value={tenant.id}>
+                      {tenant.name} · {tenant.rnc}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
@@ -93,12 +102,12 @@ export function EmitECFPage() {
       <Card>
         <CardHeader className="space-y-2">
           <CardTitle>Resultado y reglas</CardTitle>
-          <p className="text-sm text-slate-300">Esta superficie estÃ¡ limitada por rol y por asignaciÃ³n de tenants.</p>
+          <p className="text-sm text-slate-300">Esta superficie está limitada por rol y por asignación de clientes.</p>
         </CardHeader>
         <CardContent className="space-y-4 text-sm text-slate-300">
           <ul className="space-y-2">
-            <li>• `partner_reseller` y `partner_operator` pueden emitir solo si la asignaciÃ³n habilita `canEmit`.</li>
-            <li>• `partner_auditor` conserva acceso de lectura, sin emisiÃ³n.</li>
+            <li>• `partner_reseller` y `partner_operator` pueden emitir solo si la asignación habilita `canEmit`.</li>
+            <li>• `partner_auditor` conserva acceso de lectura, sin emisión.</li>
             <li>• Los documentos se crean en estado `SIMULADO` dentro del backend demo.</li>
           </ul>
           {emitMutation.isSuccess ? (
@@ -113,7 +122,7 @@ export function EmitECFPage() {
               No se pudo generar el comprobante demo. Verifica el cliente seleccionado y tus permisos.
             </div>
           ) : null}
-          {tenantsQuery.isLoading ? <p>Cargando clientes habilitados…</p> : null}
+          {tenantsQuery.isLoading ? <p>Cargando clientes habilitados...</p> : null}
         </CardContent>
       </Card>
     </div>
