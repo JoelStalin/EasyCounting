@@ -4,7 +4,6 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import DateTime, Enum, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
@@ -43,9 +42,10 @@ class Tenant(Base):
     )
     issuer_tenant: Mapped["Tenant | None"] = relationship(remote_side="Tenant.id", backref="issued_tenants")
     role_change_requests: Mapped[List["RoleChangeRequest"]] = relationship(back_populates="tenant")
-    plan: Mapped[Plan | None] = relationship(back_populates="tenants", foreign_keys=[plan_id])
-    pending_plan: Mapped[Plan | None] = relationship("Plan", foreign_keys=[pending_plan_id])
-    usage_records: Mapped[List[UsageRecord]] = relationship(back_populates="tenant")
+    plan: Mapped["Plan | None"] = relationship("Plan", back_populates="tenants", foreign_keys=[plan_id])
+    pending_plan: Mapped["Plan | None"] = relationship("Plan", foreign_keys=[pending_plan_id])
+    usage_records: Mapped[List["UsageRecord"]] = relationship("UsageRecord", back_populates="tenant")
+    sequences: Mapped[List["Sequence"]] = relationship("Sequence", back_populates="tenant")
 
 
 class Delegation(Base):

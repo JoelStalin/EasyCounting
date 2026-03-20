@@ -18,20 +18,7 @@ router = APIRouter()
 # ──────────────────────────────────────────────────────────────────
 # Self-contained table definition (avoids ORM circular imports)
 # ──────────────────────────────────────────────────────────────────
-_sequences_t = Table(
-    "sequences", Base.metadata,
-    Column("id", Integer, primary_key=True, autoincrement=True),
-    Column("tenant_id", Integer, ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False),
-    Column("doc_type", String(10), nullable=False),
-    Column("prefix", String(3), nullable=False),
-    Column("next_number", Integer, default=1),
-    UniqueConstraint("tenant_id", "doc_type", name="uq_tenant_doctype_seq"),
-    extend_existing=True,
-)
-
-# Create sequences table synchronously at module load (safe, uses checkfirst)
-with sync_engine.begin() as _conn:
-    Base.metadata.create_all(bind=_conn, checkfirst=True)
+from app.models.sequence import Sequence
 
 
 # ──────────────────────────────────────────────────────────────────
@@ -42,24 +29,25 @@ def _next_seq_sync(tenant_id: int, doc_type: str) -> str:
     prefix = f"E{doc_type}"
     with sync_engine.begin() as conn:
         row = conn.execute(
-            select(_sequences_t).where(
-                (_sequences_t.c.tenant_id == tenant_id) &
-                (_sequences_t.c.doc_type == doc_type)
+            select(Sequence).where(
+                (Sequence.tenant_id == tenant_id) &
+                (Sequence.doc_type == doc_type)
             )
         ).fetchone()
         if row is None:
             conn.execute(
-                insert(_sequences_t).values(
+                insert(Sequence).values(
                     tenant_id=tenant_id, doc_type=doc_type, prefix=prefix, next_number=2
                 )
             )
             return f"{prefix}{str(1).zfill(8)}"
+        
         ncf = f"{row.prefix}{str(row.next_number).zfill(8)}"
         conn.execute(
-            update(_sequences_t)
+            update(Sequence)
             .where(
-                (_sequences_t.c.tenant_id == tenant_id) &
-                (_sequences_t.c.doc_type == doc_type)
+                (Sequence.tenant_id == tenant_id) &
+                (Sequence.doc_type == doc_type)
             )
             .values(next_number=row.next_number + 1)
         )

@@ -20,6 +20,7 @@ from app.models import (
     recurring_invoice,
     profile,
     access_control,
+    sequence,
 )
 
 __all__ = [
@@ -43,4 +44,5 @@ __all__ = [
     "recurring_invoice",
     "profile",
     "access_control",
+    "sequence",
 ]
