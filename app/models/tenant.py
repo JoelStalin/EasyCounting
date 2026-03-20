@@ -4,10 +4,13 @@ from __future__ import annotations
 from datetime import datetime
 from typing import List, Optional
 
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.models.base import Base
-from app.models.billing import Plan, UsageRecord
+
+# NOTE: string-based relationship references break the billing->tenant circular import.
+# Plan / UsageRecord are referenced by string only - no direct import needed here.
 
 
 class Tenant(Base):

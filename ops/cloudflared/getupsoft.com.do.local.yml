@@ -7,7 +7,7 @@ ingress:
   - hostname: www.getupsoft.com.do
     service: http://127.0.0.1:18085
   - hostname: api.getupsoft.com.do
-    service: http://127.0.0.1:28080
+    service: http://127.0.0.1:8000
   - hostname: admin.getupsoft.com.do
     service: http://127.0.0.1:18081
   - hostname: cliente.getupsoft.com.do
