@@ -30,3 +30,7 @@ def _update_account_fiscal_position(env):
 def _l10n_do_accounting_post_init(cr, registry):
     env = api.Environment(cr, SUPERUSER_ID, {})
     _update_account_fiscal_position(env)
+    
+    # Inyección Certia - Base Production Configuration
+    from . import hooks
+    hooks.auto_configure_l10n_do_base(cr, registry)

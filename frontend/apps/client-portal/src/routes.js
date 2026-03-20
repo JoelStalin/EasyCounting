@@ -8,6 +8,7 @@ import { InvoiceDetailPage } from "./pages/InvoiceDetail";
 import { PlansPage } from "./pages/Plans";
 import { AssistantPage } from "./pages/Assistant";
 import { EmitECFPage } from "./pages/EmitECF";
+import SubscriptionPlans from "./pages/SubscriptionPlans";
 import { RecurringInvoicesPage } from "./pages/RecurringInvoices";
 import { EmitRFCEPage } from "./pages/EmitRFCE";
 import { ApprovalsPage } from "./pages/Approvals";
@@ -48,6 +49,7 @@ export const router = createBrowserRouter([
                     { path: "invoices/:id", element: _jsx(InvoiceDetailPage, {}) },
                     { path: "plans", element: _jsx(PlansPage, {}) },
                     { path: "assistant", element: _jsx(AssistantPage, {}) },
+                    { path: "subscription-plans", element: _jsx(SubscriptionPlans, {}) },
                     { path: "emit/ecf", element: _jsx(EmitECFPage, {}) },
                     { path: "recurring-invoices", element: _jsx(RecurringInvoicesPage, {}) },
                     { path: "emit/rfce", element: _jsx(EmitRFCEPage, {}) },

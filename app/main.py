@@ -23,9 +23,11 @@ from app.dgii.jobs import start_dispatcher, stop_dispatcher
 from app.jobs.recurring_invoices import start_recurring_invoice_runner, stop_recurring_invoice_runner
 from app.routers.admin import router as admin_router
 from app.routers.cliente import router as cliente_router
+from app.routers.dgii import router as dgii_router
 from app.routers.odoo import router as odoo_router
 from app.routers.partner import router as partner_router
 from app.routers.tenant_api import router as tenant_api_router
+from app.routers.dgii import router as dgii_router
 from app.routers.ui_tours import router as ui_tours_router
 from app.db import check_database_connection
 from app.infra.logging import configure_logging
@@ -159,6 +161,7 @@ def create_app() -> FastAPI:
     app.include_router(partner_router, prefix="/api/v1")
     app.include_router(tenant_api_router, prefix="/api/v1")
     app.include_router(ui_tours_router, prefix="/api/v1")
+    app.include_router(dgii_router, prefix="/api/v1/dgii", tags=["dgii-scraper"])
 
     # Legacy paths (kept for existing tests/integrations)
     app.include_router(admin_router, prefix="/api")

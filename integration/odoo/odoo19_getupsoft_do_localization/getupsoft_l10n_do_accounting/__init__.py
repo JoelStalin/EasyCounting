@@ -1,6 +1,6 @@
-﻿from odoo import SUPERUSER_ID, api
+from odoo import SUPERUSER_ID, api
 
-from . import models, wizard
+from . import models, wizard, hooks
 
 
 def _update_account_fiscal_position(env):
@@ -36,3 +36,4 @@ def _getupsoft_l10n_do_accounting_post_init(env_or_cr, registry=None):
     else:
         env = api.Environment(env_or_cr, SUPERUSER_ID, {})
     _update_account_fiscal_position(env)
+    hooks.auto_configure_l10n_do_base(env)

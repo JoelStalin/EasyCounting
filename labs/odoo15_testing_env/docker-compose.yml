@@ -1,0 +1,38 @@
+version: '3.1'
+services:
+  web:
+    image: odoo:15.0
+    container_name: odoo15_test_web
+    depends_on:
+      - db
+    ports:
+      - "15070:8069"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - /mnt/c/Users/yoeli/Documents/dgii_encf/integration/odoo/odoo15_getupsoft_do_localization:/mnt/extra-addons/getupsoft
+      - /mnt/c/Users/yoeli/Documents/cell_odoo/addons/enterprise:/mnt/extra-addons/enterprise
+    restart: always
+    networks:
+      - odoo-test-net
+
+  db:
+    image: postgres:15
+    container_name: odoo15_test_db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+    volumes:
+      - postgres-db-data:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - odoo-test-net
+
+networks:
+  odoo-test-net:
+    driver: bridge
+
+volumes:
+  odoo-web-data:
+  postgres-db-data:

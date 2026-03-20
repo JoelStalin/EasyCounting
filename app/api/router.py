@@ -12,3 +12,7 @@ api_router.include_router(dgii.router, prefix="/dgii", tags=["dgii"])
 api_router.include_router(ri.router, prefix="/ri", tags=["ri"])
 api_router.include_router(receptor.router, prefix="/receptor", tags=["receptor"])
 api_router.include_router(sign.router, tags=["sign"])
+
+# ECF Master Engine — self-contained to avoid circular imports
+from app.routers.ecf import router as ecf_router  # noqa: E402
+api_router.include_router(ecf_router, prefix="/ecf", tags=["ecf-master-engine"])
