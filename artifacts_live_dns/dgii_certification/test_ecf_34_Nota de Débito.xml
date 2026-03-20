@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<Factura>
+  <Encabezado>
+    <RNCEmisor>25500706423</RNCEmisor>
+    <RNCComprador>13100000001</RNCComprador>
+    <ENCF>E340000000004</ENCF>
+    <FechaEmision>2026-03-20T06:46:53.389947</FechaEmision>
+  </Encabezado>
+  <Totales>
+    <Total>4400.00</Total>
+  </Totales>
+</Factura>

@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-03-20T02:46:53.393253",
+  "rnc": "25500706423",
+  "user": "JOEL STALIN",
+  "status": {
+    "rnc": "25500706423",
+    "status": "success",
+    "certification_state": "Registrado",
+    "step": 1,
+    "message": "En postulaci\u00f3n activa para Emisor Electr\u00f3nico. Esperando Pruebas de Certificaci\u00f3n DGII."
+  },
+  "generated_test_xml": [
+    {
+      "type": "31",
+      "description": "Cr\u00e9dito Fiscal (B2B)",
+      "filename": "test_ecf_31_Cr\u00e9dito Fiscal (B2B).xml",
+      "path": "artifacts_live_dns\\dgii_certification\\test_ecf_31_Cr\u00e9dito Fiscal (B2B).xml",
+      "encf": "E310000000001",
+      "xml_size": 317
+    },
+    {
+      "type": "32",
+      "description": "Compra/Consumo (B2C)",
+      "filename": "test_ecf_32_Compra_Consumo (B2C).xml",
+      "path": "artifacts_live_dns\\dgii_certification\\test_ecf_32_Compra_Consumo (B2C).xml",
+      "encf": "E320000000002",
+      "xml_size": 317
+    },
+    {
+      "type": "33",
+      "description": "Nota de Cr\u00e9dito",
+      "filename": "test_ecf_33_Nota de Cr\u00e9dito.xml",
+      "path": "artifacts_live_dns\\dgii_certification\\test_ecf_33_Nota de Cr\u00e9dito.xml",
+      "encf": "E330000000003",
+      "xml_size": 317
+    },
+    {
+      "type": "34",
+      "description": "Nota de D\u00e9bito",
+      "filename": "test_ecf_34_Nota de D\u00e9bito.xml",
+      "path": "artifacts_live_dns\\dgii_certification\\test_ecf_34_Nota de D\u00e9bito.xml",
+      "encf": "E340000000004",
+      "xml_size": 317
+    }
+  ],
+  "environment": "PRECERT",
+  "next_steps": [
+    "Descargar certificado digital .p12 del Portal OFV (https://dgii.gov.do/OFV)",
+    "Guardar en: c:\\Users\\yoeli\\Documents\\dgii_encf\\secrets\\cert.p12",
+    "Actualizar .env.local con DGII_CERT_P12_PASSWORD",
+    "Ejecutar test suite: python -m pytest app/tests/test_dgii_certification.py",
+    "Revisar resultados en Portal OFV"
+  ]
+}
