@@ -8,7 +8,7 @@ from datetime import datetime
 from typing import Any, Dict
 
 from fastapi import APIRouter, HTTPException, Query, status
-from sqlalchemy import Column, ForeignKey, Integer, MetaData, String, Table, UniqueConstraint, func, select, update, insert, text
+from sqlalchemy import Column, ForeignKey, Integer, String, Table, UniqueConstraint, func, select, update, insert, text
 
 from app.db import get_async_session, sync_engine
 from app.models.base import Base
@@ -18,9 +18,8 @@ router = APIRouter()
 # ──────────────────────────────────────────────────────────────────
 # Self-contained table definition (avoids ORM circular imports)
 # ──────────────────────────────────────────────────────────────────
-_meta = MetaData()
 _sequences_t = Table(
-    "sequences", _meta,
+    "sequences", Base.metadata,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("tenant_id", Integer, ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False),
     Column("doc_type", String(10), nullable=False),
@@ -32,7 +31,7 @@ _sequences_t = Table(
 
 # Create sequences table synchronously at module load (safe, uses checkfirst)
 with sync_engine.begin() as _conn:
-    _meta.create_all(bind=_conn, checkfirst=True)
+    Base.metadata.create_all(bind=_conn, checkfirst=True)
 
 
 # ──────────────────────────────────────────────────────────────────
