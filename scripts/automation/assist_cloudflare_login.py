@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import sys
 import time
 from pathlib import Path
@@ -15,6 +16,43 @@ def write_status(path: Path, message: str) -> None:
 
 
 def main() -> int:
+    """
+    Asistente seguro para login en Cloudflare.
+    
+    IMPORTANTE: NO hardcodear credenciales en este archivo.
+    
+    Credenciales deben venir de:
+    1. Variables de entorno: CLOUDFLARE_EMAIL, CLOUDFLARE_PASSWORD
+    2. O mejor: CLOUDFLARE_API_TOKEN (en lugar de user/pass)
+    3. Gestor de credenciales del SO (Windows Credential Manager)
+    
+    RIESGOS SI USAS USER/PASS:
+    - Quedan expuestas en control de versiones
+    - Quedan en histórico de git
+    - No se pueden rotar fácilmente
+    
+    RECOMENDACIÓN:
+    - Usar API Token de Cloudflare
+    - Guardar en gestor seguro de credenciales
+    - No versionar en repositorio
+    """
+    
+    # Obtener credenciales de variables de entorno (NUNCA hardcodear)
+    cf_email = os.getenv("CLOUDFLARE_EMAIL")
+    cf_password = os.getenv("CLOUDFLARE_PASSWORD")
+    
+    if not cf_email or not cf_password:
+        print("ERROR: Credenciales de Cloudflare no configuradas.")
+        print("\nConfigura variables de entorno:")
+        print("  Windows:")
+        print("    $env:CLOUDFLARE_EMAIL='tu-email@example.com'")
+        print("    $env:CLOUDFLARE_PASSWORD='tu-contraseña-segura'")
+        print("\n  O mejor aún, usa Cloudflare API Token:")
+        print("    $env:CLOUDFLARE_API_TOKEN='tu-api-token'")
+        print("\nObtén el API Token en:")
+        print("  https://dash.cloudflare.com/profile/api-tokens")
+        return 1
+    
     out_dir = Path("artifacts_live_dns")
     out_dir.mkdir(exist_ok=True)
     status_path = out_dir / "cloudflare_assisted_status.txt"
@@ -35,10 +73,10 @@ def main() -> int:
         try:
             email = wait.until(EC.presence_of_element_located((By.NAME, "email")))
             email.clear()
-            email.send_keys("Joelstalin2105@gmail.com")
+            email.send_keys(cf_email)
             password = driver.find_element(By.NAME, "password")
             password.clear()
-            password.send_keys("Pandemia@2020#covid")
+            password.send_keys(cf_password)
 
             for selector in (
                 "button[type='submit']",
