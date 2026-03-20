@@ -18,6 +18,8 @@ from app.models import (
     ui_tour,
     tenant_api_token,
     recurring_invoice,
+    profile,
+    access_control,
 )
 
 __all__ = [
@@ -39,4 +41,6 @@ __all__ = [
     "ui_tour",
     "tenant_api_token",
     "recurring_invoice",
+    "profile",
+    "access_control",
 ]

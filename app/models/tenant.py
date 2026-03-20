@@ -18,6 +18,9 @@ class Tenant(Base):
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     rnc: Mapped[str] = mapped_column(String(11), nullable=False, unique=True)
+    tenant_kind: Mapped[str] = mapped_column(String(20), default="STANDARD")
+    issuer_tenant_id: Mapped[int | None] = mapped_column(ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True)
+    certification_status: Mapped[str] = mapped_column(String(30), default="pending")
     env: Mapped[str] = mapped_column(String(20), default="testecf")
     onboarding_status: Mapped[str] = mapped_column(String(30), default="completed")
     plan_id: Mapped[int | None] = mapped_column(ForeignKey("billing_plans.id", ondelete="SET NULL"), nullable=True)
@@ -31,6 +34,15 @@ class Tenant(Base):
 
     certificates: Mapped[List["Certificate"]] = relationship(back_populates="tenant")
     users: Mapped[List["User"]] = relationship(back_populates="tenant")
+    memberships: Mapped[List["TenantMembership"]] = relationship(back_populates="tenant")
+    fiscal_profile: Mapped["FiscalProfile | None"] = relationship(
+        back_populates="tenant",
+        cascade="all, delete-orphan",
+        uselist=False,
+        single_parent=True,
+    )
+    issuer_tenant: Mapped["Tenant | None"] = relationship(remote_side="Tenant.id", backref="issued_tenants")
+    role_change_requests: Mapped[List["RoleChangeRequest"]] = relationship(back_populates="tenant")
     plan: Mapped[Plan | None] = relationship(back_populates="tenants", foreign_keys=[plan_id])
     pending_plan: Mapped[Plan | None] = relationship("Plan", foreign_keys=[pending_plan_id])
     usage_records: Mapped[List[UsageRecord]] = relationship(back_populates="tenant")
