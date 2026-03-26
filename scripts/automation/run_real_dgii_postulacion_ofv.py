@@ -162,12 +162,17 @@ def _login_ofv(driver: webdriver.Chrome, username: str, password: str) -> None:
     raise RuntimeError("No fue posible ubicar el formulario de login OFV ni detectar una sesiÃ³n activa")
 
 
-def _goto_postulacion(driver: webdriver.Chrome) -> None:
+def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path) -> None:
     if _is_postulacion_open(driver):
         return
     driver.get("https://dgii.gov.do/OFV/FacturaElectronica/FE_Facturador_Electronico.aspx")
-    _wait_until(lambda: "Acceso Portal Facturación Electrónica" in driver.title)
-    driver.find_element(By.ID, "ctl00_ContentPlaceHolder1_btnAcceso").click()
+    _wait_until(lambda: "Acceso Portal Facturación Electrónica" in driver.title, timeout=45)
+    _capture(driver, run_dir, "postulacion_fe_access")
+    access_buttons = driver.find_elements(By.ID, "ctl00_ContentPlaceHolder1_btnAcceso")
+    if not access_buttons:
+        _capture(driver, run_dir, "postulacion_missing_access_button")
+        raise RuntimeError("No se encontro el boton de acceso al portal de certificacion en OFV")
+    access_buttons[0].click()
     try:
         _wait_until(
             lambda: "portalcertificacion" in driver.current_url.lower()
@@ -175,15 +180,44 @@ def _goto_postulacion(driver: webdriver.Chrome) -> None:
             timeout=25,
         )
     except TimeoutError:
-        driver.get("https://ecf.dgii.gov.do/certecf/portalcertificacion/Postulacion/Registrado")
-        _wait_until(lambda: _is_postulacion_open(driver), timeout=25)
+        _capture(driver, run_dir, "postulacion_portal_timeout_after_access")
+        fallback_urls = [
+            "https://ecf.dgii.gov.do/certecf/portalcertificacion/Postulacion/Registrado",
+            "https://ecf.dgii.gov.do/CerteCF/PortalCertificacion/Postulacion/Registrado",
+            "https://ecf.dgii.gov.do/certecf/portalcertificacion",
+            "https://ecf.dgii.gov.do/CerteCF/PortalCertificacion",
+        ]
+        opened = False
+        for idx, url in enumerate(fallback_urls, start=1):
+            driver.get(url)
+            time.sleep(6)
+            _capture(driver, run_dir, f"postulacion_fallback_{idx}")
+            if _is_postulacion_open(driver):
+                opened = True
+                break
+            if "portalcertificacion" in driver.current_url.lower():
+                opened = True
+                break
+        if not opened:
+            raise RuntimeError(
+                f"No fue posible abrir portal de postulacion desde OFV. URL actual={driver.current_url!r} title={driver.title!r}"
+            )
+
+    if _is_postulacion_open(driver):
         return
-    if not driver.find_elements(By.ID, "btnVerPostulacionEmisor"):
-        driver.get("https://ecf.dgii.gov.do/certecf/portalcertificacion/Postulacion/Registrado")
-        _wait_until(lambda: _is_postulacion_open(driver))
+
+    view_buttons = driver.find_elements(By.ID, "btnVerPostulacionEmisor")
+    if view_buttons:
+        view_buttons[0].click()
+        _wait_until(lambda: _is_postulacion_open(driver) or "/Postulacion/" in driver.current_url, timeout=25)
+        _capture(driver, run_dir, "postulacion_after_view_button")
         return
-    driver.find_element(By.ID, "btnVerPostulacionEmisor").click()
-    _wait_until(lambda: "/Postulacion/" in driver.current_url)
+
+    _capture(driver, run_dir, "postulacion_unknown_state")
+    raise RuntimeError(
+        f"Portal de certificacion abierto pero no se detecto formulario de postulacion ni boton esperado. "
+        f"URL={driver.current_url!r} title={driver.title!r}"
+    )
 
 
 def _fill_form_and_generate(driver: webdriver.Chrome, run_dir: Path, api_base: str, software_name: str, software_version: str) -> Path:
@@ -587,7 +621,7 @@ def main() -> int:
         _capture(driver, run_dir, "ofv_login")
         _login_ofv(driver, username, password)
         _capture(driver, run_dir, "ofv_authenticated")
-        _goto_postulacion(driver)
+        _goto_postulacion(driver, run_dir)
         _capture(driver, run_dir, "postulacion_open")
         generated_xml = _fill_form_and_generate(driver, run_dir, api_base, software_name, software_version)
         signed_xml, signature_mode = _resolve_signed_xml(run_dir, generated_xml)
