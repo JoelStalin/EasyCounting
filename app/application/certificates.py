@@ -17,11 +17,15 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, load_only
 
-from app.dgii.signing import sign_ecf
 from app.infra.settings import settings
 from app.models.tenant import Certificate, Tenant
 from app.security.audit import append_audit_log
-from app.security.signing import SigningError, sign_xml_enveloped
+from app.security.xml_dsig import (
+    CertificateMetadata as SigningCertificateMetadata,
+    SigningOptions,
+    XMLDigitalSignatureService,
+    XMLSigningError,
+)
 from app.shared.storage import storage
 
 
@@ -86,7 +90,7 @@ class CertificateMetadata:
 
 @dataclass(slots=True)
 class TenantCertificateRuntime:
-    source: Literal["tenant", "env"]
+    source: Literal["tenant", "env", "windows-store", "external"]
     tenant_id: int | None
     certificate_id: int | None
     alias: str
@@ -94,7 +98,7 @@ class TenantCertificateRuntime:
     issuer: str
     not_before: datetime
     not_after: datetime
-    p12_path: Path
+    p12_path: Path | None
     password: str | None
 
 
@@ -127,6 +131,7 @@ class TenantCertificateService:
 
     def __init__(self, db: Session) -> None:
         self.db = db
+        self.signing_service = XMLDigitalSignatureService()
 
     @staticmethod
     def _tenant_runtime_query():
@@ -207,10 +212,10 @@ class TenantCertificateService:
         )
 
     def _resolve_env_runtime(self) -> TenantCertificateRuntime | None:
-        path = Path(settings.dgii_cert_p12_path)
+        path = Path(settings.dgii_effective_pfx_path)
         if not path.exists():
             return None
-        metadata = load_pkcs12_metadata(path.read_bytes(), settings.dgii_cert_p12_password)
+        metadata = load_pkcs12_metadata(path.read_bytes(), settings.dgii_effective_pfx_password)
         return TenantCertificateRuntime(
             source="env",
             tenant_id=None,
@@ -221,8 +226,54 @@ class TenantCertificateService:
             not_before=metadata.not_before,
             not_after=metadata.not_after,
             p12_path=path,
-            password=settings.dgii_cert_p12_password,
+            password=settings.dgii_effective_pfx_password,
         )
+
+    @staticmethod
+    def _metadata_to_runtime(
+        metadata: SigningCertificateMetadata,
+        *,
+        source: Literal["windows-store", "external"],
+        tenant_id: int | None = None,
+    ) -> TenantCertificateRuntime:
+        alias = metadata.thumbprint[-8:] if metadata.thumbprint else source
+        normalized_not_before = _normalize_datetime(metadata.not_before)
+        normalized_not_after = _normalize_datetime(metadata.not_after)
+        return TenantCertificateRuntime(
+            source=source,
+            tenant_id=tenant_id,
+            certificate_id=None,
+            alias=f"{source}:{alias}",
+            subject=metadata.subject,
+            issuer=metadata.issuer,
+            not_before=normalized_not_before,
+            not_after=normalized_not_after,
+            p12_path=None,
+            password=None,
+        )
+
+    def _build_signing_options(
+        self,
+        *,
+        mode: Literal["pfx", "windows-store", "external"],
+        reference_uri: str,
+        runtime: TenantCertificateRuntime | None,
+    ) -> SigningOptions:
+        options = SigningOptions(
+            signing_mode=mode,
+            reference_uri=reference_uri,
+            target_tag=(settings.dgii_sign_target_tag or "").strip() or None,
+            validate_after_sign=settings.dgii_validate_signature,
+            store_location=settings.dgii_cert_store_location,
+            store_name=settings.dgii_cert_store_name,
+            thumbprint=(settings.dgii_cert_thumbprint or "").strip() or None,
+            pfx_path=settings.dgii_effective_pfx_path,
+            pfx_password=settings.dgii_effective_pfx_password,
+        )
+        if runtime is not None:
+            options.pfx_path = str(runtime.p12_path) if runtime.p12_path else None
+            options.pfx_password = runtime.password
+        return options
 
     def list_certificates(self, tenant_id: int) -> dict[str, object]:
         tenant = self._get_tenant(tenant_id)
@@ -414,20 +465,27 @@ class TenantCertificateService:
         allow_env_fallback: bool = True,
         reference_uri: str = "",
     ) -> tuple[bytes, TenantCertificateRuntime]:
-        runtime = self.resolve_runtime(
-            tenant_id=tenant_id,
-            tenant_rnc=tenant_rnc,
-            allow_env_fallback=allow_env_fallback,
-        )
-        try:
-            signed_xml = sign_xml_enveloped(
-                xml_bytes,
-                str(runtime.p12_path),
-                runtime.password,
-                reference_uri=reference_uri,
+        mode: Literal["pfx", "windows-store", "external"] = settings.dgii_signing_mode
+        runtime: TenantCertificateRuntime | None = None
+        if mode == "pfx":
+            runtime = self.resolve_runtime(
+                tenant_id=tenant_id,
+                tenant_rnc=tenant_rnc,
+                allow_env_fallback=allow_env_fallback,
             )
-        except SigningError as exc:
+        options = self._build_signing_options(mode=mode, reference_uri=reference_uri, runtime=runtime)
+        try:
+            signed_xml = self.signing_service.sign_xml(xml_bytes, options)
+            if runtime is None:
+                metadata = self.signing_service.get_certificate_metadata(options)
+                runtime = self._metadata_to_runtime(
+                    metadata,
+                    source="windows-store" if mode == "windows-store" else "external",
+                    tenant_id=tenant_id,
+                )
+        except XMLSigningError as exc:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
+        assert runtime is not None
         return signed_xml, runtime
 
     def sign_dgii_document(
@@ -438,17 +496,10 @@ class TenantCertificateService:
         tenant_rnc: str | None = None,
         allow_env_fallback: bool = True,
     ) -> tuple[bytes, TenantCertificateRuntime]:
-        runtime = self.resolve_runtime(
+        return self.sign_xml(
+            xml_bytes,
             tenant_id=tenant_id,
             tenant_rnc=tenant_rnc,
             allow_env_fallback=allow_env_fallback,
+            reference_uri="",
         )
-        try:
-            signed_xml = sign_ecf(
-                xml_bytes,
-                str(runtime.p12_path),
-                runtime.password,
-            )
-        except Exception as exc:  # noqa: BLE001
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
-        return signed_xml, runtime

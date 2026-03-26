@@ -1,53 +1,88 @@
-"""XML Digital Signature helpers."""
+"""Backward-compatible signing helpers backed by the DGII XMLDSIG service."""
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Optional
 
-from cryptography.hazmat.primitives.serialization import Encoding, pkcs12
-from lxml import etree
-from signxml import XMLSigner, methods
+from app.infra.settings import settings
+from app.security.xml_dsig import (
+    CanonicalizationError,
+    CertificateExpiredError,
+    CertificateMetadata,
+    CertificateNotFoundError,
+    CertificatePasswordError,
+    CertificatePrivateKeyError,
+    ExternalSignerNotConfiguredError,
+    PfxFileSigner,
+    SignatureValidationError,
+    SignatureValidationResult,
+    SigningOptions,
+    ThumbprintInvalidError,
+    XMLDigitalSignatureService,
+    XMLMalformedError,
+    XMLSigningError,
+    validate_signed_xml,
+)
 
-from app.security.xml import parse_secure
+SigningError = XMLSigningError
+
+_signing_service = XMLDigitalSignatureService()
 
 
-class SigningError(RuntimeError):
-    """Raised when digital signing fails."""
+def sign_xml_enveloped(
+    xml_bytes: bytes,
+    p12_path: str,
+    password: Optional[str],
+    reference_uri: str = "",
+) -> bytes:
+    """Sign XML with DGII-required XMLDSIG settings using a PFX/P12 certificate."""
 
-
-def sign_xml_enveloped(xml_bytes: bytes, p12_path: str, password: Optional[str], reference_uri: str = "") -> bytes:
-    """Sign XML using RSA-SHA256 enveloped signature."""
-
-    root = parse_secure(xml_bytes)
-
-    try:
-        bundle = Path(p12_path).read_bytes()
-    except OSError as exc:
-        raise SigningError("Unable to read PKCS#12 bundle") from exc
-
-    try:
-        private_key, certificate, _ = pkcs12.load_key_and_certificates(bundle, password.encode() if password else None)
-    except Exception as exc:  # noqa: BLE001
-        raise SigningError("Invalid PKCS#12 bundle or password") from exc
-
-    if not private_key or not certificate:
-        raise SigningError("PKCS#12 bundle missing private key or certificate")
-
-    signer = XMLSigner(
-        method=methods.enveloped,
-        signature_algorithm="rsa-sha256",
-        digest_algorithm="sha256",
-        c14n_algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315",
+    options = SigningOptions(
+        signing_mode="pfx",
+        pfx_path=p12_path,
+        pfx_password=password,
+        reference_uri=reference_uri,
+        validate_after_sign=settings.dgii_validate_signature,
     )
+    return _signing_service.sign_xml(xml_bytes, options)
 
-    try:
-        signed = signer.sign(
-            root,
-            key=private_key,
-            cert=certificate.public_bytes(Encoding.PEM),
-            reference_uri=reference_uri or None,
-        )
-    except Exception as exc:  # noqa: BLE001
-        raise SigningError("Error signing XML document") from exc
 
-    return etree.tostring(signed, encoding="UTF-8", xml_declaration=True)
+def sign_xml(xml_input: bytes, signing_options: SigningOptions) -> bytes:
+    """Generic XML signing entrypoint with selectable signer backend."""
+
+    return _signing_service.sign_xml(xml_input, signing_options)
+
+
+def get_certificate_metadata(signing_options: SigningOptions) -> CertificateMetadata:
+    """Get certificate metadata for the configured signer backend."""
+
+    return _signing_service.get_certificate_metadata(signing_options)
+
+
+def validate_signed_xml_details(signed_xml: bytes, *, x509_cert: bytes | None = None) -> SignatureValidationResult:
+    """Validate signed XML and return detailed DGII-specific diagnostics."""
+
+    return validate_signed_xml(signed_xml, x509_cert=x509_cert)
+
+
+__all__ = [
+    "CanonicalizationError",
+    "CertificateExpiredError",
+    "CertificateMetadata",
+    "CertificateNotFoundError",
+    "CertificatePasswordError",
+    "CertificatePrivateKeyError",
+    "ExternalSignerNotConfiguredError",
+    "PfxFileSigner",
+    "SignatureValidationError",
+    "SignatureValidationResult",
+    "SigningError",
+    "SigningOptions",
+    "ThumbprintInvalidError",
+    "XMLMalformedError",
+    "XMLSigningError",
+    "get_certificate_metadata",
+    "sign_xml",
+    "sign_xml_enveloped",
+    "validate_signed_xml",
+    "validate_signed_xml_details",
+]

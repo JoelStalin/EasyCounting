@@ -6,7 +6,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import List, Literal, Set
 
-from pydantic import AliasChoices, AnyUrl, Field, computed_field, constr, field_validator, model_validator
+from pydantic import AliasChoices, AnyUrl, Field, computed_field, constr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 
@@ -232,6 +232,38 @@ class Settings(BaseSettings):
 
     dgii_cert_p12_path: Path = Field(default=Path("/secrets/cert.p12"), validation_alias=AliasChoices("DGII_CERT_P12_PATH", "DGII_P12_PATH"))
     dgii_cert_p12_password: str = Field(default="changeit", validation_alias=AliasChoices("DGII_CERT_P12_PASSWORD", "DGII_P12_PASSWORD"))
+    dgii_signing_mode: Literal["pfx", "windows-store", "external"] = Field(
+        default="pfx",
+        validation_alias=AliasChoices("DGII_SIGNING_MODE"),
+    )
+    dgii_signing_pfx_path: Path | None = Field(
+        default=None,
+        validation_alias=AliasChoices("DGII_PFX_PATH", "DGII_SIGNING_PFX_PATH"),
+    )
+    dgii_signing_pfx_password: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("DGII_PFX_PASSWORD", "DGII_SIGNING_PFX_PASSWORD"),
+    )
+    dgii_cert_thumbprint: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("DGII_CERT_THUMBPRINT", "DGII_SIGNING_CERT_THUMBPRINT"),
+    )
+    dgii_cert_store_location: Literal["CurrentUser", "LocalMachine"] = Field(
+        default="CurrentUser",
+        validation_alias=AliasChoices("DGII_CERT_STORE_LOCATION", "DGII_SIGNING_CERT_STORE_LOCATION"),
+    )
+    dgii_cert_store_name: str = Field(
+        default="My",
+        validation_alias=AliasChoices("DGII_CERT_STORE_NAME", "DGII_SIGNING_CERT_STORE_NAME"),
+    )
+    dgii_sign_target_tag: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("DGII_SIGN_TARGET_TAG"),
+    )
+    dgii_validate_signature: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("DGII_VALIDATE_SIGNATURE"),
+    )
     dgii_browser_automation_enabled: bool = Field(default=False, validation_alias=AliasChoices("DGII_BROWSER_AUTOMATION_ENABLED"))
     dgii_browser_automation_mode: Literal["assistive", "fallback", "evidence-only"] = Field(
         default="evidence-only",
@@ -471,6 +503,20 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def dgii_p12_password(self) -> str:
+        return self.dgii_cert_p12_password
+
+    @computed_field
+    @property
+    def dgii_effective_pfx_path(self) -> str:
+        if self.dgii_signing_pfx_path:
+            return str(self.dgii_signing_pfx_path)
+        return str(self.dgii_cert_p12_path)
+
+    @computed_field
+    @property
+    def dgii_effective_pfx_password(self) -> str:
+        if self.dgii_signing_pfx_password is not None:
+            return self.dgii_signing_pfx_password
         return self.dgii_cert_p12_password
 
     @computed_field

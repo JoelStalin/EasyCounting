@@ -93,6 +93,72 @@ curl -sS -H "Authorization: Bearer admin:bob" -H "Content-Type: application/json
 | `JWT_SECRET` | Secreto para JWT corto. | `change-me` |
 | `DGII_*` | URLs/credenciales DGII legadas. | Ver `.env.example` |
 
+## Firma XML DGII (postulacion y e-CF)
+
+La firma XML se ejecuta con perfil DGII:
+
+- `XMLDSIG enveloped`
+- `CanonicalizationMethod=C14N 1.0` (`http://www.w3.org/TR/2001/REC-xml-c14n-20010315`)
+- `SignatureMethod=RSA-SHA256`
+- `DigestMethod=SHA-256`
+- `Reference URI=""`
+- `KeyInfo/X509Data/X509Certificate` embebido
+
+Configuracion:
+
+| Variable | Descripcion |
+| --- | --- |
+| `DGII_SIGNING_MODE` | `pfx`, `windows-store`, `external` |
+| `DGII_PFX_PATH` | Ruta al archivo `.p12/.pfx` |
+| `DGII_PFX_PASSWORD` | Password del `.p12/.pfx` |
+| `DGII_CERT_THUMBPRINT` | Thumbprint para Windows Certificate Store |
+| `DGII_CERT_STORE_LOCATION` | `CurrentUser` o `LocalMachine` |
+| `DGII_CERT_STORE_NAME` | Store name, por defecto `My` |
+| `DGII_SIGN_TARGET_TAG` | Nodo objetivo a firmar (`ECF`, `RFCE`, etc.) |
+| `DGII_VALIDATE_SIGNATURE` | `true/false` validacion posterior de firma |
+
+### Modo PFX
+
+1. Cargar certificado del tenant por API (`/api/v1/cliente/certificates`) o por variables de entorno.
+2. Firmar XML por flujo interno (`TenantCertificateService`) o por endpoint (`/api/v1/cliente/certificates/sign-xml`).
+
+### Modo Windows Certificate Store
+
+1. Instalar certificado del representante en `CurrentUser\My` o `LocalMachine\My`.
+2. Definir `DGII_SIGNING_MODE=windows-store`.
+3. Definir `DGII_CERT_THUMBPRINT`, `DGII_CERT_STORE_LOCATION` y `DGII_CERT_STORE_NAME`.
+4. El backend usa `scripts/automation/sign_with_windows_certstore.ps1`.
+
+### Modo External (stub)
+
+`DGII_SIGNING_MODE=external` deja listo el contrato de integracion, pero no firma aun. El sistema responde error controlado indicando que falta conectar App Firma Digital o un servicio externo.
+
+### Ejemplo de ejecucion simulada
+
+```bash
+poetry run pytest tests/test_xml_dsig_service.py -q
+```
+
+## Troubleshooting firma DGII
+
+- Error `La firma utilizada en el XML no corresponde con el representante registrado`:
+  - La firma puede ser criptograficamente valida, pero DGII la rechaza por identidad tributaria.
+  - Debes usar el certificado real del representante legal registrado para ese RNC.
+- Diferencia clave:
+  - Valida criptograficamente: XMLDSIG correcto (algoritmos, digest, cadena de firma).
+  - Aceptada por DGII: ademas coincide la identidad fiscal del certificado con el contribuyente/representante.
+- Verificar certificado antes de firmar:
+  - `Subject`, `Issuer`, `Thumbprint`, `notBefore`, `notAfter`.
+  - Si no existe en `CurrentUser\My` o `LocalMachine\My`, importar el certificado correcto.
+- Errores comunes manejados por la API:
+  - certificado no encontrado
+  - certificado sin llave privada
+  - password incorrecto
+  - certificado expirado/no vigente
+  - thumbprint invalido
+  - XML mal formado
+  - validacion de firma fallida
+
 ## Observabilidad y seguridad
 
 - Logs JSON (`structlog`) enviados a stdout y consumidos por Docker/Stackdriver.
