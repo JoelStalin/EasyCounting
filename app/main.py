@@ -135,6 +135,7 @@ def create_app() -> FastAPI:
             "testserver",
             "test",
             "getupsoft.com.do",
+            settings.app_portal_domain,
             settings.public_site_domain,
             "api.getupsoft.com.do",
             settings.admin_portal_domain,

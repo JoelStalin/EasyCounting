@@ -27,6 +27,10 @@ class Settings(BaseSettings):
         default="cliente.getupsoft.com.do",
         validation_alias=AliasChoices("CLIENT_PORTAL_DOMAIN"),
     )
+    app_portal_domain: str = Field(
+        default="app.getupsoft.com.do",
+        validation_alias=AliasChoices("APP_PORTAL_DOMAIN"),
+    )
     admin_portal_domain: str = Field(
         default="admin.getupsoft.com.do",
         validation_alias=AliasChoices("ADMIN_PORTAL_DOMAIN"),
@@ -331,12 +335,14 @@ class Settings(BaseSettings):
         if self.cors_allow_origins_raw is None:
             origins = [
                 "https://api.getupsoft.com.do",
+                "https://app.getupsoft.com.do",
                 "https://admin.getupsoft.com.do",
                 "https://cliente.getupsoft.com.do",
                 "https://socios.getupsoft.com.do",
                 "https://www.getupsoft.com.do",
                 "https://getupsoft.com.do",
                 "http://api.getupsoft.com.do",
+                "http://app.getupsoft.com.do",
                 "http://admin.getupsoft.com.do",
                 "http://cliente.getupsoft.com.do",
                 "http://socios.getupsoft.com.do",
@@ -348,6 +354,7 @@ class Settings(BaseSettings):
 
         portal_origins = [
             self._normalize_origin(self.client_portal_domain),
+            self._normalize_origin(self.app_portal_domain),
             self._normalize_origin(self.admin_portal_domain),
             self._normalize_origin(self.partner_portal_domain),
             self._normalize_origin(self.public_site_domain),

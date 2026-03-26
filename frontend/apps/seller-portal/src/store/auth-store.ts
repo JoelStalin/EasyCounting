@@ -29,7 +29,7 @@ interface AuthState {
   clearSession: () => void;
 }
 
-const STORAGE_KEY = "getupsoft-seller-auth";
+const STORAGE_KEY = "getupsoft-app-auth";
 
 function readSession(): AuthSession | null {
   if (typeof window === "undefined") {

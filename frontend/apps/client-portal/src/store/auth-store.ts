@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type AuthScope = "PLATFORM" | "TENANT";
+export type AuthScope = "PLATFORM" | "TENANT" | "PARTNER";
 
 export interface AuthUser {
   id: string;
@@ -29,7 +29,7 @@ interface AuthState {
   clearSession: () => void;
 }
 
-const STORAGE_KEY = "getupsoft-client-auth";
+const STORAGE_KEY = "getupsoft-app-auth";
 
 function readSession(): AuthSession | null {
   if (typeof window === "undefined") {
