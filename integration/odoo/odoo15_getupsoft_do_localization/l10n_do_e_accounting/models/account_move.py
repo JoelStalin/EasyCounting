@@ -34,12 +34,18 @@ class AccountMove(models.Model):
         for move in self.filtered(lambda m: m.is_invoice() and m.l10n_latam_document_type_id and m.l10n_latam_document_type_id.l10n_do_ncf_type):
             try:
                 payload = {
-                    "odoo_invoice_id": move.id,
-                    "issue_date": str(move.invoice_date or fields.Date.today()),
-                    "e_cf_type": move.l10n_latam_document_type_id.l10n_do_ncf_type,
+                    "tenantId": move.company_id.id,
+                    "odooInvoiceId": move.id,
+                    "odooInvoiceName": move.name,
+                    "issueDate": str(move.invoice_date or fields.Date.today()),
+                    "eCfType": move.l10n_latam_document_type_id.l10n_do_ncf_type,
+                    "documentNumber": move.name,
+                    "issuerRnc": move.company_id.vat,
+                    "issuerName": move.company_id.name,
                     "currency": move.currency_id.name or "DOP",
-                    "total_amount": float(move.amount_total),
-                    "total_itbis": float(sum(line.price_total - line.price_subtotal for line in move.invoice_line_ids if line.tax_ids)),
+                    "totalAmount": float(move.amount_total),
+                    "totalItbis": float(sum(line.price_total - line.price_subtotal for line in move.invoice_line_ids if line.tax_ids)),
+                    "totalDiscount": float(sum((line.price_unit * line.quantity) * (line.discount / 100.0) for line in move.invoice_line_ids if not line.display_type)),
                     "buyer": None,
                     "lines": []
                 }

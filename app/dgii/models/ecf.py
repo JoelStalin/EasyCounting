@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import List
+from typing import ClassVar, List
 
 from lxml import etree
 from pydantic import Field
@@ -14,7 +14,7 @@ from app.dgii.models.base import BaseDGIIModel, XMLSerializerConfig, decimal_to_
 class ECFLineItem(BaseDGIIModel):
     """Detalle de producto o servicio dentro del e-CF."""
 
-    xml_config = XMLSerializerConfig(root_tag="Item")
+    xml_config: ClassVar[XMLSerializerConfig] = XMLSerializerConfig(root_tag="Item")
 
     descripcion: str = Field(..., max_length=200)
     cantidad: Decimal = Field(..., gt=0)
@@ -37,7 +37,7 @@ class ECFLineItem(BaseDGIIModel):
 class ECFRequest(BaseDGIIModel):
     """Cabecera simplificada compatible con los esquemas de DGII."""
 
-    xml_config = XMLSerializerConfig(root_tag="eCF")
+    xml_config: ClassVar[XMLSerializerConfig] = XMLSerializerConfig(root_tag="eCF")
 
     encf: str = Field(..., max_length=13)
     tipo_ecf: str = Field(..., max_length=6, alias="tipoECF")

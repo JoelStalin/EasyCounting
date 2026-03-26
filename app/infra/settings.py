@@ -136,10 +136,11 @@ class Settings(BaseSettings):
         validation_alias=AliasChoices("DATABASE_URL", "POSTGRES_DSN"),
     )
     redis_url: str = Field(default="redis://localhost:6379/0")
+    artifacts_root: Path = Field(default=Path("tests/artifacts"), validation_alias=AliasChoices("ARTIFACTS_ROOT"))
     sentry_dsn: str | None = Field(default=None)
     sentry_traces_sample_rate: float = Field(default=0.0, ge=0.0, le=1.0, alias="SENTRY_TRACES")
 
-    dgii_env: Literal["PRECERT", "CERT", "PROD"] = Field(default="PRECERT", validation_alias=AliasChoices("DGII_ENV", "ENV"))
+    dgii_env: Literal["LOCAL", "TEST", "PRECERT", "CERT", "PROD"] = Field(default="TEST", validation_alias=AliasChoices("DGII_ENV", "ENV"))
     dgii_allowed_hosts_raw: str | None = Field(default=None, validation_alias=AliasChoices("DGII_ALLOWED_HOSTS"))
     dgii_rnc: str = Field(default="131415161", validation_alias=AliasChoices("DGII_RNC"))
 
@@ -231,6 +232,16 @@ class Settings(BaseSettings):
 
     dgii_cert_p12_path: Path = Field(default=Path("/secrets/cert.p12"), validation_alias=AliasChoices("DGII_CERT_P12_PATH", "DGII_P12_PATH"))
     dgii_cert_p12_password: str = Field(default="changeit", validation_alias=AliasChoices("DGII_CERT_P12_PASSWORD", "DGII_P12_PASSWORD"))
+    dgii_browser_automation_enabled: bool = Field(default=False, validation_alias=AliasChoices("DGII_BROWSER_AUTOMATION_ENABLED"))
+    dgii_browser_automation_mode: Literal["assistive", "fallback", "evidence-only"] = Field(
+        default="evidence-only",
+        validation_alias=AliasChoices("DGII_BROWSER_AUTOMATION_MODE"),
+    )
+    odoo_sync_enabled: bool = Field(default=False, validation_alias=AliasChoices("ODOO_SYNC_ENABLED"))
+    odoo_json2_base_url: str | None = Field(default=None, validation_alias=AliasChoices("ODOO_JSON2_BASE_URL"))
+    odoo_json2_database: str | None = Field(default=None, validation_alias=AliasChoices("ODOO_JSON2_DATABASE"))
+    odoo_json2_api_key: str | None = Field(default=None, validation_alias=AliasChoices("ODOO_JSON2_API_KEY"))
+    odoo_timeout_seconds: float = Field(default=20.0, gt=1.0, le=120.0, validation_alias=AliasChoices("ODOO_TIMEOUT_SECONDS"))
     ri_qr_base_url: AnyUrl = Field(default="https://ri.mock/qr", validation_alias=AliasChoices("RI_QR_BASE_URL"))
     jobs_enabled: bool = Field(default=True, validation_alias=AliasChoices("JOBS_ENABLED"))
     recurring_invoice_job_enabled: bool = Field(
@@ -389,7 +400,7 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def dgii_auth_base_url(self) -> str:
-        if self.dgii_env == "PRECERT":
+        if self.dgii_env in {"LOCAL", "TEST", "PRECERT"}:
             return str(self.dgii_auth_base_url_precert)
         if self.dgii_env == "CERT":
             return str(self.dgii_auth_base_url_cert)
@@ -398,7 +409,7 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def dgii_recepcion_base_url(self) -> str:
-        if self.dgii_env == "PRECERT":
+        if self.dgii_env in {"LOCAL", "TEST", "PRECERT"}:
             return str(self.dgii_recepcion_base_url_precert)
         if self.dgii_env == "CERT":
             return str(self.dgii_recepcion_base_url_cert)
@@ -407,7 +418,7 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def dgii_recepcion_fc_base_url(self) -> str:
-        if self.dgii_env == "PRECERT":
+        if self.dgii_env in {"LOCAL", "TEST", "PRECERT"}:
             return str(self.dgii_recepcion_fc_base_url_precert)
         if self.dgii_env == "CERT":
             return str(self.dgii_recepcion_fc_base_url_cert)
@@ -437,11 +448,20 @@ class Settings(BaseSettings):
     @computed_field
     @property
     def dgii_consulta_resultado_base_url(self) -> str:
-        if self.dgii_env == "PRECERT":
+        if self.dgii_env in {"LOCAL", "TEST", "PRECERT"}:
             return str(self.dgii_consulta_resultado_base_url_precert)
         if self.dgii_env == "CERT":
             return str(self.dgii_consulta_resultado_base_url_cert)
         return str(self.dgii_consulta_resultado_base_url_prod)
+
+    @computed_field
+    @property
+    def dgii_env_canonical(self) -> str:
+        if self.dgii_env in {"LOCAL"}:
+            return "LOCAL"
+        if self.dgii_env in {"TEST", "PRECERT"}:
+            return "TEST"
+        return self.dgii_env
 
     @computed_field
     @property

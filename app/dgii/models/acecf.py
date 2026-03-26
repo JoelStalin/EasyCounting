@@ -6,13 +6,15 @@ from datetime import datetime
 from lxml import etree
 from pydantic import Field
 
+from typing import ClassVar
+
 from app.dgii.models.base import BaseDGIIModel, XMLSerializerConfig
 
 
 class ACECFRequest(BaseDGIIModel):
     """Notifica la aprobación comercial del e-CF."""
 
-    xml_config = XMLSerializerConfig(root_tag="ACECF")
+    xml_config: ClassVar[XMLSerializerConfig] = XMLSerializerConfig(root_tag="ACECF")
 
     encf: str = Field(..., max_length=13)
     rnc_emisor: str = Field(..., max_length=11, alias="rncEmisor")

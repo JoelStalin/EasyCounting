@@ -21,12 +21,21 @@ from app.api.enfc_routes import router as enfc_router
 from app.api.router import api_router
 from app.dgii.jobs import start_dispatcher, stop_dispatcher
 from app.jobs.recurring_invoices import start_recurring_invoice_runner, stop_recurring_invoice_runner
+from app.core.logging import bind_request_context, reset_request_context
+from app.routers.acuse import router as arecef_router
 from app.routers.admin import router as admin_router
+from app.routers.anulacion import router as anecf_router
+from app.routers.aprobacion import router as acecf_router
+from app.routers.auth import router as dgii_auth_router
 from app.routers.cliente import router as cliente_router
 from app.routers.dgii import router as dgii_router
 from app.routers.ecf import router as ecf_router
+from app.routers.internal import router as internal_router
 from app.routers.odoo import router as odoo_router
+from app.routers.operations import router as operations_router
 from app.routers.partner import router as partner_router
+from app.routers.recepcion import router as recepcion_router
+from app.routers.rfce import router as rfce_router
 from app.routers.tenant_api import router as tenant_api_router
 from app.routers.ui_tours import router as ui_tours_router
 from app.db import check_database_connection
@@ -34,6 +43,7 @@ from app.infra.logging import configure_logging
 from app.infra.settings import settings
 from app.security.auth import setup_security
 from app.security.rate_limit import configure_rate_limiter, init_rate_limiter, shutdown_rate_limiter
+from app.shared.tracing import ensure_trace_id, get_request_id
 
 LOGGER = logging.getLogger(__name__)
 INSTRUMENTATOR = Instrumentator(
@@ -52,7 +62,7 @@ ENFC_TAG_METADATA = {
 async def _is_redis_ready(app: FastAPI) -> bool:
     redis_client = getattr(app.state, "redis_rate_limiter", None)
     if redis_client is None:
-        return False
+        return settings.environment.lower() not in {"production", "prod"}
     try:
         await redis_client.ping()
         return True
@@ -86,7 +96,7 @@ def create_app() -> FastAPI:
                 raise RuntimeError("Redis connection failed during startup") from exc
 
         try:
-            if settings.environment.lower() in {"production", "prod"}:
+            if settings.jobs_enabled:
                 await start_dispatcher()
         except Exception as exc:  # pragma: no cover - defensive
             LOGGER.exception("Failed to start DGII dispatcher", exc_info=exc)
@@ -158,26 +168,56 @@ def create_app() -> FastAPI:
     app.include_router(portal_me_router, prefix="/api/v1", tags=["portal-auth"])
     app.include_router(admin_router, prefix="/api/v1")
     app.include_router(cliente_router, prefix="/api/v1")
+    app.include_router(internal_router, prefix="/api/v1")
     app.include_router(odoo_router, prefix="/api/v1")
+    app.include_router(operations_router, prefix="/api/v1")
     app.include_router(partner_router, prefix="/api/v1")
     app.include_router(tenant_api_router, prefix="/api/v1")
     app.include_router(ui_tours_router, prefix="/api/v1")
+    app.include_router(dgii_auth_router, prefix="/api/v1")
+    app.include_router(recepcion_router, prefix="/api/v1")
+    app.include_router(rfce_router, prefix="/api/v1")
+    app.include_router(anecf_router, prefix="/api/v1")
+    app.include_router(acecf_router, prefix="/api/v1")
+    app.include_router(arecef_router, prefix="/api/v1")
     app.include_router(dgii_router, prefix="/api/v1/dgii", tags=["dgii-scraper"])
     app.include_router(ecf_router, prefix="/api/v1/ecf", tags=["ecf-engine"])
 
     # Legacy paths (kept for existing tests/integrations)
     app.include_router(admin_router, prefix="/api")
     app.include_router(cliente_router, prefix="/api")
+    app.include_router(internal_router, prefix="/api")
     app.include_router(odoo_router, prefix="/api")
+    app.include_router(operations_router, prefix="/api")
     app.include_router(partner_router, prefix="/api")
     app.include_router(tenant_api_router, prefix="/api")
     app.include_router(ui_tours_router, prefix="/api")
+    app.include_router(dgii_auth_router, prefix="/api")
+    app.include_router(recepcion_router, prefix="/api")
+    app.include_router(rfce_router, prefix="/api")
+    app.include_router(anecf_router, prefix="/api")
+    app.include_router(acecf_router, prefix="/api")
+    app.include_router(arecef_router, prefix="/api")
 
     app.include_router(api_router, prefix="/api")
     app.include_router(api_router, prefix="/api/1")
     app.include_router(enfc_router)
     app.include_router(receptor_router, prefix="/receptor", tags=["receptor"])
     app.include_router(ri_router, prefix="/ri", tags=["ri"])
+
+    @app.middleware("http")
+    async def tracing_context(request: Request, call_next) -> Response:  # type: ignore[override]
+        trace_id = ensure_trace_id(request)
+        request_id = get_request_id(request)
+        bind_request_context(trace_id=trace_id, request_id=request_id or "", path=request.url.path, method=request.method)
+        try:
+            response = await call_next(request)
+        finally:
+            reset_request_context()
+        response.headers.setdefault(settings.tracing_header, trace_id)
+        if request_id:
+            response.headers.setdefault(settings.request_id_header, request_id)
+        return response
 
     @app.middleware("http")
     async def security_headers(request: Request, call_next) -> Response:  # type: ignore[override]

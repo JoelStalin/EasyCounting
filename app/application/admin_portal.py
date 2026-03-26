@@ -9,7 +9,7 @@ from typing import List, Optional
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from app.admin.schemas import (
     AuditLogItem,
@@ -39,11 +39,17 @@ from app.admin.schemas import (
     PlatformAIProviderItem,
     PlatformAIProviderPayload,
     PlatformUserItem,
+    OperationDetailResponse,
+    OperationEventItem,
+    OperationListItem,
+    OperationListResponse,
+    OperationRetryResponse,
 )
 from app.infra.settings import settings as app_settings
 from app.models.billing import Plan, UsageRecord
 from app.models.accounting import InvoiceLedgerEntry, TenantSettings
 from app.models.audit import AuditLog
+from app.models.fiscal_operation import EvidenceArtifact, FiscalOperation, FiscalOperationEvent
 from app.models.invoice import Invoice
 from app.models.platform_ai import PlatformAIProvider
 from app.models.tenant import Tenant
@@ -389,6 +395,17 @@ class AdminService:
             contabilizado=bool(invoice.contabilizado),
             accounted_at=invoice.accounted_at,
             asiento_referencia=invoice.asiento_referencia,
+            currency=invoice.currency,
+            subtotal_source=Decimal(str(invoice.subtotal_source)),
+            discount_total_source=Decimal(str(invoice.discount_total_source)),
+            tax_total_source=Decimal(str(invoice.tax_total_source)),
+            total_fiscal=Decimal(str(invoice.total_fiscal)),
+            total_accounting=Decimal(str(invoice.total_accounting)),
+            rounding_delta=Decimal(str(invoice.rounding_delta)),
+            odoo_move_id=invoice.odoo_move_id,
+            odoo_move_name=invoice.odoo_move_name,
+            odoo_sync_state=invoice.odoo_sync_state,
+            odoo_synced_at=invoice.odoo_synced_at,
         )
 
     def list_plans(self) -> List[PlanResponse]:
@@ -576,6 +593,26 @@ class AdminService:
             correo_facturacion=settings.correo_facturacion,
             telefono_contacto=settings.telefono_contacto,
             notas=settings.notas,
+            rounding_policy=settings.rounding_policy,
+            odoo_sync_enabled=bool(settings.odoo_sync_enabled),
+            odoo_api_url=settings.odoo_api_url,
+            odoo_database=settings.odoo_database,
+            odoo_company_id=settings.odoo_company_id,
+            odoo_sales_journal_id=settings.odoo_sales_journal_id,
+            odoo_purchase_journal_id=settings.odoo_purchase_journal_id,
+            odoo_fiscal_position_id=settings.odoo_fiscal_position_id,
+            odoo_payment_term_id=settings.odoo_payment_term_id,
+            odoo_currency_id=settings.odoo_currency_id,
+            odoo_customer_document_type_id=settings.odoo_customer_document_type_id,
+            odoo_vendor_document_type_id=settings.odoo_vendor_document_type_id,
+            odoo_credit_note_document_type_id=settings.odoo_credit_note_document_type_id,
+            odoo_debit_note_document_type_id=settings.odoo_debit_note_document_type_id,
+            odoo_sales_tax_id=settings.odoo_sales_tax_id,
+            odoo_purchase_tax_id=settings.odoo_purchase_tax_id,
+            odoo_zero_tax_id=settings.odoo_zero_tax_id,
+            odoo_partner_vat_prefix=settings.odoo_partner_vat_prefix,
+            odoo_journal_code_hint=settings.odoo_journal_code_hint,
+            odoo_api_key_ref=settings.odoo_api_key_ref,
             updated_at=settings.updated_at,
         )
 
@@ -597,6 +634,26 @@ class AdminService:
             correo_facturacion=settings.correo_facturacion,
             telefono_contacto=settings.telefono_contacto,
             notas=settings.notas,
+            rounding_policy=settings.rounding_policy,
+            odoo_sync_enabled=bool(settings.odoo_sync_enabled),
+            odoo_api_url=settings.odoo_api_url,
+            odoo_database=settings.odoo_database,
+            odoo_company_id=settings.odoo_company_id,
+            odoo_sales_journal_id=settings.odoo_sales_journal_id,
+            odoo_purchase_journal_id=settings.odoo_purchase_journal_id,
+            odoo_fiscal_position_id=settings.odoo_fiscal_position_id,
+            odoo_payment_term_id=settings.odoo_payment_term_id,
+            odoo_currency_id=settings.odoo_currency_id,
+            odoo_customer_document_type_id=settings.odoo_customer_document_type_id,
+            odoo_vendor_document_type_id=settings.odoo_vendor_document_type_id,
+            odoo_credit_note_document_type_id=settings.odoo_credit_note_document_type_id,
+            odoo_debit_note_document_type_id=settings.odoo_debit_note_document_type_id,
+            odoo_sales_tax_id=settings.odoo_sales_tax_id,
+            odoo_purchase_tax_id=settings.odoo_purchase_tax_id,
+            odoo_zero_tax_id=settings.odoo_zero_tax_id,
+            odoo_partner_vat_prefix=settings.odoo_partner_vat_prefix,
+            odoo_journal_code_hint=settings.odoo_journal_code_hint,
+            odoo_api_key_ref=settings.odoo_api_key_ref,
             updated_at=settings.updated_at,
         )
 
@@ -659,6 +716,127 @@ class AdminService:
             stmt = stmt.where(AuditLog.tenant_id == tenant_id)
         logs = self.db.scalars(stmt.order_by(AuditLog.created_at.desc()).limit(limit)).all()
         return [AuditLogItem.model_validate(log, from_attributes=True) for log in logs]
+
+    def list_operations(self, *, tenant_id: int | None = None, invoice_id: int | None = None, limit: int = 50) -> OperationListResponse:
+        stmt = select(FiscalOperation).order_by(FiscalOperation.last_transition_at.desc()).limit(limit)
+        if tenant_id is not None:
+            stmt = stmt.where(FiscalOperation.tenant_id == tenant_id)
+        if invoice_id is not None:
+            stmt = stmt.where(FiscalOperation.invoice_id == invoice_id)
+        operations = self.db.scalars(stmt).all()
+        items = [
+            OperationListItem(
+                operation_id=operation.operation_id,
+                correlation_id=operation.correlation_id,
+                request_id=operation.request_id,
+                tenant_id=operation.tenant_id,
+                invoice_id=operation.invoice_id,
+                document_type=operation.document_type,
+                document_number=operation.document_number,
+                environment=operation.environment,
+                source_system=operation.source_system,
+                state=operation.state,
+                dgii_track_id=operation.dgii_track_id,
+                odoo_sync_state=operation.odoo_sync_state,
+                amount_total=Decimal(str(operation.amount_total)),
+                currency=operation.currency,
+                retry_count=operation.retry_count,
+                initiated_by=operation.initiated_by,
+                last_error_code=operation.last_error_code,
+                last_error_message=operation.last_error_message,
+                started_at=operation.started_at,
+                completed_at=operation.completed_at,
+                last_transition_at=operation.last_transition_at,
+            )
+            for operation in operations
+        ]
+        return OperationListResponse(items=items, total=len(items))
+
+    def get_operation(self, operation_id: str) -> OperationDetailResponse:
+        operation = self.db.scalar(
+            select(FiscalOperation)
+            .where(FiscalOperation.operation_id == operation_id)
+            .options(
+                selectinload(FiscalOperation.events),
+                selectinload(FiscalOperation.evidence_artifacts),
+            )
+        )
+        if operation is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Operacion no encontrada")
+        events = [OperationEventItem.model_validate(event, from_attributes=True) for event in operation.events]
+        evidence = [self._serialize_evidence(item) for item in operation.evidence_artifacts]
+        return OperationDetailResponse(
+            operation_id=operation.operation_id,
+            correlation_id=operation.correlation_id,
+            request_id=operation.request_id,
+            tenant_id=operation.tenant_id,
+            invoice_id=operation.invoice_id,
+            document_type=operation.document_type,
+            document_number=operation.document_number,
+            environment=operation.environment,
+            source_system=operation.source_system,
+            state=operation.state,
+            dgii_track_id=operation.dgii_track_id,
+            odoo_sync_state=operation.odoo_sync_state,
+            amount_total=Decimal(str(operation.amount_total)),
+            currency=operation.currency,
+            retry_count=operation.retry_count,
+            initiated_by=operation.initiated_by,
+            last_error_code=operation.last_error_code,
+            last_error_message=operation.last_error_message,
+            started_at=operation.started_at,
+            completed_at=operation.completed_at,
+            last_transition_at=operation.last_transition_at,
+            metadata_json=operation.metadata_json or {},
+            events=events,
+            evidence=evidence,
+        )
+
+    def get_operation_events(self, operation_id: str) -> list[OperationEventItem]:
+        operation = self.db.scalar(
+            select(FiscalOperation)
+            .where(FiscalOperation.operation_id == operation_id)
+            .options(selectinload(FiscalOperation.events))
+        )
+        if operation is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Operacion no encontrada")
+        return [OperationEventItem.model_validate(event, from_attributes=True) for event in operation.events]
+
+    def retry_operation(self, operation_id: str) -> OperationRetryResponse:
+        operation = self.db.scalar(select(FiscalOperation).where(FiscalOperation.operation_id == operation_id))
+        if operation is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Operacion no encontrada")
+        operation.retry_count += 1
+        operation.state = "RETRYING"
+        operation.last_transition_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        self.db.add(
+            FiscalOperationEvent(
+                operation_fk=operation.id,
+                status="RETRYING",
+                title="Reintento solicitado desde panel tecnico",
+                message="Retry manual registrado",
+                stage="RETRYING",
+                details_json={"retryCount": operation.retry_count},
+                occurred_at=operation.last_transition_at,
+            )
+        )
+        self.db.flush()
+        return OperationRetryResponse(
+            operation_id=operation.operation_id,
+            state=operation.state,
+            retry_count=operation.retry_count,
+        )
+
+    def _serialize_evidence(self, item: EvidenceArtifact) -> dict:
+        return {
+            "id": item.id,
+            "artifact_type": item.artifact_type,
+            "file_path": item.file_path,
+            "content_type": item.content_type,
+            "checksum": item.checksum,
+            "size_bytes": item.size_bytes,
+            "metadata_json": item.metadata_json or {},
+        }
 
     def list_platform_users(self) -> List[PlatformUserItem]:
         users = self.db.scalars(select(User).where(User.role.like("platform_%")).order_by(User.email.asc())).all()

@@ -4,6 +4,7 @@ import { useAccountingSummary, useCreateLedgerEntry, useLedgerEntries, useTenant
 import { useAdminInvoices } from "../api/dashboard";
 import { useAssignTenantPlan, useTenant, useTenantPlan, useUpdateTenant } from "../api/tenants";
 import { type Plan, usePlans } from "../api/plans";
+import { OperationMonitor } from "../components/OperationMonitor";
 
 const TABS = [
   { to: "overview", label: "Resumen" },
@@ -393,6 +394,8 @@ export function CompanyAccountingTab() {
           </table>
         </div>
       </section>
+
+      <OperationMonitor tenantId={id} />
     </div>
   );
 }
@@ -497,6 +500,26 @@ export function CompanySettingsTab() {
     correo_facturacion: "",
     telefono_contacto: "",
     notas: "",
+    rounding_policy: "HALF_UP",
+    odoo_sync_enabled: false,
+    odoo_api_url: "",
+    odoo_database: "",
+    odoo_company_id: "",
+    odoo_sales_journal_id: "",
+    odoo_purchase_journal_id: "",
+    odoo_fiscal_position_id: "",
+    odoo_payment_term_id: "",
+    odoo_currency_id: "",
+    odoo_customer_document_type_id: "",
+    odoo_vendor_document_type_id: "",
+    odoo_credit_note_document_type_id: "",
+    odoo_debit_note_document_type_id: "",
+    odoo_sales_tax_id: "",
+    odoo_purchase_tax_id: "",
+    odoo_zero_tax_id: "",
+    odoo_partner_vat_prefix: "",
+    odoo_journal_code_hint: "",
+    odoo_api_key_ref: "",
   });
 
   useEffect(() => {
@@ -519,6 +542,26 @@ export function CompanySettingsTab() {
         correo_facturacion: settingsQuery.data.correo_facturacion ?? "",
         telefono_contacto: settingsQuery.data.telefono_contacto ?? "",
         notas: settingsQuery.data.notas ?? "",
+        rounding_policy: settingsQuery.data.rounding_policy,
+        odoo_sync_enabled: settingsQuery.data.odoo_sync_enabled,
+        odoo_api_url: settingsQuery.data.odoo_api_url ?? "",
+        odoo_database: settingsQuery.data.odoo_database ?? "",
+        odoo_company_id: settingsQuery.data.odoo_company_id ? String(settingsQuery.data.odoo_company_id) : "",
+        odoo_sales_journal_id: settingsQuery.data.odoo_sales_journal_id ? String(settingsQuery.data.odoo_sales_journal_id) : "",
+        odoo_purchase_journal_id: settingsQuery.data.odoo_purchase_journal_id ? String(settingsQuery.data.odoo_purchase_journal_id) : "",
+        odoo_fiscal_position_id: settingsQuery.data.odoo_fiscal_position_id ? String(settingsQuery.data.odoo_fiscal_position_id) : "",
+        odoo_payment_term_id: settingsQuery.data.odoo_payment_term_id ? String(settingsQuery.data.odoo_payment_term_id) : "",
+        odoo_currency_id: settingsQuery.data.odoo_currency_id ? String(settingsQuery.data.odoo_currency_id) : "",
+        odoo_customer_document_type_id: settingsQuery.data.odoo_customer_document_type_id ? String(settingsQuery.data.odoo_customer_document_type_id) : "",
+        odoo_vendor_document_type_id: settingsQuery.data.odoo_vendor_document_type_id ? String(settingsQuery.data.odoo_vendor_document_type_id) : "",
+        odoo_credit_note_document_type_id: settingsQuery.data.odoo_credit_note_document_type_id ? String(settingsQuery.data.odoo_credit_note_document_type_id) : "",
+        odoo_debit_note_document_type_id: settingsQuery.data.odoo_debit_note_document_type_id ? String(settingsQuery.data.odoo_debit_note_document_type_id) : "",
+        odoo_sales_tax_id: settingsQuery.data.odoo_sales_tax_id ? String(settingsQuery.data.odoo_sales_tax_id) : "",
+        odoo_purchase_tax_id: settingsQuery.data.odoo_purchase_tax_id ? String(settingsQuery.data.odoo_purchase_tax_id) : "",
+        odoo_zero_tax_id: settingsQuery.data.odoo_zero_tax_id ? String(settingsQuery.data.odoo_zero_tax_id) : "",
+        odoo_partner_vat_prefix: settingsQuery.data.odoo_partner_vat_prefix ?? "",
+        odoo_journal_code_hint: settingsQuery.data.odoo_journal_code_hint ?? "",
+        odoo_api_key_ref: settingsQuery.data.odoo_api_key_ref ?? "",
       });
     }
   }, [settingsQuery.data]);
@@ -531,6 +574,11 @@ export function CompanySettingsTab() {
   const handleSettingsChange = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setSettingsForm((prev) => ({ ...prev, [name]: name === "dias_credito" ? Number(value) : value }));
+  };
+
+  const handleSettingsToggle = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = event.target;
+    setSettingsForm((prev) => ({ ...prev, [name]: checked }));
   };
 
   const handleIssuerSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -552,6 +600,26 @@ export function CompanySettingsTab() {
       correo_facturacion: settingsForm.correo_facturacion || null,
       telefono_contacto: settingsForm.telefono_contacto || null,
       notas: settingsForm.notas || null,
+      rounding_policy: settingsForm.rounding_policy,
+      odoo_sync_enabled: settingsForm.odoo_sync_enabled,
+      odoo_api_url: settingsForm.odoo_api_url || null,
+      odoo_database: settingsForm.odoo_database || null,
+      odoo_company_id: settingsForm.odoo_company_id ? Number(settingsForm.odoo_company_id) : null,
+      odoo_sales_journal_id: settingsForm.odoo_sales_journal_id ? Number(settingsForm.odoo_sales_journal_id) : null,
+      odoo_purchase_journal_id: settingsForm.odoo_purchase_journal_id ? Number(settingsForm.odoo_purchase_journal_id) : null,
+      odoo_fiscal_position_id: settingsForm.odoo_fiscal_position_id ? Number(settingsForm.odoo_fiscal_position_id) : null,
+      odoo_payment_term_id: settingsForm.odoo_payment_term_id ? Number(settingsForm.odoo_payment_term_id) : null,
+      odoo_currency_id: settingsForm.odoo_currency_id ? Number(settingsForm.odoo_currency_id) : null,
+      odoo_customer_document_type_id: settingsForm.odoo_customer_document_type_id ? Number(settingsForm.odoo_customer_document_type_id) : null,
+      odoo_vendor_document_type_id: settingsForm.odoo_vendor_document_type_id ? Number(settingsForm.odoo_vendor_document_type_id) : null,
+      odoo_credit_note_document_type_id: settingsForm.odoo_credit_note_document_type_id ? Number(settingsForm.odoo_credit_note_document_type_id) : null,
+      odoo_debit_note_document_type_id: settingsForm.odoo_debit_note_document_type_id ? Number(settingsForm.odoo_debit_note_document_type_id) : null,
+      odoo_sales_tax_id: settingsForm.odoo_sales_tax_id ? Number(settingsForm.odoo_sales_tax_id) : null,
+      odoo_purchase_tax_id: settingsForm.odoo_purchase_tax_id ? Number(settingsForm.odoo_purchase_tax_id) : null,
+      odoo_zero_tax_id: settingsForm.odoo_zero_tax_id ? Number(settingsForm.odoo_zero_tax_id) : null,
+      odoo_partner_vat_prefix: settingsForm.odoo_partner_vat_prefix || null,
+      odoo_journal_code_hint: settingsForm.odoo_journal_code_hint || null,
+      odoo_api_key_ref: settingsForm.odoo_api_key_ref || null,
     });
   };
 
@@ -648,6 +716,156 @@ export function CompanySettingsTab() {
             value={settingsForm.telefono_contacto}
             onChange={handleSettingsChange}
             placeholder="809-555-0000"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Politica de redondeo">
+          <input
+            name="rounding_policy"
+            value={settingsForm.rounding_policy}
+            onChange={handleSettingsChange}
+            placeholder="HALF_UP"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <label className="flex items-center gap-3 rounded-lg border border-slate-800 bg-slate-950/60 px-3 py-2 text-sm text-slate-200">
+          <input
+            type="checkbox"
+            name="odoo_sync_enabled"
+            checked={settingsForm.odoo_sync_enabled}
+            onChange={handleSettingsToggle}
+          />
+          Habilitar sincronizacion Odoo JSON-2
+        </label>
+        <Field label="Odoo API URL" className="md:col-span-2">
+          <input
+            name="odoo_api_url"
+            value={settingsForm.odoo_api_url}
+            onChange={handleSettingsChange}
+            placeholder="https://odoo.example.com/json/2"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Odoo database">
+          <input
+            name="odoo_database"
+            value={settingsForm.odoo_database}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Odoo API key ref">
+          <input
+            name="odoo_api_key_ref"
+            value={settingsForm.odoo_api_key_ref}
+            onChange={handleSettingsChange}
+            placeholder="secret://odoo/company-a"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Company ID">
+          <input
+            name="odoo_company_id"
+            value={settingsForm.odoo_company_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Sales journal ID">
+          <input
+            name="odoo_sales_journal_id"
+            value={settingsForm.odoo_sales_journal_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Purchase journal ID">
+          <input
+            name="odoo_purchase_journal_id"
+            value={settingsForm.odoo_purchase_journal_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Fiscal position ID">
+          <input
+            name="odoo_fiscal_position_id"
+            value={settingsForm.odoo_fiscal_position_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Payment term ID">
+          <input
+            name="odoo_payment_term_id"
+            value={settingsForm.odoo_payment_term_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Currency ID">
+          <input
+            name="odoo_currency_id"
+            value={settingsForm.odoo_currency_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Customer doc type ID">
+          <input
+            name="odoo_customer_document_type_id"
+            value={settingsForm.odoo_customer_document_type_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Credit note doc type ID">
+          <input
+            name="odoo_credit_note_document_type_id"
+            value={settingsForm.odoo_credit_note_document_type_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Debit note doc type ID">
+          <input
+            name="odoo_debit_note_document_type_id"
+            value={settingsForm.odoo_debit_note_document_type_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Sales tax ID">
+          <input
+            name="odoo_sales_tax_id"
+            value={settingsForm.odoo_sales_tax_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Zero tax ID">
+          <input
+            name="odoo_zero_tax_id"
+            value={settingsForm.odoo_zero_tax_id}
+            onChange={handleSettingsChange}
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="VAT prefix">
+          <input
+            name="odoo_partner_vat_prefix"
+            value={settingsForm.odoo_partner_vat_prefix}
+            onChange={handleSettingsChange}
+            placeholder="DO-"
+            className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
+          />
+        </Field>
+        <Field label="Journal code hint">
+          <input
+            name="odoo_journal_code_hint"
+            value={settingsForm.odoo_journal_code_hint}
+            onChange={handleSettingsChange}
+            placeholder="VENTA"
             className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2 text-sm text-slate-100 focus:border-primary focus:outline-none"
           />
         </Field>

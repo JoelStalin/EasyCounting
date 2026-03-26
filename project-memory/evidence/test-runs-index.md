@@ -1,0 +1,39 @@
+# Test Runs Index
+
+- `2026-03-26 02:13:10`
+  - tipo: controlled local matrix
+  - ruta: `tests/artifacts/2026-03-26_02-13-10_controlled_local_matrix/`
+  - pruebas:
+    - `pytest tests/test_tenant_certificates.py tests/test_fiscal_operations.py -q` => `8 passed`
+    - `python scripts/run_local_controlled_matrix.py` => `PASS_LOCAL`
+  - cobertura:
+    - E31
+    - E32
+    - E33
+    - E34
+    - E41
+    - E43
+    - E44
+    - E45
+    - E46
+    - E47
+  - monto: `0.001`
+  - resultado: `PASS_LOCAL`
+
+- `2026-03-25 23:50:25`
+  - tipo: controlled local matrix
+  - ruta: `tests/artifacts/2026-03-25_23-50-25_controlled_local_matrix/`
+  - validación docker: `tests/artifacts/2026-03-25_23-50-25_controlled_local_matrix/docker-validation.json`
+  - cobertura:
+    - E31
+    - E32
+    - E33
+    - E34
+    - E41
+    - E43
+    - E44
+    - E45
+    - E46
+    - E47
+  - monto: `0.001`
+  - resultado: `PASS_LOCAL`

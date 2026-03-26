@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import base64
+import binascii
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Query, Request, UploadFile, status
 from sqlalchemy.orm import Session
 
+from app.application.certificates import TenantCertificateService
 from app.application.client_portal import ClientPortalService
 from app.application.recurring_invoices import RecurringInvoiceService
 from app.application.tenant_api import TenantApiService
@@ -17,6 +20,10 @@ from app.portal_client.schemas import (
     InvoiceListResponse,
     PlanChangeRequest,
     PlanPublic,
+    TenantCertificateListResponse,
+    TenantCertificateSignRequest,
+    TenantCertificateSignResponse,
+    TenantCertificateUploadResponse,
     TenantOnboardingStatusResponse,
     TenantOnboardingUpdateRequest,
     TenantPlanSummary,
@@ -81,6 +88,14 @@ def _user_id_from_payload(payload: dict) -> int | None:
         return None
 
 
+def _actor_from_payload(payload: dict) -> str:
+    user_id = _user_id_from_payload(payload)
+    if user_id is not None:
+        return f"user:{user_id}"
+    tenant_id = payload.get("tenant_id")
+    return f"tenant:{tenant_id}" if tenant_id is not None else "tenant:unknown"
+
+
 @router.get("/health")
 def health() -> dict:
     return {"status": "ok", "scope": "cliente"}
@@ -89,6 +104,68 @@ def health() -> dict:
 @router.get("/me")
 def me(payload: dict = Depends(_require_tenant_user)) -> dict:
     return {"user": payload}
+
+
+@router.get("/certificates", response_model=TenantCertificateListResponse)
+def list_certificates(
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> TenantCertificateListResponse:
+    tenant_id = _tenant_id_from_payload(payload)
+    return TenantCertificateService(db).list_certificates(tenant_id)
+
+
+@router.post("/certificates", response_model=TenantCertificateUploadResponse, status_code=status.HTTP_201_CREATED)
+async def upload_certificate(
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+    alias: str = Form(..., max_length=100),
+    password: str = Form(..., min_length=1, max_length=512),
+    activate: bool = Form(default=True),
+    certificate: UploadFile = File(...),
+) -> TenantCertificateUploadResponse:
+    tenant_id = _tenant_id_from_payload(payload)
+    filename = certificate.filename or "certificado.p12"
+    suffix = filename.lower()
+    if not suffix.endswith(".p12") and not suffix.endswith(".pfx"):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Solo se aceptan archivos .p12 o .pfx")
+    content = await certificate.read()
+    return TenantCertificateService(db).upload_certificate(
+        tenant_id=tenant_id,
+        alias=alias,
+        password=password,
+        p12_bytes=content,
+        filename=filename,
+        activate=activate,
+        actor=_actor_from_payload(payload),
+        actor_user_id=_user_id_from_payload(payload),
+    )
+
+
+@router.post("/certificates/sign-xml", response_model=TenantCertificateSignResponse)
+def sign_xml_with_active_certificate(
+    body: TenantCertificateSignRequest,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> TenantCertificateSignResponse:
+    tenant_id = _tenant_id_from_payload(payload)
+    try:
+        xml_bytes = base64.b64decode(body.xml)
+    except (ValueError, binascii.Error) as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="XML base64 invalido") from exc
+    signed_xml, runtime = TenantCertificateService(db).sign_xml(
+        xml_bytes,
+        tenant_id=tenant_id,
+        allow_env_fallback=body.allow_env_fallback,
+        reference_uri=body.reference_uri,
+    )
+    return TenantCertificateSignResponse(
+        xmlSigned=base64.b64encode(signed_xml).decode("utf-8"),
+        certificateId=runtime.certificate_id,
+        certificateAlias=runtime.alias,
+        certificateSubject=runtime.subject,
+        source=runtime.source,
+    )
 
 
 @router.get("/onboarding", response_model=TenantOnboardingStatusResponse)

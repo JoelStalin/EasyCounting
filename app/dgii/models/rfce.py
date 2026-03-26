@@ -7,13 +7,15 @@ from decimal import Decimal
 from lxml import etree
 from pydantic import Field
 
+from typing import ClassVar
+
 from app.dgii.models.base import BaseDGIIModel, XMLSerializerConfig, decimal_to_str
 
 
 class RFCERequest(BaseDGIIModel):
     """Representa el resumen diario/mensual enviado a la DGII."""
 
-    xml_config = XMLSerializerConfig(root_tag="RFCE")
+    xml_config: ClassVar[XMLSerializerConfig] = XMLSerializerConfig(root_tag="RFCE")
 
     encf: str = Field(..., max_length=13)
     rnc_emisor: str = Field(..., max_length=11, alias="rncEmisor")

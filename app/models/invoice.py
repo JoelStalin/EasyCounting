@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from decimal import Decimal
 from typing import List
 
 from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Numeric, String, UniqueConstraint
@@ -54,15 +55,37 @@ class Invoice(Base):
     estado_dgii: Mapped[str] = mapped_column(String(30), default="pendiente")
     track_id: Mapped[str | None] = mapped_column(String(64))
     codigo_seguridad: Mapped[str | None] = mapped_column(String(6))
-    total: Mapped[float] = mapped_column(Numeric(16, 2))
+    currency: Mapped[str] = mapped_column(String(3), default="DOP")
+    subtotal_source: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    discount_total_source: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    tax_total_source: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    total_fiscal: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    total_accounting: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    rounding_delta: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    total: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
     fecha_emision: Mapped[datetime] = mapped_column(default=utcnow)
     contabilizado: Mapped[bool] = mapped_column(Boolean, default=False)
     accounted_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     asiento_referencia: Mapped[str | None] = mapped_column(String(64))
+    odoo_move_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    odoo_move_name: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    odoo_sync_state: Mapped[str] = mapped_column(String(32), default="PENDING")
+    odoo_synced_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    last_operation_id: Mapped[int | None] = mapped_column(ForeignKey("fiscal_operations.id", ondelete="SET NULL"), nullable=True)
 
-    tenant: Mapped[Tenant] = relationship(backref="invoices")
+    tenant: Mapped[Tenant] = relationship(backref="invoices", foreign_keys=[tenant_id])
     issuer_tenant: Mapped[Tenant | None] = relationship(foreign_keys=[issuer_tenant_id], backref="issued_invoices")
     ledger_entries: Mapped[List["InvoiceLedgerEntry"]] = relationship("InvoiceLedgerEntry", back_populates="invoice")
+    fiscal_operations: Mapped[List["FiscalOperation"]] = relationship(
+        "FiscalOperation",
+        back_populates="invoice",
+        foreign_keys="FiscalOperation.invoice_id",
+    )
+    last_operation: Mapped["FiscalOperation | None"] = relationship(
+        "FiscalOperation",
+        foreign_keys=[last_operation_id],
+        post_update=True,
+    )
     line_items: Mapped[List["InvoiceLine"]] = relationship(
         back_populates="invoice",
         cascade="all, delete-orphan",
@@ -78,15 +101,17 @@ class InvoiceLine(Base):
     tenant_id: Mapped[int] = mapped_column(ForeignKey("tenants.id", ondelete="CASCADE"))
     invoice_id: Mapped[int] = mapped_column(ForeignKey("invoices.id", ondelete="CASCADE"))
     line_number: Mapped[int] = mapped_column(default=1)
-    cantidad: Mapped[float] = mapped_column(Numeric(16, 2), default=1)
+    cantidad: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("1"))
     billing_indicator: Mapped[str | None] = mapped_column(String(20), nullable=True)
     descripcion: Mapped[str] = mapped_column(String(255))
     unidad_medida: Mapped[str | None] = mapped_column(String(40), nullable=True)
-    precio_unitario: Mapped[float] = mapped_column(Numeric(16, 2), default=0)
-    itbis_rate: Mapped[float | None] = mapped_column(Numeric(8, 4), nullable=True)
-    itbis_amount: Mapped[float] = mapped_column(Numeric(16, 2), default=0)
-    other_tax_amount: Mapped[float] = mapped_column(Numeric(16, 2), default=0)
-    line_total: Mapped[float] = mapped_column(Numeric(16, 2), default=0)
+    precio_unitario: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    discount_amount: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    line_subtotal: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    itbis_rate: Mapped[Decimal | None] = mapped_column(Numeric(8, 4), nullable=True)
+    itbis_amount: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    other_tax_amount: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
+    line_total: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
 
     invoice: Mapped[Invoice] = relationship(back_populates="line_items")
-    tenant: Mapped[Tenant] = relationship(backref="invoice_lines")
+    tenant: Mapped[Tenant] = relationship(backref="invoice_lines", foreign_keys=[tenant_id])

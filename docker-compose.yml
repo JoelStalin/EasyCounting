@@ -1,25 +1,37 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      args:
+        INSTALL_BROWSER_AUTOMATION: ${INSTALL_BROWSER_AUTOMATION:-false}
     image: dgii-ecf-web:latest
     env_file: ${ENV_FILE:-.env}
     depends_on:
       db:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
+    environment:
+      TZ: ${TZ:-America/Santo_Domingo}
+      ARTIFACTS_ROOT: /app/tests/artifacts
+      STORAGE_BASE_PATH: /var/getupsoft/storage
     volumes:
       - ./xsd:/app/xsd:ro
       - ./alembic:/app/alembic:ro
       - ./secrets:/secrets:ro
+      - ./tests/artifacts:/app/tests/artifacts
+      - ./logs:/app/logs
+      - storage_data:/var/getupsoft/storage
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test:
         [
           "CMD",
           "python",
           "-c",
-          "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/readyz').read()",
         ]
       interval: 15s
       timeout: 5s
@@ -46,6 +58,8 @@ services:
       POSTGRES_DB: dgii
       POSTGRES_USER: dgii
       POSTGRES_PASSWORD: dgii
+      TZ: ${TZ:-America/Santo_Domingo}
+      PGTZ: ${TZ:-America/Santo_Domingo}
     ports:
       - "5432:5432"
     healthcheck:
@@ -60,8 +74,15 @@ services:
   redis:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "no"]
+    environment:
+      TZ: ${TZ:-America/Santo_Domingo}
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   mailpit:
@@ -84,3 +105,4 @@ services:
 
 volumes:
   pgdata:
+  storage_data:

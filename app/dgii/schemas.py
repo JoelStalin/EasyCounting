@@ -5,7 +5,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.dgii.models import (
     ACECFRequest,
@@ -131,9 +131,15 @@ class ARECFPayload(BaseModel):
 
 
 class SubmissionResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     track_id: str = Field(..., alias="trackId")
     status: str
     messages: Optional[List[str]] = None
+    operation_id: Optional[str] = Field(default=None, alias="operationId")
+    correlation_id: Optional[str] = Field(default=None, alias="correlationId")
+    environment: Optional[str] = None
+    state: Optional[str] = None
 
 
 class RFCESubmissionResponse(BaseModel):
@@ -144,6 +150,8 @@ class RFCESubmissionResponse(BaseModel):
 
 
 class StatusResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     track_id: str = Field(..., alias="trackId")
     estado: str
     descripcion: Optional[str] = None

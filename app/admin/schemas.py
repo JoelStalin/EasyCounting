@@ -21,6 +21,26 @@ class TenantSettingsPayload(BaseModel):
     correo_facturacion: Optional[str] = Field(default=None, max_length=255)
     telefono_contacto: Optional[str] = Field(default=None, max_length=25)
     notas: Optional[str] = Field(default=None, max_length=512)
+    rounding_policy: str = Field(default="HALF_UP", max_length=32)
+    odoo_sync_enabled: bool = False
+    odoo_api_url: Optional[str] = Field(default=None, max_length=255)
+    odoo_database: Optional[str] = Field(default=None, max_length=120)
+    odoo_company_id: Optional[int] = Field(default=None, ge=1)
+    odoo_sales_journal_id: Optional[int] = Field(default=None, ge=1)
+    odoo_purchase_journal_id: Optional[int] = Field(default=None, ge=1)
+    odoo_fiscal_position_id: Optional[int] = Field(default=None, ge=1)
+    odoo_payment_term_id: Optional[int] = Field(default=None, ge=1)
+    odoo_currency_id: Optional[int] = Field(default=None, ge=1)
+    odoo_customer_document_type_id: Optional[int] = Field(default=None, ge=1)
+    odoo_vendor_document_type_id: Optional[int] = Field(default=None, ge=1)
+    odoo_credit_note_document_type_id: Optional[int] = Field(default=None, ge=1)
+    odoo_debit_note_document_type_id: Optional[int] = Field(default=None, ge=1)
+    odoo_sales_tax_id: Optional[int] = Field(default=None, ge=1)
+    odoo_purchase_tax_id: Optional[int] = Field(default=None, ge=1)
+    odoo_zero_tax_id: Optional[int] = Field(default=None, ge=1)
+    odoo_partner_vat_prefix: Optional[str] = Field(default=None, max_length=12)
+    odoo_journal_code_hint: Optional[str] = Field(default=None, max_length=32)
+    odoo_api_key_ref: Optional[str] = Field(default=None, max_length=128)
 
 
 class TenantSettingsResponse(TenantSettingsPayload):
@@ -262,4 +282,69 @@ class InvoiceDetailResponse(InvoiceListItem):
     contabilizado: bool
     accounted_at: Optional[datetime] = None
     asiento_referencia: Optional[str] = None
+    currency: str = "DOP"
+    subtotal_source: Decimal = Decimal("0")
+    discount_total_source: Decimal = Decimal("0")
+    tax_total_source: Decimal = Decimal("0")
+    total_fiscal: Decimal = Decimal("0")
+    total_accounting: Decimal = Decimal("0")
+    rounding_delta: Decimal = Decimal("0")
+    odoo_move_id: Optional[str] = None
+    odoo_move_name: Optional[str] = None
+    odoo_sync_state: str = "PENDING"
+    odoo_synced_at: Optional[datetime] = None
+
+
+class OperationListItem(BaseModel):
+    operation_id: str
+    correlation_id: str
+    request_id: Optional[str] = None
+    tenant_id: int
+    invoice_id: Optional[int] = None
+    document_type: str
+    document_number: Optional[str] = None
+    environment: str
+    source_system: str
+    state: str
+    dgii_track_id: Optional[str] = None
+    odoo_sync_state: str
+    amount_total: Decimal
+    currency: str
+    retry_count: int
+    initiated_by: Optional[str] = None
+    last_error_code: Optional[str] = None
+    last_error_message: Optional[str] = None
+    started_at: datetime
+    completed_at: Optional[datetime] = None
+    last_transition_at: datetime
+
+
+class OperationEventItem(BaseModel):
+    id: int
+    status: str
+    title: str
+    message: Optional[str] = None
+    stage: Optional[str] = None
+    duration_ms: Optional[int] = None
+    details_json: dict = Field(default_factory=dict)
+    occurred_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class OperationDetailResponse(OperationListItem):
+    metadata_json: dict = Field(default_factory=dict)
+    events: List[OperationEventItem] = Field(default_factory=list)
+    evidence: List[dict] = Field(default_factory=list)
+
+
+class OperationListResponse(BaseModel):
+    items: List[OperationListItem]
+    total: int
+
+
+class OperationRetryResponse(BaseModel):
+    operation_id: str
+    state: str
+    retry_count: int
 

@@ -28,12 +28,18 @@ async def get_dgii_client() -> AsyncIterator[DGIIClient]:
 
 
 def bind_request_headers(
-    request_id: str | None = Header(default=None, alias=settings.request_id_header)
+    request_id: str | None = Header(default=None, alias=settings.request_id_header),
+    trace_id: str | None = Header(default=None, alias=settings.tracing_header),
 ) -> None:
     """Bind tracing information from headers if available."""
 
+    context: dict[str, str] = {}
     if request_id:
-        bind_request_context(request_id=request_id)
+        context["request_id"] = request_id
+    if trace_id:
+        context["trace_id"] = trace_id
+    if context:
+        bind_request_context(**context)
 
 
 BearerToken = Depends(get_bearer_token)

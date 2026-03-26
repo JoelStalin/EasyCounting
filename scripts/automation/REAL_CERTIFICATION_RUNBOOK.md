@@ -1,86 +1,134 @@
 # Real Certification Runbook
 
-Este documento deja el flujo seguro para pruebas reales y certificacion sin usar cuentas root ni secretos expuestos en el chat.
+This runbook defines a safe and reproducible flow for real DGII certification tests.
 
 ## Guardrails
 
-- no usar `AWS root user` para automatizacion
-- no exponer `80/443` publicamente desde el equipo sin reverse proxy, TLS y allowlist
-- no reutilizar credenciales DGII o AWS que ya fueron divulgadas en un chat o captura
-- rotar inmediatamente cualquier secreto ya compartido
+- do not use AWS root user for automation
+- do not expose `80/443` publicly without reverse proxy, TLS, and allowlist
+- rotate any credential already shared in chat or screenshots
+- keep DGII production and certification credentials strictly separated
 
-## Acciones obligatorias antes de produccion
+## Mandatory Preconditions
 
-1. Rotar la clave root de AWS y habilitar MFA.
-2. Crear un usuario o rol IAM dedicado para Route53 con permisos minimos.
-3. Generar `AWS_ACCESS_KEY_ID` y `AWS_SECRET_ACCESS_KEY` para ese usuario.
-4. Rotar tambien la credencial DGII compartida y guardarla fuera del repo.
-5. Definir el `HostedZoneId` real de `getupsoft.com`.
+1. Rotate AWS root password and enable MFA.
+2. Create a dedicated IAM user/role for Route53 with least privilege.
+3. Rotate DGII credentials and store them outside the repository.
+4. Use a real signing certificate for the registered representative.
+5. Define the real HostedZoneId for `getupsoft.com`.
 
-## IAM minimo recomendado para Route53
+## Minimal Route53 IAM Scope
 
-Permisos esperados:
+Required actions:
 
 - `route53:ListHostedZonesByName`
 - `route53:ListResourceRecordSets`
 - `route53:ChangeResourceRecordSets`
 - `route53:GetChange`
 
-Recurso:
+Resource scope:
 
-- limitar a la hosted zone exacta de `getupsoft.com`
+- exact hosted zone for `getupsoft.com`
 
-## Arranque seguro en WSL
-
-Comando:
+## Secure WSL Start
 
 ```powershell
 .\scripts\automation\start_wsl_local_service.ps1
 ```
 
-Puertos locales resultantes:
+Expected local endpoints:
 
-- `http://127.0.0.1:28080` -> Nginx local sin TLS para pruebas
-- `http://127.0.0.1:18081` -> Admin SPA local
-- `http://127.0.0.1:18082` -> Client SPA local
-- `http://127.0.0.1:18083` -> Redirect local del apex hacia admin
+- `http://127.0.0.1:28080` Nginx local test endpoint
+- `http://127.0.0.1:18081` Admin SPA
+- `http://127.0.0.1:18082` Client SPA
+- `http://127.0.0.1:18083` Apex redirect
 
-Esto no publica puertos a toda la red.
+## DGII Signature Requirements Applied
 
-## AWS CLI seguro
+- Postulacion XML must be signed by the registered representative/admin user.
+- If certificate identity does not match that representative, DGII returns `Error XML. Firma Invalida.`.
+- Certificate type must be `Persona Fisica para Procedimientos Tributarios` and align with Resolucion 035-2020, Art. 17.
+- `VersionSoftware` must be numeric (`double`), for example `1.0`.
 
-Configura un perfil dedicado:
+Official references:
+
+- https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documentacin%20sobre%20eCF/Instructivos%20sobre%20Facturaci%C3%B3n%20Electr%C3%B3nica/Firmado%20de%20e-CF.pdf
+- https://ayuda.dgii.gov.do/conversations/facturacin-electrnica/ca5241-por-cules-razones-durante-el-proceso-de-certificacin-para-ser-emisor-electrnico-puede-generar-la-alerta-la-firma-utilizada-en-el-xml-del-formulario-de-postulacin-no-corresponde-con-el-representante-registrado-favor-verificar-y-volver-a-intentarlo/6824cc24cffeb5201cfd9039
+- https://ayuda.dgii.gov.do/conversations/facturacin-electrnica/ca5270-en-cules-entidades-puedo-adquirir-el-certificado-digital-para-procesos-tributarios-exigido-en-facturacin-electrnica/68ac68a21c434d661376fe09
+- https://dgii.gov.do/cicloContribuyente/facturacion/comprobantesFiscalesElectronicosE-CF/Documents/Marco%20Legal/Resolucion%20035-2020.pdf
+
+## Real Postulacion Sequence
+
+1. Start backend and verify `/health` and `/readyz`.
+2. Ensure real certificate is loaded/available.
+3. Run Selenium postulacion flow.
+4. Generate postulacion XML.
+5. Sign XML with real certificate.
+6. Upload signed XML.
+7. Persist artifacts and final DGII response.
+
+## Available Signing Tools
+
+1. Internal API signing (tenant certificate):
 
 ```powershell
-.\scripts\automation\configure_aws_route53_profile.ps1 `
-  -AccessKeyId "<IAM_ACCESS_KEY_ID>" `
-  -SecretAccessKey "<IAM_SECRET_ACCESS_KEY>" `
-  -SessionToken "<AWS_SESSION_TOKEN_OPCIONAL>" `
-  -ProfileName "getupsoft-route53"
+python scripts/automation/sign_postulacion_xml.py `
+  --xml-path "C:\path\postulacion.xml" `
+  --tenant-id 51
 ```
 
-## Actualizacion DNS para getupsoft.com
+2. Local `.p12/.pfx` signing:
 
 ```powershell
-.\scripts\automation\update_route53_getupsoft.ps1 `
-  -HostedZoneId "<GETUPSOFT_HOSTED_ZONE_ID>" `
-  -RecordNames @("getupsoft.com.","*.getupsoft.com.") `
-  -ProfileName "getupsoft-route53"
+python scripts/automation/sign_postulacion_xml.py `
+  --xml-path "C:\path\postulacion.xml" `
+  --p12-path "C:\path\certificado.p12" `
+  --p12-password "********"
 ```
 
-## Flujo de certificacion DGII
+3. Official DGII tool (`App Firma Digital`) via automation:
 
-1. Levantar el backend local en WSL.
-2. Confirmar salud con `/health`, `/readyz` y `/api/v1/odoo/rnc/search`.
-3. Configurar Odoo con `getupsoft_dgii_encf.base_url=http://host.docker.internal:8000` o la URL interna correspondiente.
-4. Cargar certificados `.p12` del emisor en `secrets/`.
-5. Ejecutar casos de prueba en ambiente `CERT` o `PRECERT`, no con credenciales divulgadas.
-6. Conservar evidencia: XML firmado, `trackId`, respuesta DGII, consulta de estado y asiento contable.
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\automation\sign_with_dgii_app.ps1 `
+  -XmlPath "C:\path\postulacion.xml" `
+  -P12Path "C:\path\certificado.p12" `
+  -P12Password "********"
+```
 
-## Lo que sigue faltando para ejecucion real completa
+4. Windows certificate store signing (token/store):
 
-- confirmar la base de datos de produccion/certificacion
-- definir las IPs permitidas si se desea exposicion externa controlada
-- provisionar el `HostedZoneId` real de `getupsoft.com`
-- entregar credenciales IAM no root, idealmente temporales con `SessionToken`
-- entregar certificado `.p12` DGII rotado y su password por canal seguro
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts\automation\sign_with_windows_certstore.ps1 `
+  -XmlPath "C:\path\postulacion.xml" `
+  -StorePath "CurrentUser\My" `
+  -Thumbprint "<REAL_CERT_THUMBPRINT>"
+```
+
+`scripts/automation/run_real_dgii_postulacion_ofv.py` now prioritizes:
+
+1. Windows store certificate signing
+2. DGII App Firma Digital signing
+3. Internal API / certificate register fallback
+
+New environment variables:
+
+- `DGII_SIGNING_CERT_THUMBPRINT`
+- `DGII_SIGNING_CERT_SUBJECT`
+- `DGII_SIGNING_CERT_STORE_PATH` (default `CurrentUser\My`)
+
+## Operational Evidence
+
+Keep for each run:
+
+- generated XML
+- signed XML
+- run-summary JSON
+- final page screenshot and HTML
+- DGII validation message
+
+## Remaining Inputs Needed For Full Real Completion
+
+- real representative certificate (`.p12/.pfx` or installed token cert)
+- certificate password or token access flow
+- rotated DGII credentials for certification environment
+- dedicated IAM credentials (non-root)

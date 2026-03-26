@@ -45,7 +45,7 @@ def sign_xml_enveloped(xml_bytes: bytes, p12_path: str, password: Optional[str],
             root,
             key=private_key,
             cert=certificate.public_bytes(Encoding.PEM),
-            reference_uri=reference_uri,
+            reference_uri=reference_uri or None,
         )
     except Exception as exc:  # noqa: BLE001
         raise SigningError("Error signing XML document") from exc

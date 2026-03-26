@@ -149,3 +149,45 @@ class TenantOnboardingUpdateRequest(BaseModel):
     notes: Optional[str] = Field(default=None, max_length=512)
 
     model_config = ConfigDict(populate_by_name=True)
+
+
+class TenantCertificateItem(BaseModel):
+    id: int
+    alias: str
+    subject: str
+    issuer: str
+    not_before: datetime = Field(alias="notBefore")
+    not_after: datetime = Field(alias="notAfter")
+    is_active: bool = Field(alias="isActive")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class TenantCertificateListResponse(BaseModel):
+    items: List[TenantCertificateItem]
+    active_certificate_id: Optional[int] = Field(default=None, alias="activeCertificateId")
+    active_source: Optional[str] = Field(default=None, alias="activeSource")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class TenantCertificateUploadResponse(TenantCertificateItem):
+    message: str
+
+
+class TenantCertificateSignRequest(BaseModel):
+    xml: str = Field(..., description="Documento XML sin firmar en base64")
+    reference_uri: str = Field(default="", alias="referenceUri")
+    allow_env_fallback: bool = Field(default=True, alias="allowEnvFallback")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class TenantCertificateSignResponse(BaseModel):
+    xml_signed: str = Field(alias="xmlSigned")
+    certificate_id: Optional[int] = Field(default=None, alias="certificateId")
+    certificate_alias: Optional[str] = Field(default=None, alias="certificateAlias")
+    certificate_subject: Optional[str] = Field(default=None, alias="certificateSubject")
+    source: str
+
+    model_config = ConfigDict(populate_by_name=True)

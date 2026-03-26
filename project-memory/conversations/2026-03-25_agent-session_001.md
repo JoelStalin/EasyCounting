@@ -1,0 +1,22 @@
+# Agent Session 001
+
+- Fecha: 2026-03-25
+- Objetivo: endurecer DGII + Odoo 19 + observabilidad + evidencia reproducible.
+- Hallazgos:
+  - router fake DGII sombreando al real
+  - falta de operación fiscal durable
+  - precisión decimal insuficiente
+  - stream SSE atado a la sesión global
+  - migración de esquema faltante
+- Cambios:
+  - modelos fiscales y contables nuevos
+  - routers DGII reales montados
+  - Odoo JSON-2 bridge
+  - admin operations API
+  - artifacts local matrix
+- Pruebas:
+  - `pytest tests/test_fiscal_operations.py automation/browser/tests/test_browser_feature_flags.py -q`
+  - `pytest tests/test_clients_contract.py -q`
+  - `python scripts/run_local_controlled_matrix.py`
+- Evidencia:
+  - `tests/artifacts/2026-03-25_23-50-25_controlled_local_matrix/`

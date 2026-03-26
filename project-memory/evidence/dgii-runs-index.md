@@ -1,0 +1,90 @@
+# DGII Runs Index
+
+- `2026-03-26 03:06:33`
+  - modo: `DGII_REAL_PORTAL_SELENIUM`
+  - script: `scripts/automation/run_real_dgii_postulacion_ofv.py`
+  - evidencia principal:
+    - `tests/artifacts/2026-03-26_03-06-33_dgii_real_postulacion_ofv/run-summary.json`
+    - `tests/artifacts/2026-03-26_03-06-33_dgii_real_postulacion_ofv/windows-store-sign-result.json`
+    - `tests/artifacts/2026-03-26_03-06-33_dgii_real_postulacion_ofv/after_signed_upload.json`
+  - estado:
+    - login OFV OK
+    - apertura postulación OK
+    - generación XML OK
+    - firma automática OK (`signed_with_windows_store`)
+    - carga XML firmado ejecutada
+  - respuesta DGII:
+    - `La firma utilizada en el XML del formulario de postulación no corresponde con el representante registrado...`
+  - gate externo registrado:
+    - no existe en el host un certificado real del representante del contribuyente
+
+- `2026-03-26 03:01:10`
+  - modo: `DGII_REAL_PORTAL_SELENIUM`
+  - script: `scripts/automation/run_real_dgii_postulacion_ofv.py`
+  - evidencia principal:
+    - `tests/artifacts/2026-03-26_03-01-10_dgii_real_postulacion_ofv/run-summary.json`
+    - `tests/artifacts/2026-03-26_03-01-10_dgii_real_postulacion_ofv/internal-sign-error.json`
+  - estado:
+    - login OFV OK
+    - apertura postulación OK
+    - generación XML OK
+    - firma NO ejecutada por falta de material válido
+  - gate externo registrado:
+    - `409 No existe un certificado utilizable para firmar`
+
+- `2026-03-26 02:33:33`
+  - modo: `DGII_REAL_PORTAL_SELENIUM`
+  - script: `scripts/automation/run_real_dgii_postulacion_ofv.py`
+  - evidencia principal:
+    - `tests/artifacts/2026-03-26_02-33-33_dgii_real_postulacion_ofv/run-summary.json`
+    - `tests/artifacts/2026-03-26_02-33-33_dgii_real_postulacion_ofv/after_signed_upload.json`
+    - `tests/artifacts/2026-03-26_02-33-33_dgii_real_postulacion_ofv/202603263403078.signed.xml`
+  - estado:
+    - login OFV OK
+    - apertura postulación OK
+    - generación XML OK
+    - firma automática OK (`internal_api:tenant`)
+    - carga XML firmado ejecutada
+  - respuesta DGII:
+    - `Error XML. Firma Inválida.`
+  - gate externo registrado:
+    - certificado de firma no corresponde al representante registrado del contribuyente
+
+- `2026-03-26 02:13:52`
+  - modo: `DGII_REAL_PORTAL_SELENIUM`
+  - script: `scripts/automation/run_real_dgii_postulacion_ofv.py`
+  - evidencia principal:
+    - `tests/artifacts/2026-03-26_02-13-52_dgii_real_postulacion_ofv/run-summary.json`
+    - `tests/artifacts/2026-03-26_02-13-52_dgii_real_postulacion_ofv/ofv_authenticated.png`
+    - `tests/artifacts/2026-03-26_02-13-52_dgii_real_postulacion_ofv/generated_postulacion.png`
+    - `tests/artifacts/2026-03-26_02-13-52_dgii_real_postulacion_ofv/202603261437600.xml`
+  - estado:
+    - login OFV OK
+    - apertura de postulación OK
+    - generación de XML OK
+    - carga de XML firmado NO ejecutada
+  - gate externo registrado:
+    - `409 No existe un certificado utilizable para firmar`
+    - `DGII_SIGNING_P12_PATH` y `DGII_SIGNING_P12_PASSWORD` no definidos
+
+- `2026-03-26 02:13:10`
+  - modo: `LOCAL_CONTROLLED`
+  - cliente DGII: fake deterministic client
+  - evidencia principal:
+    - `tests/artifacts/2026-03-26_02-13-10_controlled_local_matrix/run-summary.json`
+    - `tests/artifacts/2026-03-26_02-13-10_controlled_local_matrix/run-summary.md`
+  - gate externo registrado:
+    - certificado DGII real ausente
+    - credenciales portal DGII no cargadas en entorno shell
+    - Odoo JSON-2 remoto no configurado
+
+- `2026-03-25 23:50:25`
+  - modo: `LOCAL_CONTROLLED`
+  - cliente DGII: fake deterministic client
+  - evidencia principal:
+    - `tests/artifacts/2026-03-25_23-50-25_controlled_local_matrix/run-summary.json`
+    - `tests/artifacts/2026-03-25_23-50-25_controlled_local_matrix/run-summary.md`
+  - gate externo registrado:
+    - certificado DGII real ausente
+    - credenciales portal DGII vacías
+    - Docker apagado en auditoría inicial

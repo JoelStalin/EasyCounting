@@ -2,18 +2,34 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from typing import Iterator
+from typing import Callable, Iterator
 
 from sqlalchemy.orm import Session
 
 from app.db import SyncSessionFactory
+
+_session_factory: Callable[[], Session] = SyncSessionFactory
+
+
+def set_session_factory(factory: Callable[[], Session]) -> None:
+    """Override the sync session factory for tests or embedded runtimes."""
+
+    global _session_factory
+    _session_factory = factory
+
+
+def reset_session_factory() -> None:
+    """Restore the default sync session factory."""
+
+    global _session_factory
+    _session_factory = SyncSessionFactory
 
 
 @contextmanager
 def session_scope() -> Iterator[Session]:
     """Provee un contexto seguro para operaciones DB reutilizando el engine async."""
 
-    session = SyncSessionFactory()
+    session = _session_factory()
     try:
         yield session
         session.commit()

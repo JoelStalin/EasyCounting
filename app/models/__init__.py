@@ -21,6 +21,7 @@ from app.models import (
     profile,
     access_control,
     sequence,
+    fiscal_operation,
 )
 
 __all__ = [
@@ -45,4 +46,5 @@ __all__ = [
     "profile",
     "access_control",
     "sequence",
+    "fiscal_operation",
 ]

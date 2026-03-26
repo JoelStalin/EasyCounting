@@ -6,7 +6,7 @@ import json
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.models.audit import AuditLog
@@ -32,10 +32,13 @@ def append_audit_log(
     user_agent: str | None = None,
     metadata: dict[str, Any] | None = None,
 ) -> AuditLog:
-    last = db.scalar(select(AuditLog).where(AuditLog.tenant_id == tenant_id).order_by(AuditLog.id.desc()).limit(1))
-    hash_prev = last.hash_curr if last else "0" * 64
     now = _utcnow()
     metadata_json = json.dumps(metadata, ensure_ascii=False, sort_keys=True) if metadata else None
+    last_hash = db.execute(
+        text("select hash_curr from audit_logs where tenant_id = :tenant_id order by id desc limit 1"),
+        {"tenant_id": tenant_id},
+    ).scalar_one_or_none()
+    hash_prev = str(last_hash or "0" * 64)
     raw = "|".join(
         [
             str(tenant_id),
@@ -48,24 +51,35 @@ def append_audit_log(
         ]
     )
     hash_curr = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+    payload: dict[str, Any] = {
+        "tenant_id": tenant_id,
+        "actor": actor,
+        "action": action,
+        "resource": resource,
+        "hash_prev": hash_prev,
+        "hash_curr": hash_curr,
+        "created_at": now,
+        "updated_at": now,
+    }
+    column_sql = ", ".join(payload.keys())
+    value_sql = ", ".join(f":{key}" for key in payload)
+    db.execute(text(f"insert into audit_logs ({column_sql}) values ({value_sql})"), payload)
     record = AuditLog(
         tenant_id=tenant_id,
-        actor_user_id=actor_user_id,
-        membership_id=membership_id,
         actor=actor,
         action=action,
         resource=resource,
-        resource_type=resource_type,
-        resource_id=resource_id,
-        decision=decision,
-        ip_address=ip_address,
-        user_agent=user_agent,
-        metadata_json=metadata_json,
         hash_prev=hash_prev,
         hash_curr=hash_curr,
         created_at=now,
         updated_at=now,
     )
-    db.add(record)
-    db.flush()
+    record.actor_user_id = actor_user_id
+    record.membership_id = membership_id
+    record.resource_type = resource_type
+    record.resource_id = resource_id
+    record.decision = decision
+    record.ip_address = ip_address
+    record.user_agent = user_agent
+    record.metadata_json = metadata_json
     return record

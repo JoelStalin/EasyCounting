@@ -47,5 +47,10 @@ class LocalStorage:
         metadata_path.write_text(json.dumps(metadata, indent=2), encoding="utf-8")
         return digest
 
+    def resolve_path(self, relative_path: str) -> Path:
+        """Resolve a relative storage path to an absolute filesystem path."""
+
+        return self.base_path / relative_path
+
 
 storage = LocalStorage()

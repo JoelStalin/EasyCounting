@@ -6,13 +6,15 @@ from datetime import datetime
 from lxml import etree
 from pydantic import Field
 
+from typing import ClassVar
+
 from app.dgii.models.base import BaseDGIIModel, XMLSerializerConfig
 
 
 class ARECFRequest(BaseDGIIModel):
     """Confirma la recepción de un e-CF por parte del comprador."""
 
-    xml_config = XMLSerializerConfig(root_tag="ARECF")
+    xml_config: ClassVar[XMLSerializerConfig] = XMLSerializerConfig(root_tag="ARECF")
 
     encf: str = Field(..., max_length=13)
     track_id: str = Field(..., alias="trackId")

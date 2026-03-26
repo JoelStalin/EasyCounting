@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Iterable, Tuple
+from typing import ClassVar, Iterable, Tuple
 
 from lxml import etree
 from pydantic import BaseModel, ConfigDict
@@ -28,7 +28,7 @@ class BaseDGIIModel(BaseModel):
 
     model_config = ConfigDict(str_strip_whitespace=True, populate_by_name=True, arbitrary_types_allowed=True)
 
-    xml_config: XMLSerializerConfig
+    xml_config: ClassVar[XMLSerializerConfig]
 
     def _create_root(self) -> etree._Element:
         cfg = self.xml_config
