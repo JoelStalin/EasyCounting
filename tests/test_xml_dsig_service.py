@@ -15,6 +15,7 @@ from app.security.xml_dsig import (
     XMLDigitalSignatureService,
     validate_signed_xml,
 )
+from app.dgii.domain.xml_signature_verification_service import XmlSignatureVerificationService
 
 
 def _sample_xml() -> bytes:
@@ -155,3 +156,20 @@ def test_windows_store_thumbprint_format_validation(monkeypatch) -> None:
         service.get_certificate_metadata(
             SigningOptions(signing_mode="windows-store", thumbprint="NOT-HEX")
         )
+
+
+def test_domain_verification_service_reports_valid_signature(certificate_bundle) -> None:
+    p12_path, password, _key, _cert = certificate_bundle
+    signing_service = XMLDigitalSignatureService()
+    signed = signing_service.sign_xml(
+        _sample_xml(),
+        SigningOptions(
+            signing_mode="pfx",
+            pfx_path=str(p12_path),
+            pfx_password=password.decode(),
+            reference_uri="",
+            validate_after_sign=True,
+        ),
+    )
+    result = XmlSignatureVerificationService().verify_signature(signed)
+    assert result.valid is True

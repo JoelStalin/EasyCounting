@@ -37,6 +37,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 
+pytestmark = pytest.mark.skipif(
+    os.getenv("RUN_LIVE_FUNCTIONAL_CERTIFICATION", "0") != "1",
+    reason="Prueba funcional live deshabilitada por defecto; habilitar con RUN_LIVE_FUNCTIONAL_CERTIFICATION=1",
+)
+
+
 # ═════════════════════════════════════════════════════════════════════
 # CONFIGURACIÓN
 # ═════════════════════════════════════════════════════════════════════

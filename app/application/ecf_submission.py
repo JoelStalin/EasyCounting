@@ -20,6 +20,7 @@ from app.infra.settings import settings
 from app.models.invoice import Invoice, InvoiceLine
 from app.models.tenant import Tenant
 from app.observability.evidence import build_run_directory, write_json_artifact
+from app.dgii.infrastructure.signed_xml_repository import SignedXmlRepository
 from app.shared.storage import storage
 
 
@@ -99,11 +100,9 @@ async def submit_ecf(
 
         operations.transition(operation, state="SIGNING", title="Documento firmado", stage="SIGNING")
         xml_relative_path = f"xml/{payload.encf}.xml"
-        try:
-            storage.store_bytes(xml_relative_path, signed_xml)
-        except FileExistsError:
-            pass
-        xml_hash = storage.compute_hash(xml_relative_path)
+        signed_repo = SignedXmlRepository(str(storage.base_path / "xml"))
+        signed_record = signed_repo.persist(payload.encf, signed_xml)
+        xml_hash = signed_record["fingerprint_sha256"]
 
         run_dir = build_run_directory("dgii_submission")
         write_json_artifact(

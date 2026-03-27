@@ -7,9 +7,9 @@ param(
     [string]$AdminHostname = "",
     [string]$ClientHostname = "",
     [string]$ApiOrigin = "http://127.0.0.1:28080",
-    [string]$AdminOrigin = "http://127.0.0.1:18081",
-    [string]$ClientOrigin = "http://127.0.0.1:18082",
-    [string]$ApexOrigin = "http://127.0.0.1:18083",
+    [string]$AdminOrigin = "http://127.0.0.1:28080",
+    [string]$ClientOrigin = "http://127.0.0.1:28080",
+    [string]$ApexOrigin = "http://127.0.0.1:28080",
     [string]$ApexRedirectTarget = "",
     [switch]$CreateZoneIfMissing,
     [switch]$InstallTunnelService

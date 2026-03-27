@@ -56,9 +56,23 @@ def reset_request_context() -> None:
 def _sanitize_context(context: Dict[str, Any]) -> Dict[str, Any]:
     """Mask sensitive values before binding to logs."""
 
+    if not settings.log_redact_secrets:
+        return context
+
+    sensitive_keys = {
+        "token",
+        "password",
+        "secret",
+        "cert_password",
+        "private_key",
+        "access_token",
+        "refresh_token",
+        "authorization",
+        "api_key",
+    }
     sanitized: Dict[str, Any] = {}
     for key, value in context.items():
-        if key.lower() in {"token", "password", "secret", "cert_password", "track_id", "trackid"}:
+        if key.lower() in sensitive_keys:
             sanitized[key] = "***"
         else:
             sanitized[key] = value

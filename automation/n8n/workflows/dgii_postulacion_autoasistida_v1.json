@@ -1,0 +1,85 @@
+{
+  "name": "dgii_postulacion_autoasistida_v1",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "dgii/postulacion/start",
+        "responseMode": "responseNode",
+        "httpMethod": "POST"
+      },
+      "id": "WebhookStart",
+      "name": "Webhook Start",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [260, 260]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$json.apiBase}}/api/v1/internal/certificate-workflow/intake",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-Secret",
+              "value": "={{$json.internalSecret}}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{$json.intakePayload}}"
+      },
+      "id": "Intake",
+      "name": "INTAKE_RECEIVED",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 260]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$json.apiBase}}/api/v1/internal/certificate-workflow/{{$json.body.case_id}}/execution/start",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Internal-Secret",
+              "value": "={{$json.internalSecret}}"
+            }
+          ]
+        }
+      },
+      "id": "StartExecution",
+      "name": "PRECHECK_OK",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [780, 260]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"status\":\"accepted\",\"case_id\":$json.body.case_id,\"hint\":\"Continue with portal tasks using /checkpoint and /resume\"}"
+      },
+      "id": "Respond",
+      "name": "Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.2,
+      "position": [1040, 260]
+    }
+  ],
+  "connections": {
+    "Webhook Start": {
+      "main": [[{ "node": "INTAKE_RECEIVED", "type": "main", "index": 0 }]]
+    },
+    "INTAKE_RECEIVED": {
+      "main": [[{ "node": "PRECHECK_OK", "type": "main", "index": 0 }]]
+    },
+    "PRECHECK_OK": {
+      "main": [[{ "node": "Response", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "versionId": "1"
+}

@@ -22,6 +22,7 @@ from app.models import (
     access_control,
     sequence,
     fiscal_operation,
+    certificate_workflow,
 )
 
 __all__ = [
@@ -47,4 +48,5 @@ __all__ = [
     "access_control",
     "sequence",
     "fiscal_operation",
+    "certificate_workflow",
 ]

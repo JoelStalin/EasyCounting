@@ -131,6 +131,62 @@ def _switch_to_window_with_url_fragment(driver: webdriver.Chrome, fragment: str)
     return False
 
 
+def _login_cert_portal_if_needed(driver: webdriver.Chrome, username: str, password: str) -> bool:
+    current = (driver.current_url or "").lower()
+    if "portalcertificacion/login" not in current:
+        return False
+
+    user_candidates = ["inputUserName", "inputRnc", "username", "inputUsuario"]
+    pass_candidates = ["inputClave", "inputPassword", "password"]
+    button_candidates = ["btningresar", "btnIngresar", "btnLogin"]
+
+    user_el = None
+    pass_el = None
+    submit_el = None
+
+    for candidate in user_candidates:
+        found = driver.find_elements(By.ID, candidate)
+        if found:
+            user_el = found[0]
+            break
+    if user_el is None:
+        found = driver.find_elements(By.NAME, "username")
+        if found:
+            user_el = found[0]
+
+    for candidate in pass_candidates:
+        found = driver.find_elements(By.ID, candidate)
+        if found:
+            pass_el = found[0]
+            break
+    if pass_el is None:
+        found = driver.find_elements(By.NAME, "password")
+        if found:
+            pass_el = found[0]
+
+    for candidate in button_candidates:
+        found = driver.find_elements(By.ID, candidate)
+        if found:
+            submit_el = found[0]
+            break
+    if submit_el is None:
+        found = driver.find_elements(By.CSS_SELECTOR, "button[type='submit']")
+        if found:
+            submit_el = found[0]
+
+    if user_el is None or pass_el is None or submit_el is None:
+        return False
+
+    user_el.clear()
+    user_el.send_keys(username)
+    pass_el.clear()
+    pass_el.send_keys(password)
+    submit_el.click()
+
+    _wait_until(lambda: "portalcertificacion/login" not in (driver.current_url or "").lower(), timeout=30)
+    return True
+
+
 def _login_ofv(driver: webdriver.Chrome, username: str, password: str) -> None:
     if _is_postulacion_open(driver):
         return
@@ -162,7 +218,7 @@ def _login_ofv(driver: webdriver.Chrome, username: str, password: str) -> None:
     raise RuntimeError("No fue posible ubicar el formulario de login OFV ni detectar una sesiÃ³n activa")
 
 
-def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path) -> None:
+def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path, username: str, password: str) -> None:
     if _is_postulacion_open(driver):
         return
     driver.get("https://dgii.gov.do/OFV/FacturaElectronica/FE_Facturador_Electronico.aspx")
@@ -192,6 +248,7 @@ def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path) -> None:
             driver.get(url)
             time.sleep(6)
             _capture(driver, run_dir, f"postulacion_fallback_{idx}")
+            _login_cert_portal_if_needed(driver, username, password)
             if _is_postulacion_open(driver):
                 opened = True
                 break
@@ -212,6 +269,12 @@ def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path) -> None:
         _wait_until(lambda: _is_postulacion_open(driver) or "/Postulacion/" in driver.current_url, timeout=25)
         _capture(driver, run_dir, "postulacion_after_view_button")
         return
+
+    if _login_cert_portal_if_needed(driver, username, password):
+        time.sleep(4)
+        _capture(driver, run_dir, "postulacion_after_cert_login")
+        if _is_postulacion_open(driver) or "/Postulacion/" in driver.current_url:
+            return
 
     _capture(driver, run_dir, "postulacion_unknown_state")
     raise RuntimeError(
@@ -621,7 +684,7 @@ def main() -> int:
         _capture(driver, run_dir, "ofv_login")
         _login_ofv(driver, username, password)
         _capture(driver, run_dir, "ofv_authenticated")
-        _goto_postulacion(driver, run_dir)
+        _goto_postulacion(driver, run_dir, username, password)
         _capture(driver, run_dir, "postulacion_open")
         generated_xml = _fill_form_and_generate(driver, run_dir, api_base, software_name, software_version)
         signed_xml, signature_mode = _resolve_signed_xml(run_dir, generated_xml)

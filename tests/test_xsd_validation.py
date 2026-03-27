@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from app.dgii.domain.xsd_validator_service import XsdValidatorService
 from app.security.xml import XMLSecurityError, validate_with_xsd
 
 
@@ -25,3 +26,10 @@ def test_xml_too_large_raises() -> None:
     huge_xml = b"<eCF>" + b"<a>" * 1_000_000 + b"</a>" * 1_000_000 + b"</eCF>"
     with pytest.raises(XMLSecurityError):
         validate_with_xsd(huge_xml, "xsd/ecf.xsd")
+
+
+def test_domain_xsd_validator_service_returns_structured_result() -> None:
+    xml_bytes = Path("tests/assets/sample_ecf_32.xml").read_bytes()
+    result = XsdValidatorService().validate_xsd(xml_bytes, "32")
+    assert result.valid is True
+    assert result.errors == []

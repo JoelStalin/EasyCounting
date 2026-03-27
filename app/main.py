@@ -21,6 +21,7 @@ from app.api.enfc_routes import router as enfc_router
 from app.api.router import api_router
 from app.dgii.jobs import start_dispatcher, stop_dispatcher
 from app.jobs.recurring_invoices import start_recurring_invoice_runner, stop_recurring_invoice_runner
+from app.jobs.certificate_workflow import start_certificate_workflow_runner, stop_certificate_workflow_runner
 from app.core.logging import bind_request_context, reset_request_context
 from app.routers.acuse import router as arecef_router
 from app.routers.admin import router as admin_router
@@ -28,6 +29,7 @@ from app.routers.anulacion import router as anecf_router
 from app.routers.aprobacion import router as acecf_router
 from app.routers.auth import router as dgii_auth_router
 from app.routers.cliente import router as cliente_router
+from app.routers.certificate_workflow import router as certificate_workflow_router
 from app.routers.dgii import router as dgii_router
 from app.routers.ecf import router as ecf_router
 from app.routers.internal import router as internal_router
@@ -106,6 +108,11 @@ def create_app() -> FastAPI:
                 await start_recurring_invoice_runner()
         except Exception as exc:  # pragma: no cover - defensive
             LOGGER.exception("Failed to start recurring invoice runner", exc_info=exc)
+        try:
+            if settings.jobs_enabled:
+                await start_certificate_workflow_runner()
+        except Exception as exc:  # pragma: no cover - defensive
+            LOGGER.exception("Failed to start certificate workflow runner", exc_info=exc)
 
         yield
 
@@ -118,6 +125,10 @@ def create_app() -> FastAPI:
             await stop_recurring_invoice_runner()
         except Exception as exc:  # pragma: no cover - defensive
             LOGGER.exception("Failed to stop recurring invoice runner", exc_info=exc)
+        try:
+            await stop_certificate_workflow_runner()
+        except Exception as exc:  # pragma: no cover - defensive
+            LOGGER.exception("Failed to stop certificate workflow runner", exc_info=exc)
 
     app = FastAPI(
         title=settings.app_name,
@@ -169,6 +180,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_router, prefix="/api/v1")
     app.include_router(cliente_router, prefix="/api/v1")
     app.include_router(internal_router, prefix="/api/v1")
+    app.include_router(certificate_workflow_router, prefix="/api/v1/internal")
     app.include_router(odoo_router, prefix="/api/v1")
     app.include_router(operations_router, prefix="/api/v1")
     app.include_router(partner_router, prefix="/api/v1")
@@ -187,6 +199,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_router, prefix="/api")
     app.include_router(cliente_router, prefix="/api")
     app.include_router(internal_router, prefix="/api")
+    app.include_router(certificate_workflow_router, prefix="/api/internal")
     app.include_router(odoo_router, prefix="/api")
     app.include_router(operations_router, prefix="/api")
     app.include_router(partner_router, prefix="/api")

@@ -275,6 +275,28 @@ class TenantCertificateService:
             options.pfx_password = runtime.password
         return options
 
+    @staticmethod
+    def _assert_expected_certificate_identity(metadata: SigningCertificateMetadata) -> None:
+        expected_subject = (settings.dgii_cert_expected_subject or "").strip()
+        expected_serial = (settings.dgii_cert_expected_serial or "").strip().upper()
+        expected_rnc = (settings.dgii_cert_expected_rnc or "").strip()
+
+        if expected_subject and expected_subject not in metadata.subject:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Subject del certificado no coincide con DGII_CERT_EXPECTED_SUBJECT",
+            )
+        if expected_serial and expected_serial != str(metadata.serial).strip().upper():
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Serial del certificado no coincide con DGII_CERT_EXPECTED_SERIAL",
+            )
+        if expected_rnc and expected_rnc not in metadata.subject:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="RNC esperado no coincide con el certificado activo",
+            )
+
     def list_certificates(self, tenant_id: int) -> dict[str, object]:
         tenant = self._get_tenant(tenant_id)
         active_cert = self._resolve_certificate_ref(tenant)
@@ -475,9 +497,10 @@ class TenantCertificateService:
             )
         options = self._build_signing_options(mode=mode, reference_uri=reference_uri, runtime=runtime)
         try:
+            metadata = self.signing_service.get_certificate_metadata(options)
+            self._assert_expected_certificate_identity(metadata)
             signed_xml = self.signing_service.sign_xml(xml_bytes, options)
             if runtime is None:
-                metadata = self.signing_service.get_certificate_metadata(options)
                 runtime = self._metadata_to_runtime(
                     metadata,
                     source="windows-store" if mode == "windows-store" else "external",

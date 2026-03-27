@@ -1,0 +1,74 @@
+[
+  {
+    "error_code": "PORTAL_LOGIN_FAILED",
+    "symptom": "No se completa login en portal DGII.",
+    "root_cause": "Credenciales invalidas, cambio de UI o timeout.",
+    "auto_action": "Reintentar login con backoff exponencial.",
+    "human_action": "Validar credenciales y estado OFV.",
+    "retry_policy": "max_3_exponential",
+    "escalation_policy": "notify_owner_after_max_retries"
+  },
+  {
+    "error_code": "CAPTCHA_BLOCK",
+    "symptom": "Flujo detenido por CAPTCHA o desafio anti-bot.",
+    "root_cause": "Control anti-automatizacion del portal.",
+    "auto_action": "Marcar paso bloqueado y pausar ejecucion.",
+    "human_action": "Resolver CAPTCHA manualmente y reanudar.",
+    "retry_policy": "none_until_human_resume",
+    "escalation_policy": "immediate_human_approval_required"
+  },
+  {
+    "error_code": "SESSION_EXPIRED",
+    "symptom": "Sesion invalida durante navegacion.",
+    "root_cause": "Timeout de sesion o cookie invalidada.",
+    "auto_action": "Intentar refresh/login nuevamente.",
+    "human_action": "Revisar estabilidad de red y MFA.",
+    "retry_policy": "max_3_exponential",
+    "escalation_policy": "notify_owner_after_max_retries"
+  },
+  {
+    "error_code": "FORM_VALIDATION_ERROR",
+    "symptom": "Formulario de postulacion rechazado por validacion.",
+    "root_cause": "Campos invalidos o faltantes.",
+    "auto_action": "Registrar detalle y marcar bloqueado.",
+    "human_action": "Corregir datos y relanzar checkpoint.",
+    "retry_policy": "manual_after_fix",
+    "escalation_policy": "notify_fiscal_owner"
+  },
+  {
+    "error_code": "UPLOAD_REJECTED",
+    "symptom": "Adjunto/XML firmado no aceptado.",
+    "root_cause": "Formato, firma o metadatos invalidos.",
+    "auto_action": "Registrar evidencia y marcar retryable.",
+    "human_action": "Validar firma/XSD y recargar.",
+    "retry_policy": "max_3_exponential",
+    "escalation_policy": "notify_tech_owner_after_second_failure"
+  },
+  {
+    "error_code": "SUBMIT_TIMEOUT",
+    "symptom": "Submit no retorna respuesta en ventana esperada.",
+    "root_cause": "Latencia DGII o caida parcial del portal.",
+    "auto_action": "Reintentar con idempotencia.",
+    "human_action": "Validar estado manual en portal.",
+    "retry_policy": "max_3_exponential",
+    "escalation_policy": "notify_ops_after_max_retries"
+  },
+  {
+    "error_code": "TRACKID_MISSING",
+    "symptom": "No se captura TrackId despues del submit.",
+    "root_cause": "Respuesta incompleta o parsing fallido.",
+    "auto_action": "Consultar estado por endpoint alterno.",
+    "human_action": "Verificar acuse en portal DGII.",
+    "retry_policy": "max_3_linear",
+    "escalation_policy": "notify_tech_owner"
+  },
+  {
+    "error_code": "DGII_STATUS_STALLED",
+    "symptom": "TrackId permanece EN_PROCESO por tiempo extendido.",
+    "root_cause": "Cola DGII o incidencia de procesamiento.",
+    "auto_action": "Continuar polling segun politica.",
+    "human_action": "Escalar caso con evidencias.",
+    "retry_policy": "scheduled_polling_with_backoff",
+    "escalation_policy": "notify_fiscal_and_ops_after_threshold"
+  }
+]

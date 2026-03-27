@@ -52,12 +52,24 @@ class Settings(BaseSettings):
     compat_api_enabled: bool = Field(default=True, validation_alias=AliasChoices("COMPAT_API_ENABLED"))
     hmac_service_secret: str = Field(default="dev-hmac", validation_alias=AliasChoices("HMAC_SERVICE_SECRET"))
     log_level: str = Field(default="INFO", validation_alias=AliasChoices("LOG_LEVEL"))
+    log_redact_secrets: bool = Field(default=True, validation_alias=AliasChoices("LOG_REDACT_SECRETS"))
     tls_enabled: bool = Field(default=True, validation_alias=AliasChoices("TLS_ENABLED"))
     tracing_header: str = Field(default="X-Trace-ID", validation_alias=AliasChoices("TRACING_HEADER"))
     request_id_header: str = Field(default="X-Request-ID", validation_alias=AliasChoices("REQUEST_ID_HEADER"))
     metrics_enabled: bool = Field(default=True, validation_alias=AliasChoices("METRICS_ENABLED"))
     storage_bucket: str = Field(default="local", validation_alias=AliasChoices("STORAGE_BUCKET"))
     storage_base_path: Path = Field(default=Path("/var/getupsoft/storage"), validation_alias=AliasChoices("STORAGE_BASE_PATH"))
+    psc_workflow_storage_path: Path = Field(
+        default=Path("expedientes"),
+        validation_alias=AliasChoices("PSC_WORKFLOW_STORAGE_PATH"),
+    )
+    secret_provider: Literal["env", "vault"] = Field(default="env", validation_alias=AliasChoices("SECRET_PROVIDER"))
+    vault_addr: str | None = Field(default=None, validation_alias=AliasChoices("VAULT_ADDR"))
+    vault_token: str | None = Field(default=None, validation_alias=AliasChoices("VAULT_TOKEN"))
+    vault_cert_secret_prefix: str = Field(
+        default="certificates/dgii",
+        validation_alias=AliasChoices("VAULT_CERT_SECRET_PREFIX"),
+    )
     odoo_rnc_catalog_path: Path = Field(
         default=Path("integration/odoo/odoo19_getupsoft_do_localization/local_rnc_directory.json"),
         validation_alias=AliasChoices("ODOO_RNC_CATALOG_PATH"),
@@ -109,6 +121,28 @@ class Settings(BaseSettings):
     smtp_secure: bool = Field(default=True, validation_alias=AliasChoices("SMTP_SECURE"))
     smtp_from: str | None = Field(default=None, validation_alias=AliasChoices("SMTP_FROM"))
     smtp_timeout_seconds: float = Field(default=20.0, gt=1.0, le=120.0, validation_alias=AliasChoices("SMTP_TIMEOUT_SECONDS"))
+    notify_email_from: str | None = Field(default=None, validation_alias=AliasChoices("NOTIFY_EMAIL_FROM"))
+    notify_slack_webhook: str | None = Field(default=None, validation_alias=AliasChoices("NOTIFY_SLACK_WEBHOOK"))
+    certificate_workflow_reminder_job_enabled: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_REMINDER_JOB_ENABLED"),
+    )
+    certificate_workflow_reminder_poll_seconds: int = Field(
+        default=120,
+        ge=10,
+        le=3600,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_REMINDER_POLL_SECONDS"),
+    )
+    certificate_workflow_track_poll_live: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_TRACK_POLL_LIVE"),
+    )
+    certificate_workflow_track_poll_limit: int = Field(
+        default=25,
+        ge=1,
+        le=500,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_TRACK_POLL_LIMIT"),
+    )
 
     bootstrap_admin_email: str = Field(
         default="admin@getupsoft.com.do",
@@ -143,6 +177,16 @@ class Settings(BaseSettings):
     dgii_env: Literal["LOCAL", "TEST", "PRECERT", "CERT", "PROD"] = Field(default="TEST", validation_alias=AliasChoices("DGII_ENV", "ENV"))
     dgii_allowed_hosts_raw: str | None = Field(default=None, validation_alias=AliasChoices("DGII_ALLOWED_HOSTS"))
     dgii_rnc: str = Field(default="131415161", validation_alias=AliasChoices("DGII_RNC"))
+    dgii_razon_social: str | None = Field(default=None, validation_alias=AliasChoices("DGII_RAZON_SOCIAL"))
+    dgii_usuario_administrador_id: str | None = Field(default=None, validation_alias=AliasChoices("DGII_USUARIO_ADMINISTRADOR_ID"))
+    dgii_usuario_administrador_nombre: str | None = Field(default=None, validation_alias=AliasChoices("DGII_USUARIO_ADMINISTRADOR_NOMBRE"))
+    dgii_cert_expected_subject: str | None = Field(default=None, validation_alias=AliasChoices("DGII_CERT_EXPECTED_SUBJECT"))
+    dgii_cert_expected_serial: str | None = Field(default=None, validation_alias=AliasChoices("DGII_CERT_EXPECTED_SERIAL"))
+    dgii_cert_expected_rnc: str | None = Field(default=None, validation_alias=AliasChoices("DGII_CERT_EXPECTED_RNC"))
+    dgii_cert_expiration_alert_days: int = Field(default=30, ge=1, le=365, validation_alias=AliasChoices("DGII_CERT_EXPIRATION_ALERT_DAYS"))
+    allow_xml_pretty_print_after_sign: bool = Field(default=False, validation_alias=AliasChoices("ALLOW_XML_PRETTY_PRINT_AFTER_SIGN"))
+    dgii_poll_interval_seconds: int = Field(default=30, ge=5, le=3600, validation_alias=AliasChoices("DGII_POLL_INTERVAL_SECONDS"))
+    dgii_idempotency_window_minutes: int = Field(default=30, ge=1, le=1440, validation_alias=AliasChoices("DGII_IDEMPOTENCY_WINDOW_MINUTES"))
 
     # Official DGII services (base URLs by environment)
     dgii_auth_base_url_precert: AnyUrl = Field(
@@ -370,6 +414,24 @@ class Settings(BaseSettings):
                     raise ValueError("BOOTSTRAP_ADMIN_PASSWORD must be set in production or disable bootstrap")
                 if self.bootstrap_admin_email == "admin@getupsoft.com.do":
                     raise ValueError("BOOTSTRAP_ADMIN_EMAIL must be set in production or disable bootstrap")
+
+        if self.dgii_env in {"TEST", "PRECERT", "CERT", "PROD"}:
+            if not self.dgii_rnc.strip():
+                raise ValueError("DGII_RNC es obligatorio para operar integracion DGII")
+            if not str(self.dgii_cert_p12_password or "").strip():
+                raise ValueError("DGII_CERT_P12_PASSWORD es obligatorio")
+            if self.dgii_env in {"CERT", "PROD"}:
+                required_identity = [
+                    self.dgii_razon_social,
+                    self.dgii_usuario_administrador_id,
+                    self.dgii_usuario_administrador_nombre,
+                ]
+                if any(not str(item or "").strip() for item in required_identity):
+                    raise ValueError("Razon social y usuario administrador son obligatorios en CERT/PROD")
+                if self.dgii_cert_expected_rnc and self.dgii_cert_expected_rnc != self.dgii_rnc:
+                    raise ValueError("DGII_CERT_EXPECTED_RNC debe coincidir con DGII_RNC")
+            if self.dgii_env == "PROD" and "TesteCF" in str(self.dgii_auth_base_url):
+                raise ValueError("Entorno PROD no puede usar endpoints de prueba")
         return self
 
     @computed_field
