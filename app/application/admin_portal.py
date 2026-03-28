@@ -39,6 +39,10 @@ from app.admin.schemas import (
     PlatformAIProviderItem,
     PlatformAIProviderPayload,
     PlatformUserItem,
+    TenantAIProviderItem,
+    TenantAIProviderPayload,
+    UserAIProviderItem,
+    UserAIProviderPayload,
     OperationDetailResponse,
     OperationEventItem,
     OperationListItem,
@@ -52,6 +56,8 @@ from app.models.audit import AuditLog
 from app.models.fiscal_operation import EvidenceArtifact, FiscalOperation, FiscalOperationEvent
 from app.models.invoice import Invoice
 from app.models.platform_ai import PlatformAIProvider
+from app.models.tenant_ai import TenantAIProvider
+from app.models.user_ai import UserAIProvider
 from app.models.tenant import Tenant
 from app.models.user import User
 from app.portal_admin.reports import billing_summary
@@ -125,6 +131,54 @@ class AdminService:
         raw_api_key = decrypt_secret(provider.encrypted_api_key)
         return PlatformAIProviderItem(
             id=provider.id,
+            display_name=provider.display_name,
+            provider_type=provider.provider_type,
+            enabled=bool(provider.enabled),
+            is_default=bool(provider.is_default),
+            base_url=normalize_base_url(provider.provider_type, provider.base_url),
+            model=provider.model,
+            api_key_configured=bool(raw_api_key),
+            api_key_masked=mask_secret(raw_api_key),
+            organization_id=provider.organization_id,
+            project_id=provider.project_id,
+            api_version=provider.api_version,
+            system_prompt=provider.system_prompt,
+            extra_headers=parse_extra_headers(provider.extra_headers_json),
+            timeout_seconds=float(provider.timeout_seconds),
+            max_completion_tokens=int(provider.max_completion_tokens),
+            created_at=provider.created_at,
+            updated_at=provider.updated_at,
+        )
+
+    def _to_tenant_ai_provider_item(self, provider: TenantAIProvider) -> TenantAIProviderItem:
+        raw_api_key = decrypt_secret(provider.encrypted_api_key)
+        return TenantAIProviderItem(
+            id=provider.id,
+            tenant_id=provider.tenant_id,
+            display_name=provider.display_name,
+            provider_type=provider.provider_type,
+            enabled=bool(provider.enabled),
+            is_default=bool(provider.is_default),
+            base_url=normalize_base_url(provider.provider_type, provider.base_url),
+            model=provider.model,
+            api_key_configured=bool(raw_api_key),
+            api_key_masked=mask_secret(raw_api_key),
+            organization_id=provider.organization_id,
+            project_id=provider.project_id,
+            api_version=provider.api_version,
+            system_prompt=provider.system_prompt,
+            extra_headers=parse_extra_headers(provider.extra_headers_json),
+            timeout_seconds=float(provider.timeout_seconds),
+            max_completion_tokens=int(provider.max_completion_tokens),
+            created_at=provider.created_at,
+            updated_at=provider.updated_at,
+        )
+
+    def _to_user_ai_provider_item(self, provider: UserAIProvider) -> UserAIProviderItem:
+        raw_api_key = decrypt_secret(provider.encrypted_api_key)
+        return UserAIProviderItem(
+            id=provider.id,
+            user_id=provider.user_id,
             display_name=provider.display_name,
             provider_type=provider.provider_type,
             enabled=bool(provider.enabled),
@@ -932,5 +986,191 @@ class AdminService:
         if not provider:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proveedor IA no encontrado")
         self._append_platform_audit_log(action="PLATFORM_AI_PROVIDER_DELETED", resource=f"platform_ai_provider:{provider.id}")
+        self.db.delete(provider)
+        self.db.flush()
+
+    def list_tenant_ai_providers(self, tenant_id: int) -> List[TenantAIProviderItem]:
+        self._get_tenant_or_404(tenant_id)
+        providers = self.db.scalars(
+            select(TenantAIProvider)
+            .where(TenantAIProvider.tenant_id == tenant_id)
+            .order_by(TenantAIProvider.id)
+        ).all()
+        return [self._to_tenant_ai_provider_item(p) for p in providers]
+
+    def create_tenant_ai_provider(self, tenant_id: int, payload: TenantAIProviderPayload) -> TenantAIProviderItem:
+        self._get_tenant_or_404(tenant_id)
+        provider = TenantAIProvider(
+            tenant_id=tenant_id,
+            display_name=payload.display_name,
+            provider_type=payload.provider_type,
+            enabled=payload.enabled,
+            is_default=payload.is_default,
+            base_url=normalize_base_url(payload.provider_type, payload.base_url),
+            model=payload.model,
+            encrypted_api_key=encrypt_secret(payload.api_key) if (payload.api_key and payload.api_key.strip()) else None,
+            organization_id=payload.organization_id,
+            project_id=payload.project_id,
+            api_version=payload.api_version,
+            system_prompt=payload.system_prompt,
+            extra_headers_json=dumps_extra_headers(payload.extra_headers),
+            timeout_seconds=payload.timeout_seconds,
+            max_completion_tokens=payload.max_completion_tokens,
+        )
+        self.db.add(provider)
+        self.db.flush()
+
+        if provider.is_default:
+            others = self.db.scalars(select(TenantAIProvider).where(TenantAIProvider.tenant_id == tenant_id, TenantAIProvider.is_default == True, TenantAIProvider.id != provider.id)).all()
+            for o in others:
+                o.is_default = False
+            self.db.flush()
+
+        self._append_audit_log(tenant_id=tenant_id, action="AI_PROVIDER_CREATED", resource=f"ai_provider:{provider.id}")
+        return self._to_tenant_ai_provider_item(provider)
+
+    def update_tenant_ai_provider(self, tenant_id: int, provider_id: int, payload: TenantAIProviderPayload) -> TenantAIProviderItem:
+        self._get_tenant_or_404(tenant_id)
+        provider = self.db.get(TenantAIProvider, provider_id)
+        if not provider or provider.tenant_id != tenant_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proveedor IA no encontrado")
+
+        if payload.is_default and not provider.is_default:
+            others = self.db.scalars(select(TenantAIProvider).where(TenantAIProvider.tenant_id == tenant_id, TenantAIProvider.is_default == True, TenantAIProvider.id != provider.id)).all()
+            for o in others:
+                o.is_default = False
+
+        provider.display_name = payload.display_name
+        provider.provider_type = payload.provider_type
+        provider.enabled = payload.enabled
+        provider.is_default = payload.is_default
+        provider.base_url = normalize_base_url(payload.provider_type, payload.base_url)
+        provider.model = payload.model
+        provider.organization_id = payload.organization_id
+        provider.project_id = payload.project_id
+        provider.api_version = payload.api_version
+        provider.system_prompt = payload.system_prompt
+        provider.extra_headers_json = dumps_extra_headers(payload.extra_headers)
+        provider.timeout_seconds = payload.timeout_seconds
+        provider.max_completion_tokens = payload.max_completion_tokens
+        
+        if payload.clear_api_key:
+            provider.encrypted_api_key = None
+        elif payload.api_key and payload.api_key.strip():
+            provider.encrypted_api_key = encrypt_secret(payload.api_key)
+
+        self.db.flush()
+        self._append_audit_log(tenant_id=tenant_id, action="AI_PROVIDER_UPDATED", resource=f"ai_provider:{provider.id}")
+        return self._to_tenant_ai_provider_item(provider)
+
+    def delete_tenant_ai_provider(self, tenant_id: int, provider_id: int) -> None:
+        self._get_tenant_or_404(tenant_id)
+        provider = self.db.get(TenantAIProvider, provider_id)
+        if not provider or provider.tenant_id != tenant_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proveedor IA no encontrado")
+        self._append_audit_log(tenant_id=tenant_id, action="AI_PROVIDER_DELETED", resource=f"ai_provider:{provider_id}")
+        self.db.delete(provider)
+        self.db.flush()
+
+    def list_user_ai_providers(self, user_id: int) -> List[UserAIProviderItem]:
+        user = self.db.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+        providers = self.db.scalars(
+            select(UserAIProvider)
+            .where(UserAIProvider.user_id == user_id)
+            .order_by(UserAIProvider.id)
+        ).all()
+        return [self._to_user_ai_provider_item(p) for p in providers]
+
+    def create_user_ai_provider(self, user_id: int, payload: UserAIProviderPayload) -> UserAIProviderItem:
+        user = self.db.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+        provider = UserAIProvider(
+            user_id=user_id,
+            display_name=payload.display_name,
+            provider_type=payload.provider_type,
+            enabled=payload.enabled,
+            is_default=payload.is_default,
+            base_url=normalize_base_url(payload.provider_type, payload.base_url),
+            model=payload.model,
+            encrypted_api_key=encrypt_secret(payload.api_key) if (payload.api_key and payload.api_key.strip()) else None,
+            organization_id=payload.organization_id,
+            project_id=payload.project_id,
+            api_version=payload.api_version,
+            system_prompt=payload.system_prompt,
+            extra_headers_json=dumps_extra_headers(payload.extra_headers),
+            timeout_seconds=payload.timeout_seconds,
+            max_completion_tokens=payload.max_completion_tokens,
+        )
+        self.db.add(provider)
+        self.db.flush()
+
+        if provider.is_default:
+            others = self.db.scalars(
+                select(UserAIProvider).where(
+                    UserAIProvider.user_id == user_id,
+                    UserAIProvider.is_default == True,  # noqa: E712
+                    UserAIProvider.id != provider.id,
+                )
+            ).all()
+            for other in others:
+                other.is_default = False
+            self.db.flush()
+
+        self._append_audit_log(tenant_id=user.tenant_id, action="USER_AI_PROVIDER_CREATED", resource=f"user_ai_provider:{provider.id}")
+        return self._to_user_ai_provider_item(provider)
+
+    def update_user_ai_provider(self, user_id: int, provider_id: int, payload: UserAIProviderPayload) -> UserAIProviderItem:
+        user = self.db.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+        provider = self.db.get(UserAIProvider, provider_id)
+        if not provider or provider.user_id != user_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proveedor IA de usuario no encontrado")
+
+        if payload.is_default and not provider.is_default:
+            others = self.db.scalars(
+                select(UserAIProvider).where(
+                    UserAIProvider.user_id == user_id,
+                    UserAIProvider.is_default == True,  # noqa: E712
+                    UserAIProvider.id != provider.id,
+                )
+            ).all()
+            for other in others:
+                other.is_default = False
+
+        provider.display_name = payload.display_name
+        provider.provider_type = payload.provider_type
+        provider.enabled = payload.enabled
+        provider.is_default = payload.is_default
+        provider.base_url = normalize_base_url(payload.provider_type, payload.base_url)
+        provider.model = payload.model
+        provider.organization_id = payload.organization_id
+        provider.project_id = payload.project_id
+        provider.api_version = payload.api_version
+        provider.system_prompt = payload.system_prompt
+        provider.extra_headers_json = dumps_extra_headers(payload.extra_headers)
+        provider.timeout_seconds = payload.timeout_seconds
+        provider.max_completion_tokens = payload.max_completion_tokens
+
+        if payload.clear_api_key:
+            provider.encrypted_api_key = None
+        elif payload.api_key and payload.api_key.strip():
+            provider.encrypted_api_key = encrypt_secret(payload.api_key)
+
+        self.db.flush()
+        self._append_audit_log(tenant_id=user.tenant_id, action="USER_AI_PROVIDER_UPDATED", resource=f"user_ai_provider:{provider.id}")
+        return self._to_user_ai_provider_item(provider)
+
+    def delete_user_ai_provider(self, user_id: int, provider_id: int) -> None:
+        user = self.db.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+        provider = self.db.get(UserAIProvider, provider_id)
+        if not provider or provider.user_id != user_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Proveedor IA de usuario no encontrado")
+        self._append_audit_log(tenant_id=user.tenant_id, action="USER_AI_PROVIDER_DELETED", resource=f"user_ai_provider:{provider_id}")
         self.db.delete(provider)
         self.db.flush()

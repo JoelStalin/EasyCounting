@@ -170,3 +170,23 @@ class WorkflowProgressResponse(BaseModel):
     attempt: int | None
     latest_error_code: str | None
     latest_error_message: str | None
+
+
+class MailIntakeProcessResponse(BaseModel):
+    scanned: int
+    skipped_sender: int
+    skipped_case: int
+    attachments_saved: int
+    cases_updated: int
+    validations_ok: int
+    validations_failed: int
+
+
+class MailIntakeHealthResponse(BaseModel):
+    enabled: bool
+    imap_host: str | None
+    imap_port: int
+    mailbox: str
+    use_ssl: bool
+    can_connect: bool
+    error: str | None

@@ -12,6 +12,7 @@ Backend FastAPI (Python 3.12) listo para desplegar en producción con Docker, Gu
 [Gunicorn (UvicornWorker) -> FastAPI]
     |--> PostgreSQL 16 (SQLAlchemy async + Alembic)
     |--> Redis 7 (rate limit & background primitives)
+    |--> Browser MCP sidecar (Playwright MCP + jobs API)
     |--> Observabilidad: Prometheus metrics, JSON logs, Sentry
 ```
 
@@ -50,6 +51,37 @@ make down
 ```
 
 ## Desarrollo local
+
+### Browser MCP sidecar
+
+La capa de navegador productiva vive en [automation/browser-mcp/README.md](/c:/Users/yoeli/Documents/dgii_encf/automation/browser-mcp/README.md).
+
+Comandos base:
+
+```bash
+cd automation/browser-mcp
+npm install
+npm run browsers:install
+npm run build
+npm run mcp:http
+```
+
+Para que FastAPI use el sidecar:
+
+```bash
+export BROWSER_MCP_ENABLED=true
+export BROWSER_MCP_MODE=remote
+export BROWSER_MCP_BASE_URL=http://browser-mcp:8930
+```
+
+Para flujos DGII repetibles con perfil real clonado y navegador normal:
+
+```bash
+export BROWSER_MCP_DEFAULT_BROWSER=chromium
+export BROWSER_MCP_CHROMIUM_CHANNEL=chrome
+export DGII_CHROME_PROFILE_SOURCE=Default
+export DGII_POSTULACION_POLICY_BASELINE=strict_normal_browser
+```
 
 ### Rutas de prueba
 
@@ -207,6 +239,12 @@ Variables necesarias en GitHub Secrets:
 | Gunicorn reinicia | Ajusta `GUNICORN_MAX_REQUESTS` o revisa out-of-memory. |
 | No se exportan métricas | Confirma que `prometheus-fastapi-instrumentator` no esté deshabilitado por env (`PROMETHEUS_DISABLED`). |
 | Error de certificados DGII | Monta el `.p12` en `/secrets` y revisa `DGII_P12_PASSWORD`. |
+
+## Límites reales del sistema
+
+- Playwright MCP mejora control, trazabilidad y persistencia de sesión, pero no elimina controles reales del navegador o del sitio.
+- No se debe asumir bypass de CAPTCHA, anti-bot, CORS, autenticación federada o políticas del portal objetivo.
+- Los flujos DGII/Odoo reales deben ejecutarse con credenciales válidas, ambientes autorizados y evidencia guardada por job.
 
 ## Despliegue TLS
 

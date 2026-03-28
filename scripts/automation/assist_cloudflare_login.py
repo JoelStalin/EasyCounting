@@ -1,5 +1,6 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
+import argparse
 import os
 import sys
 import time
@@ -18,41 +19,39 @@ def write_status(path: Path, message: str) -> None:
 def main() -> int:
     """
     Asistente seguro para login en Cloudflare.
-    
-    IMPORTANTE: NO hardcodear credenciales en este archivo.
-    
-    Credenciales deben venir de:
-    1. Variables de entorno: CLOUDFLARE_EMAIL, CLOUDFLARE_PASSWORD
-    2. O mejor: CLOUDFLARE_API_TOKEN (en lugar de user/pass)
-    3. Gestor de credenciales del SO (Windows Credential Manager)
-    
-    RIESGOS SI USAS USER/PASS:
-    - Quedan expuestas en control de versiones
-    - Quedan en histórico de git
-    - No se pueden rotar fácilmente
-    
-    RECOMENDACIÓN:
-    - Usar API Token de Cloudflare
-    - Guardar en gestor seguro de credenciales
-    - No versionar en repositorio
+
+    Permite abrir Chrome con perfil real para reutilizar sesion ya iniciada.
+    No requiere credenciales si la sesion ya existe en el perfil.
     """
-    
-    # Obtener credenciales de variables de entorno (NUNCA hardcodear)
+
+    parser = argparse.ArgumentParser(description="Asistente Selenium para Cloudflare Dashboard")
+    parser.add_argument(
+        "--start-url",
+        default="https://dash.cloudflare.com/",
+        help="URL inicial del dashboard",
+    )
+    parser.add_argument(
+        "--user-data-dir",
+        default=None,
+        help="Directorio User Data de Chrome",
+    )
+    parser.add_argument(
+        "--profile-directory",
+        default=None,
+        help="Nombre de perfil de Chrome (ej: Default, Profile 1)",
+    )
+    parser.add_argument(
+        "--timeout-seconds",
+        type=int,
+        default=1800,
+        help="Tiempo maximo de espera para detectar dashboard",
+    )
+    args = parser.parse_args()
+
+    # Credenciales opcionales via env (NO hardcodear)
     cf_email = os.getenv("CLOUDFLARE_EMAIL")
     cf_password = os.getenv("CLOUDFLARE_PASSWORD")
-    
-    if not cf_email or not cf_password:
-        print("ERROR: Credenciales de Cloudflare no configuradas.")
-        print("\nConfigura variables de entorno:")
-        print("  Windows:")
-        print("    $env:CLOUDFLARE_EMAIL='tu-email@example.com'")
-        print("    $env:CLOUDFLARE_PASSWORD='tu-contraseña-segura'")
-        print("\n  O mejor aún, usa Cloudflare API Token:")
-        print("    $env:CLOUDFLARE_API_TOKEN='tu-api-token'")
-        print("\nObtén el API Token en:")
-        print("  https://dash.cloudflare.com/profile/api-tokens")
-        return 1
-    
+
     out_dir = Path("artifacts_live_dns")
     out_dir.mkdir(exist_ok=True)
     status_path = out_dir / "cloudflare_assisted_status.txt"
@@ -62,44 +61,47 @@ def main() -> int:
     opts.add_argument("--window-size=1440,1100")
     opts.add_experimental_option("excludeSwitches", ["enable-automation"])
     opts.add_experimental_option("useAutomationExtension", False)
+    if args.user_data_dir:
+        opts.add_argument(f"--user-data-dir={args.user_data_dir}")
+    if args.profile_directory:
+        opts.add_argument(f"--profile-directory={args.profile_directory}")
 
     driver = webdriver.Chrome(options=opts)
     wait = WebDriverWait(driver, 40)
 
     try:
-        target = "https://dash.cloudflare.com/"
-        driver.get(target)
+        driver.get(args.start_url)
 
-        try:
-            email = wait.until(EC.presence_of_element_located((By.NAME, "email")))
-            email.clear()
-            email.send_keys(cf_email)
-            password = driver.find_element(By.NAME, "password")
-            password.clear()
-            password.send_keys(cf_password)
+        # Intento de login solo si hay credenciales cargadas
+        if cf_email and cf_password:
+            try:
+                email = wait.until(EC.presence_of_element_located((By.NAME, "email")))
+                email.clear()
+                email.send_keys(cf_email)
+                password = driver.find_element(By.NAME, "password")
+                password.clear()
+                password.send_keys(cf_password)
 
-            for selector in (
-                "button[type='submit']",
-                "button[data-testid='login-submit-btn']",
-            ):
-                try:
-                    driver.find_element(By.CSS_SELECTOR, selector).click()
-                    break
-                except Exception:
-                    continue
-        except Exception:
-            pass
+                for selector in (
+                    "button[type='submit']",
+                    "button[data-testid='login-submit-btn']",
+                ):
+                    try:
+                        driver.find_element(By.CSS_SELECTOR, selector).click()
+                        break
+                    except Exception:
+                        continue
+            except Exception:
+                pass
 
         driver.save_screenshot(str(out_dir / "cloudflare_assisted_ready.png"))
-        (out_dir / "cloudflare_assisted_ready.html").write_text(
-            driver.page_source, encoding="utf-8"
-        )
+        (out_dir / "cloudflare_assisted_ready.html").write_text(driver.page_source, encoding="utf-8")
         write_status(
             status_path,
             "WAITING_FOR_HUMAN: complete Cloudflare verification in the visible browser window.",
         )
 
-        deadline = time.time() + 1800
+        deadline = time.time() + max(60, int(args.timeout_seconds))
         while time.time() < deadline:
             current_url = driver.current_url
             current_url_lower = current_url.lower()
@@ -118,9 +120,7 @@ def main() -> int:
                         or "overview" in page
                     )
                 ):
-                    driver.save_screenshot(
-                        str(out_dir / "cloudflare_assisted_entered_dashboard.png")
-                    )
+                    driver.save_screenshot(str(out_dir / "cloudflare_assisted_entered_dashboard.png"))
                     (out_dir / "cloudflare_assisted_entered_dashboard.html").write_text(
                         driver.page_source, encoding="utf-8"
                     )
@@ -130,9 +130,7 @@ def main() -> int:
             time.sleep(2)
 
         driver.save_screenshot(str(out_dir / "cloudflare_assisted_timeout.png"))
-        (out_dir / "cloudflare_assisted_timeout.html").write_text(
-            driver.page_source, encoding="utf-8"
-        )
+        (out_dir / "cloudflare_assisted_timeout.html").write_text(driver.page_source, encoding="utf-8")
         write_status(status_path, f"TIMEOUT: {driver.current_url}")
         return 1
     finally:

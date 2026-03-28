@@ -1,0 +1,36 @@
+{
+  "job": {
+    "jobId": "smoke-open-url",
+    "scenario": "open-url-extract",
+    "target": {
+      "url": "http://127.0.0.1:53617"
+    },
+    "artifacts": {
+      "screenshot": true,
+      "snapshot": true,
+      "pdf": false,
+      "trace": false,
+      "saveSession": false
+    }
+  },
+  "scenarioResult": {
+    "url": "http://127.0.0.1:53617",
+    "title": "Smoke",
+    "heading": "Browser MCP"
+  },
+  "telemetry": {
+    "stepResults": [
+      {
+        "name": "open-url",
+        "status": "ok",
+        "details": {
+          "url": "http://127.0.0.1:53617",
+          "title": "Smoke"
+        }
+      }
+    ],
+    "consoleMessages": {},
+    "networkRequests": 1,
+    "finalUrl": "http://127.0.0.1:53617/"
+  }
+}

@@ -12,8 +12,16 @@ from sqlalchemy.orm import Session
 from app.models.accounting import TenantSettings
 from app.models.billing import Plan, UsageRecord
 from app.models.invoice import Invoice
+from app.models.memory import ChatSession, ChatMessage, SemanticMemory
 from app.models.tenant import Tenant
+from app.application.tenant_api import TenantApiService
+from app.tenant_api.schemas import TenantApiInvoiceCreateRequest, TenantApiInvoiceCreateResponse
 from app.portal_client.schemas import (
+    ChatMessageItem,
+    ChatMemoryCreateRequest,
+    ChatMemoryItem,
+    ChatMemoryUpdateRequest,
+    ChatSessionItem,
     InvoiceDetailResponse,
     InvoiceListItem,
     InvoiceListResponse,
@@ -295,8 +303,97 @@ class ClientPortalService:
             fecha_emision=invoice.fecha_emision,
             xml_path=invoice.xml_path,
             xml_hash=invoice.xml_hash,
+            ri_pdf_path=invoice.ri_pdf_path,
+            receptor_nombre=invoice.receptor_nombre,
             codigo_seguridad=invoice.codigo_seguridad,
             contabilizado=bool(invoice.contabilizado),
             accounted_at=invoice.accounted_at,
             asiento_referencia=invoice.asiento_referencia,
         )
+
+    def list_chat_sessions(self, *, tenant_id: int, user_id: int | None = None) -> list[ChatSessionItem]:
+        stmt = select(ChatSession).where(ChatSession.tenant_id == tenant_id)
+        if user_id is not None:
+            stmt = stmt.where(ChatSession.user_id == user_id)
+        
+        sessions = self.db.scalars(stmt.order_by(ChatSession.updated_at.desc())).all()
+        return [ChatSessionItem.model_validate(s, from_attributes=True) for s in sessions]
+
+    def get_chat_session_messages(self, *, tenant_id: int, session_id: int) -> list[ChatMessageItem]:
+        session = self.db.get(ChatSession, session_id)
+        if not session or session.tenant_id != tenant_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sesion no encontrada")
+            
+        stmt = select(ChatMessage).where(ChatMessage.session_id == session_id).order_by(ChatMessage.created_at.asc())
+        messages = self.db.scalars(stmt).all()
+        return [ChatMessageItem.model_validate(m, from_attributes=True) for m in messages]
+
+    def delete_chat_session(self, *, tenant_id: int, session_id: int) -> None:
+        session = self.db.get(ChatSession, session_id)
+        if not session or session.tenant_id != tenant_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sesion no encontrada")
+            
+        self.db.delete(session)
+        self.db.flush()
+
+    def list_memory(self, *, tenant_id: int, user_id: int | None = None, limit: int = 50) -> list[ChatMemoryItem]:
+        stmt = select(SemanticMemory).where(SemanticMemory.tenant_id == tenant_id).order_by(SemanticMemory.updated_at.desc()).limit(limit)
+        if user_id is not None:
+            stmt = stmt.where((SemanticMemory.user_id == user_id) | (SemanticMemory.user_id.is_(None)))
+        rows = self.db.scalars(stmt).all()
+        return [ChatMemoryItem.model_validate(row, from_attributes=True) for row in rows]
+
+    def search_memory(self, *, tenant_id: int, query: str, user_id: int | None = None, limit: int = 20) -> list[ChatMemoryItem]:
+        stmt = (
+            select(SemanticMemory)
+            .where(SemanticMemory.tenant_id == tenant_id, func.lower(SemanticMemory.content).contains(query.lower()))
+            .order_by(SemanticMemory.updated_at.desc())
+            .limit(limit)
+        )
+        if user_id is not None:
+            stmt = stmt.where((SemanticMemory.user_id == user_id) | (SemanticMemory.user_id.is_(None)))
+        rows = self.db.scalars(stmt).all()
+        return [ChatMemoryItem.model_validate(row, from_attributes=True) for row in rows]
+
+    def create_memory(self, *, tenant_id: int, user_id: int | None = None, payload: ChatMemoryCreateRequest) -> ChatMemoryItem:
+        row = SemanticMemory(
+            tenant_id=tenant_id,
+            user_id=user_id if payload.scope in {"user", "session"} else None,
+            scope=payload.scope,
+            memory_type=payload.memory_type,
+            content=payload.content,
+            summary=payload.summary,
+            importance_score=payload.importance_score,
+            metadata_json=payload.metadata_json,
+            embedding=None,
+        )
+        self.db.add(row)
+        self.db.flush()
+        return ChatMemoryItem.model_validate(row, from_attributes=True)
+
+    def update_memory(self, *, tenant_id: int, memory_id: int, user_id: int | None = None, payload: ChatMemoryUpdateRequest) -> ChatMemoryItem:
+        row = self.db.get(SemanticMemory, memory_id)
+        if not row or row.tenant_id != tenant_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Memoria no encontrada")
+        if row.user_id is not None and user_id is not None and row.user_id != user_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Memoria fuera de alcance")
+        patch = payload.model_dump(exclude_none=True, by_alias=False)
+        for field, value in patch.items():
+            setattr(row, field, value)
+        self.db.flush()
+        return ChatMemoryItem.model_validate(row, from_attributes=True)
+
+    def delete_memory(self, *, tenant_id: int, memory_id: int, user_id: int | None = None) -> None:
+        row = self.db.get(SemanticMemory, memory_id)
+        if not row or row.tenant_id != tenant_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Memoria no encontrada")
+        if row.user_id is not None and user_id is not None and row.user_id != user_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Memoria fuera de alcance")
+        self.db.delete(row)
+        self.db.flush()
+
+    def emit_invoice(self, *, tenant_id: int, payload: TenantApiInvoiceCreateRequest) -> TenantApiInvoiceCreateResponse:
+        return TenantApiService(self.db).create_invoice(tenant_id=tenant_id, payload=payload)
+
+    def send_invoice_email(self, *, tenant_id: int, invoice_id: int, recipient: str) -> None:
+        TenantApiService(self.db).send_invoice_email(tenant_id=tenant_id, invoice_id=invoice_id, recipient=recipient)

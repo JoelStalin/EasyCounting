@@ -1,0 +1,41 @@
+{
+  "name": "@getupsoft/browser-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Playwright MCP sidecar and browser automation service for GetUpSoft",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json",
+    "lint": "eslint \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\" \"*.{js,json,md}\" \"config/**/*.json\"",
+    "browsers:install": "playwright install chromium firefox webkit",
+    "mcp:stdio": "tsx src/launch/stdio.ts",
+    "mcp:http": "tsx src/launch/http.ts",
+    "job": "tsx src/cli/run-job.ts",
+    "test": "tsx --test tests/**/*.test.ts"
+  },
+  "dependencies": {
+    "@playwright/mcp": "^0.0.47",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.3",
+    "pino": "^9.7.0",
+    "playwright": "^1.55.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.17",
+    "@types/supertest": "^6.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "eslint": "^9.25.1",
+    "prettier": "^3.5.3",
+    "supertest": "^7.1.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3"
+  }
+}

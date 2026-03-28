@@ -61,11 +61,24 @@ Official references:
 
 1. Start backend and verify `/health` and `/readyz`.
 2. Ensure real certificate is loaded/available.
-3. Run Selenium postulacion flow.
+3. Bootstrap DGII browser baseline from a cloned Chrome profile, never from the live profile.
+4. Run Browser MCP postulacion flow with persistent `userDataDir`.
 4. Generate postulacion XML.
 5. Sign XML with real certificate.
 6. Upload signed XML.
 7. Persist artifacts and final DGII response.
+
+## Repeatable DGII Browser Baseline
+
+- Source profile: `Default / JOEL STALIN`
+- Clone root: `DGII_POSTULACION_PROFILE_CLONE_ROOT`
+- Working profile dir: `DGII_POSTULACION_PROFILE_DIR`
+- Auth strategy order: `session_reuse,portal_credentials,manual_seed`
+- Warnings `Feature-Policy/Permissions-Policy` are non-blocking unless correlated with a functional failure
+- Persist after each run:
+  - `docs/certificados/autoasistido/dgii_postulacion_test_manifest.json`
+  - `docs/certificados/autoasistido/latest_known_state.json`
+  - `docs/certificados/autoasistido/run_notes/*.md`
 
 ## Available Signing Tools
 
@@ -104,17 +117,23 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\automation\sign_with
   -Thumbprint "<REAL_CERT_THUMBPRINT>"
 ```
 
-`scripts/automation/run_real_dgii_postulacion_ofv.py` now prioritizes:
+`scripts/automation/run_real_dgii_postulacion_ofv.py` and the Browser MCP postulacion flow now prioritize:
 
-1. Windows store certificate signing
-2. DGII App Firma Digital signing
-3. Internal API / certificate register fallback
+1. Internal API signing
+2. Internal API retry after certificate register
+3. Local `.p12/.pfx` signing
+4. Windows store certificate signing
+5. DGII App Firma Digital signing
+
+The order can be overridden with `DGII_POSTULACION_SIGNING_ORDER`.
 
 New environment variables:
 
 - `DGII_SIGNING_CERT_THUMBPRINT`
 - `DGII_SIGNING_CERT_SUBJECT`
 - `DGII_SIGNING_CERT_STORE_PATH` (default `CurrentUser\My`)
+- `DGII_APP_FIRMA_EXE_PATH`
+- `DGII_POSTULACION_SIGNING_ORDER`
 
 ## Operational Evidence
 

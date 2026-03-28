@@ -23,6 +23,10 @@ from app.models import (
     sequence,
     fiscal_operation,
     certificate_workflow,
+    memory,
+    tenant_ai,
+    user_ai,
+    odoo_mirror,
 )
 
 __all__ = [
@@ -49,4 +53,8 @@ __all__ = [
     "sequence",
     "fiscal_operation",
     "certificate_workflow",
+    "memory",
+    "tenant_ai",
+    "user_ai",
+    "odoo_mirror",
 ]

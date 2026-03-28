@@ -12,7 +12,7 @@ param(
     [string]$OutputPath = "",
 
     [Parameter(Mandatory = $false)]
-    [string]$AppExePath = "c:\Users\yoeli\Documents\dgii_encf\tests\artifacts\dgii_tools\App_Firma_Digital\App Firma Digital.exe"
+    [string]$AppExePath = "c:\Users\yoeli\Documents\dgii_encf\tools\App Firma Digital.exe"
 )
 
 Set-StrictMode -Version Latest
@@ -28,13 +28,19 @@ if (-not (Test-Path -LiteralPath $AppExePath)) {
     throw "No existe App Firma Digital: $AppExePath"
 }
 
+try {
+    Unblock-File -LiteralPath $AppExePath -ErrorAction Stop
+} catch {
+    # Si no aplica o ya estaba desbloqueado, continuamos.
+}
+
 if ([string]::IsNullOrWhiteSpace($OutputPath)) {
     $dir = Split-Path -Parent $XmlPath
     $name = [System.IO.Path]::GetFileNameWithoutExtension($XmlPath)
     $OutputPath = Join-Path $dir "$name.signed.xml"
 }
 
-$asm = [Reflection.Assembly]::LoadFile($AppExePath)
+$asm = [Reflection.Assembly]::LoadFrom($AppExePath)
 $svcType = $asm.GetType("wfFirma.Services.SignServices")
 if ($null -eq $svcType) {
     throw "No se encontró wfFirma.Services.SignServices en el ejecutable."
@@ -48,6 +54,9 @@ if ($null -eq $prop) {
 $svc = $prop.GetValue($null, $null)
 $doc = $svc.FirmarXml($XmlPath, $P12Path, $P12Password, $false)
 $doc.Save($OutputPath)
+if (-not (Test-Path -LiteralPath $OutputPath)) {
+    throw "La app DGII no genero el archivo firmado: $OutputPath"
+}
 
 $result = [ordered]@{
     status = "ok"
@@ -57,4 +66,3 @@ $result = [ordered]@{
     output = $OutputPath
 }
 $result | ConvertTo-Json -Depth 4
-

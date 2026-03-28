@@ -4,6 +4,7 @@ from __future__ import annotations
 from datetime import date, datetime, time, timezone
 from decimal import Decimal
 from typing import List, Optional
+import re
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
@@ -12,12 +13,15 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.application.ecf_submission import submit_ecf
+from app.billing.validators import normalize_tipo_ecf, validate_encf_for_tipo
 from app.billing.services import BillingService, get_billing_service
 from app.dgii.client import DGIIClient
 from app.dgii.jobs import dispatcher
 from app.dgii.schemas import ECFItem, ECFSubmission, SubmissionResponse
+from app.models.sequence import Sequence
 from app.models.tenant import Tenant
 from app.routers.dependencies import DGIIClientDep
+from app.infra.settings import settings
 from app.services.local_rnc_directory import LocalRncDirectoryService
 from app.shared.database import get_db
 
@@ -122,14 +126,41 @@ def lookup_rnc(fiscal_id: str, db: Session = Depends(get_db)) -> OdooRncRecord:
 
 
 def _resolve_tenant(payload: OdooInvoicePayload, db: Session) -> Tenant:
+    def _norm_rnc(raw: str | None) -> str | None:
+        if not raw:
+            return None
+        cleaned = re.sub(r"\D", "", raw)
+        return cleaned or None
+
     tenant = None
     if payload.tenant_id is not None:
         tenant = db.get(Tenant, payload.tenant_id)
-    if tenant is None and payload.issuer_rnc:
-        tenant = db.scalar(select(Tenant).where(Tenant.rnc == payload.issuer_rnc))
+    normalized_rnc = _norm_rnc(payload.issuer_rnc)
+    if tenant is None and normalized_rnc:
+        tenant = db.scalar(select(Tenant).where(Tenant.rnc == normalized_rnc))
     if tenant is None:
         raise HTTPException(status_code=400, detail="No se pudo resolver el tenant Odoo: envia tenantId o issuerRnc")
     return tenant
+
+
+def _allocate_encf(db: Session, *, tenant_id: int, tipo_ecf: str) -> str:
+    sequence = db.scalar(
+        select(Sequence).where(Sequence.tenant_id == tenant_id, Sequence.doc_type == tipo_ecf).with_for_update()
+    )
+    if sequence is None:
+        sequence = Sequence(
+            tenant_id=tenant_id,
+            doc_type=tipo_ecf,
+            prefix=f"E{tipo_ecf}",
+            next_number=2,
+        )
+        db.add(sequence)
+        db.flush()
+        return f"{sequence.prefix}{str(1).zfill(10)}"
+    current = sequence.next_number
+    sequence.next_number = current + 1
+    db.flush()
+    return f"{sequence.prefix}{str(current).zfill(10)}"
 
 
 @router.post("/invoices/transmit", response_model=OdooInvoiceResponse, status_code=status.HTTP_202_ACCEPTED)
@@ -140,9 +171,33 @@ async def transmit_invoice_from_odoo(
     db: Session = Depends(get_db),
 ) -> OdooInvoiceResponse:
     tenant = _resolve_tenant(payload, db)
-    encf = payload.document_number or payload.odoo_invoice_name
-    if not encf:
-        raise HTTPException(status_code=400, detail="documentNumber u odooInvoiceName son obligatorios para crear el e-CF")
+    try:
+        tipo_ecf = normalize_tipo_ecf(payload.e_cf_type)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    encf_candidate = (payload.document_number or payload.odoo_invoice_name or "").strip().upper()
+    if encf_candidate:
+        try:
+            validate_encf_for_tipo(encf_candidate, tipo_ecf)
+            encf = encf_candidate
+        except ValueError:
+            encf = _allocate_encf(db, tenant_id=tenant.id, tipo_ecf=tipo_ecf)
+    else:
+        encf = _allocate_encf(db, tenant_id=tenant.id, tipo_ecf=tipo_ecf)
+
+    if settings.odoo_transmit_mock:
+        track_id = f"MOCK-{payload.odoo_invoice_id}-{int(datetime.now(timezone.utc).timestamp())}"
+        return OdooInvoiceResponse(
+            status="RECEIVED",
+            certia_track_id=track_id,
+            operation_id=None,
+            correlation_id=None,
+            message=(
+                f"Factura Odoo #{payload.odoo_invoice_id} recibida en modo ODOO_TRANSMIT_MOCK "
+                f"para tenant {tenant.id}."
+            ),
+        )
 
     submission = payload.to_ecf_submission(issuer_rnc=tenant.rnc, encf=encf)
     token = await client.bearer()

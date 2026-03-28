@@ -504,7 +504,10 @@ class AccountMove(models.Model):
         self.ensure_one()
         if not self.invoice_payments_widget:
             return []
-        j = json.loads(self.invoice_payments_widget)
+        if isinstance(self.invoice_payments_widget, dict):
+            j = self.invoice_payments_widget
+        else:
+            j = json.loads(self.invoice_payments_widget)
         return j["content"] if j else []
 
     def _get_tax_line_ids(self):

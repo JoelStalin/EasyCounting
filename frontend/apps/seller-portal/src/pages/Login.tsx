@@ -54,7 +54,7 @@ export function LoginPage() {
       <div className="flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-2 text-center">
-            <CardTitle>getupsoft Socios</CardTitle>
+            <CardTitle>EasyCounting Socios</CardTitle>
             <p className="text-sm text-slate-300">
               Portal para revendedores y operadores con acceso restringido a sus clientes.
             </p>

@@ -1,1 +1,1 @@
-WAITING_FOR_HUMAN: complete Cloudflare verification in the visible browser window.
+STARTING

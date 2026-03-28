@@ -31,6 +31,10 @@ from app.admin.schemas import (
     PlatformAIProviderItem,
     PlatformAIProviderPayload,
     PlatformUserItem,
+    TenantAIProviderItem,
+    TenantAIProviderPayload,
+    UserAIProviderItem,
+    UserAIProviderPayload,
 )
 from app.infra.settings import settings as app_settings
 from app.shared.database import get_db
@@ -289,3 +293,77 @@ def update_tenant_settings(
     db: Session = Depends(get_db),
 ) -> TenantSettingsResponse:
     return _service(db).update_tenant_settings(tenant_id, payload)
+
+
+@router.get("/tenants/{tenant_id}/ai-providers", response_model=List[TenantAIProviderItem])
+def list_tenant_ai_providers(
+    tenant_id: int,
+    db: Session = Depends(get_db),
+) -> List[TenantAIProviderItem]:
+    return _service(db).list_tenant_ai_providers(tenant_id)
+
+
+@router.post("/tenants/{tenant_id}/ai-providers", response_model=TenantAIProviderItem, status_code=status.HTTP_201_CREATED)
+def create_tenant_ai_provider(
+    tenant_id: int,
+    payload: TenantAIProviderPayload,
+    db: Session = Depends(get_db),
+) -> TenantAIProviderItem:
+    return _service(db).create_tenant_ai_provider(tenant_id, payload)
+
+
+@router.put("/tenants/{tenant_id}/ai-providers/{provider_id}", response_model=TenantAIProviderItem)
+def update_tenant_ai_provider(
+    tenant_id: int,
+    provider_id: int,
+    payload: TenantAIProviderPayload,
+    db: Session = Depends(get_db),
+) -> TenantAIProviderItem:
+    return _service(db).update_tenant_ai_provider(tenant_id, provider_id, payload)
+
+
+@router.delete("/tenants/{tenant_id}/ai-providers/{provider_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_tenant_ai_provider(
+    tenant_id: int,
+    provider_id: int,
+    db: Session = Depends(get_db),
+) -> Response:
+    _service(db).delete_tenant_ai_provider(tenant_id, provider_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/users/{user_id}/ai-providers", response_model=List[UserAIProviderItem])
+def list_user_ai_providers(
+    user_id: int,
+    db: Session = Depends(get_db),
+) -> List[UserAIProviderItem]:
+    return _service(db).list_user_ai_providers(user_id)
+
+
+@router.post("/users/{user_id}/ai-providers", response_model=UserAIProviderItem, status_code=status.HTTP_201_CREATED)
+def create_user_ai_provider(
+    user_id: int,
+    payload: UserAIProviderPayload,
+    db: Session = Depends(get_db),
+) -> UserAIProviderItem:
+    return _service(db).create_user_ai_provider(user_id, payload)
+
+
+@router.put("/users/{user_id}/ai-providers/{provider_id}", response_model=UserAIProviderItem)
+def update_user_ai_provider(
+    user_id: int,
+    provider_id: int,
+    payload: UserAIProviderPayload,
+    db: Session = Depends(get_db),
+) -> UserAIProviderItem:
+    return _service(db).update_user_ai_provider(user_id, provider_id, payload)
+
+
+@router.delete("/users/{user_id}/ai-providers/{provider_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user_ai_provider(
+    user_id: int,
+    provider_id: int,
+    db: Session = Depends(get_db),
+) -> Response:
+    _service(db).delete_user_ai_provider(user_id, provider_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

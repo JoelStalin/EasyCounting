@@ -29,18 +29,31 @@ class AccountMove(models.Model):
         res = super().action_post()
         import requests
         import logging
+        import re
         _logger = logging.getLogger(__name__)
 
-        for move in self.filtered(lambda m: m.is_invoice() and m.l10n_latam_document_type_id and m.l10n_latam_document_type_id.l10n_do_ncf_type):
+        def _resolve_ncf_type(document_type):
+            return getattr(document_type, "l10n_do_ncf_type", False) or getattr(
+                document_type, "doc_code_prefix", False
+            )
+
+        for move in self.filtered(
+            lambda m: m.is_invoice()
+            and m.l10n_latam_document_type_id
+            and _resolve_ncf_type(m.l10n_latam_document_type_id)
+        ):
             try:
+                ncf_type = _resolve_ncf_type(move.l10n_latam_document_type_id)
+                issuer_rnc_raw = move.company_id.vat or move.company_id.partner_id.vat
+                issuer_rnc = re.sub(r"\D", "", issuer_rnc_raw or "")
                 payload = {
-                    "tenantId": move.company_id.id,
+                    "tenantId": None,
                     "odooInvoiceId": move.id,
                     "odooInvoiceName": move.name,
                     "issueDate": str(move.invoice_date or fields.Date.today()),
-                    "eCfType": move.l10n_latam_document_type_id.l10n_do_ncf_type,
+                    "eCfType": ncf_type,
                     "documentNumber": move.name,
-                    "issuerRnc": move.company_id.vat,
+                    "issuerRnc": issuer_rnc,
                     "issuerName": move.company_id.name,
                     "currency": move.currency_id.name or "DOP",
                     "totalAmount": float(move.amount_total),
@@ -68,7 +81,15 @@ class AccountMove(models.Model):
                 url = "http://host.docker.internal:28080/api/v1/odoo/invoices/transmit"
                 headers = {"Content-Type": "application/json"}
                 response = requests.post(url, json=payload, headers=headers, timeout=5)
-                response.raise_for_status()
+                if not response.ok:
+                    _logger.error(
+                        "Error HTTP Certia Odoo->Hub invoice=%s status=%s body=%s payload=%s",
+                        move.name,
+                        response.status_code,
+                        (response.text or "")[:1200],
+                        payload,
+                    )
+                    response.raise_for_status()
                 _logger.info("Factura %s encolada en Certia. Track ID: %s", move.name, response.json().get('certia_track_id'))
             except Exception as e:
                 _logger.error("Error transmitiendo a Certia desde Odoo: %s", str(e))

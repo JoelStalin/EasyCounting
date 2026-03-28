@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 export function useInvoices(params) {
     return useQuery({
         queryKey: ["tenant", "invoices", params],
@@ -22,6 +23,26 @@ export function useInvoiceDetail(invoiceId) {
         enabled: Boolean(invoiceId),
         queryFn: async () => {
             const { data } = await api.get(`/api/v1/cliente/invoices/${invoiceId}`);
+            return data;
+        },
+    });
+}
+export function useEmitInvoice() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (payload) => {
+            const { data } = await api.post("/api/v1/cliente/invoices/emit", payload);
+            return data;
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: ["tenant", "invoices"] });
+        },
+    });
+}
+export function useSendInvoiceEmail() {
+    return useMutation({
+        mutationFn: async (payload) => {
+            const { data } = await api.post(`/api/v1/cliente/invoices/${payload.invoiceId}/send-email`, { recipient: payload.recipient });
             return data;
         },
     });

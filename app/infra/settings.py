@@ -143,6 +143,64 @@ class Settings(BaseSettings):
         le=500,
         validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_TRACK_POLL_LIMIT"),
     )
+    certificate_workflow_mail_intake_enabled: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_ENABLED"),
+    )
+    certificate_workflow_mail_intake_poll_seconds: int = Field(
+        default=120,
+        ge=10,
+        le=3600,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_POLL_SECONDS"),
+    )
+    certificate_workflow_mail_intake_imap_host: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_IMAP_HOST"),
+    )
+    certificate_workflow_mail_intake_imap_port: int = Field(
+        default=993,
+        ge=1,
+        le=65535,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_IMAP_PORT"),
+    )
+    certificate_workflow_mail_intake_imap_user: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_IMAP_USER"),
+    )
+    certificate_workflow_mail_intake_imap_pass: str | None = Field(
+        default=None,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_IMAP_PASS"),
+    )
+    certificate_workflow_mail_intake_imap_mailbox: str = Field(
+        default="INBOX",
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_IMAP_MAILBOX"),
+    )
+    certificate_workflow_mail_intake_use_ssl: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_USE_SSL"),
+    )
+    certificate_workflow_mail_intake_allowed_sender_domains_raw: str | None = Field(
+        default="ra.viafirma.do,viafirma.do",
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_ALLOWED_SENDER_DOMAINS"),
+    )
+    certificate_workflow_mail_intake_subject_case_regex: str = Field(
+        default=r"(PSC-\d{4}-\d{5})",
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_SUBJECT_CASE_REGEX"),
+    )
+    certificate_workflow_mail_intake_attachment_max_mb: int = Field(
+        default=20,
+        ge=1,
+        le=100,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_ATTACHMENT_MAX_MB"),
+    )
+    certificate_workflow_mail_intake_auto_validate: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_AUTO_VALIDATE"),
+    )
+    certificate_workflow_mail_intake_password_regex: str = Field(
+        default=r"(?i)(?:password|clave|passphrase)\s*[:=]\s*([^\s<>,;]+)",
+        validation_alias=AliasChoices("CERTIFICATE_WORKFLOW_MAIL_INTAKE_PASSWORD_REGEX"),
+    )
 
     bootstrap_admin_email: str = Field(
         default="admin@getupsoft.com.do",
@@ -313,7 +371,78 @@ class Settings(BaseSettings):
         default="evidence-only",
         validation_alias=AliasChoices("DGII_BROWSER_AUTOMATION_MODE"),
     )
+    browser_mcp_enabled: bool = Field(default=False, validation_alias=AliasChoices("BROWSER_MCP_ENABLED"))
+    browser_mcp_mode: Literal["remote", "stdio"] = Field(
+        default="remote",
+        validation_alias=AliasChoices("BROWSER_MCP_MODE"),
+    )
+    browser_mcp_base_url: str = Field(
+        default="http://browser-mcp:8930",
+        validation_alias=AliasChoices("BROWSER_MCP_BASE_URL"),
+    )
+    browser_mcp_stdio_cmd: str = Field(
+        default="node automation/browser-mcp/dist/cli/run-job.js",
+        validation_alias=AliasChoices("BROWSER_MCP_STDIO_CMD"),
+    )
+    browser_mcp_default_browser: Literal["chromium", "firefox", "webkit"] = Field(
+        default="chromium",
+        validation_alias=AliasChoices("BROWSER_MCP_DEFAULT_BROWSER"),
+    )
+    browser_mcp_default_headless: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("BROWSER_MCP_DEFAULT_HEADLESS"),
+    )
+    browser_mcp_output_root: Path = Field(
+        default=Path("tests/artifacts/browser-mcp"),
+        validation_alias=AliasChoices("BROWSER_MCP_OUTPUT_ROOT"),
+    )
+    browser_mcp_allowed_origins_raw: str | None = Field(
+        default="",
+        validation_alias=AliasChoices("BROWSER_MCP_ALLOWED_ORIGINS"),
+    )
+    browser_mcp_blocked_origins_raw: str | None = Field(
+        default="",
+        validation_alias=AliasChoices("BROWSER_MCP_BLOCKED_ORIGINS"),
+    )
+    browser_mcp_action_timeout_ms: int = Field(
+        default=20_000,
+        ge=1_000,
+        le=300_000,
+        validation_alias=AliasChoices("BROWSER_MCP_ACTION_TIMEOUT_MS"),
+    )
+    browser_mcp_navigation_timeout_ms: int = Field(
+        default=45_000,
+        ge=1_000,
+        le=300_000,
+        validation_alias=AliasChoices("BROWSER_MCP_NAVIGATION_TIMEOUT_MS"),
+    )
+    browser_mcp_save_session_default: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("BROWSER_MCP_SAVE_SESSION_DEFAULT"),
+    )
+    browser_mcp_trace_default: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("BROWSER_MCP_TRACE_DEFAULT"),
+    )
+    browser_mcp_pdf_default: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("BROWSER_MCP_PDF_DEFAULT"),
+    )
+    browser_mcp_screenshot_default: bool = Field(
+        default=True,
+        validation_alias=AliasChoices("BROWSER_MCP_SCREENSHOT_DEFAULT"),
+    )
+    browser_mcp_remote_timeout_seconds: float = Field(
+        default=120.0,
+        gt=1.0,
+        le=900.0,
+        validation_alias=AliasChoices("BROWSER_MCP_REMOTE_TIMEOUT_SECONDS"),
+    )
     odoo_sync_enabled: bool = Field(default=False, validation_alias=AliasChoices("ODOO_SYNC_ENABLED"))
+    odoo_transmit_mock: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("ODOO_TRANSMIT_MOCK"),
+    )
     odoo_json2_base_url: str | None = Field(default=None, validation_alias=AliasChoices("ODOO_JSON2_BASE_URL"))
     odoo_json2_database: str | None = Field(default=None, validation_alias=AliasChoices("ODOO_JSON2_DATABASE"))
     odoo_json2_api_key: str | None = Field(default=None, validation_alias=AliasChoices("ODOO_JSON2_API_KEY"))
@@ -483,6 +612,14 @@ class Settings(BaseSettings):
 
     @computed_field
     @property
+    def certificate_workflow_mail_intake_allowed_sender_domains(self) -> Set[str]:
+        if self.certificate_workflow_mail_intake_allowed_sender_domains_raw is None:
+            return {"ra.viafirma.do", "viafirma.do"}
+        values = self._parse_csv_or_json_array(self.certificate_workflow_mail_intake_allowed_sender_domains_raw)
+        return {item.strip().lower() for item in values if item.strip()}
+
+    @computed_field
+    @property
     def secret_key(self) -> str:
         return self.jwt_secret
 
@@ -634,6 +771,18 @@ class Settings(BaseSettings):
         if base:
             return base.rstrip("/")
         return "https://api.getupsoft.com.do"
+
+    @computed_field
+    @property
+    def browser_mcp_allowed_origins(self) -> list[str]:
+        raw = self.browser_mcp_allowed_origins_raw or ""
+        return self._parse_csv_or_json_array(raw)
+
+    @computed_field
+    @property
+    def browser_mcp_blocked_origins(self) -> list[str]:
+        raw = self.browser_mcp_blocked_origins_raw or ""
+        return self._parse_csv_or_json_array(raw)
 
 
 @lru_cache

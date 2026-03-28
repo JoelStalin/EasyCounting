@@ -1,0 +1,242 @@
+{
+  "results": [
+    {
+      "prefix": "B01",
+      "status": "POSTED",
+      "invoice_id": 185,
+      "invoice": {
+        "id": 185,
+        "name": "B01 00000083",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000083",
+        "l10n_latam_document_type_id": [
+          1,
+          "(B) Crédito Fiscal"
+        ],
+        "amount_total": 1151.15
+      }
+    },
+    {
+      "prefix": "B02",
+      "status": "POSTED",
+      "invoice_id": 186,
+      "invoice": {
+        "id": 186,
+        "name": "B01 00000084",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000084",
+        "l10n_latam_document_type_id": [
+          2,
+          "(B) Consumo"
+        ],
+        "amount_total": 1152.3
+      }
+    },
+    {
+      "prefix": "B03",
+      "status": "POSTED",
+      "invoice_id": 187,
+      "invoice": {
+        "id": 187,
+        "name": "B01 00000085",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000085",
+        "l10n_latam_document_type_id": [
+          3,
+          "(B) Nota de Débito"
+        ],
+        "amount_total": 1153.45
+      }
+    },
+    {
+      "prefix": "B04",
+      "status": "POSTED",
+      "invoice_id": 188,
+      "invoice": {
+        "id": 188,
+        "name": "B01 00000086",
+        "state": "posted",
+        "move_type": "out_refund",
+        "l10n_latam_document_number": "00000086",
+        "l10n_latam_document_type_id": [
+          4,
+          "(B) Nota de Crédito"
+        ],
+        "amount_total": 1154.6
+      }
+    },
+    {
+      "prefix": "E31",
+      "status": "POSTED",
+      "invoice_id": 189,
+      "invoice": {
+        "id": 189,
+        "name": "B01 00000087",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000087",
+        "l10n_latam_document_type_id": [
+          13,
+          "(E) Crédito Fiscal Electrónica"
+        ],
+        "amount_total": 1155.75
+      }
+    },
+    {
+      "prefix": "E32",
+      "status": "POSTED",
+      "invoice_id": 190,
+      "invoice": {
+        "id": 190,
+        "name": "B01 00000088",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000088",
+        "l10n_latam_document_type_id": [
+          14,
+          "(E) Consumo Electrónica"
+        ],
+        "amount_total": 1156.9
+      }
+    },
+    {
+      "prefix": "E33",
+      "status": "POSTED",
+      "invoice_id": 191,
+      "invoice": {
+        "id": 191,
+        "name": "B01 00000089",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000089",
+        "l10n_latam_document_type_id": [
+          15,
+          "(E) Nota de Débito Electrónica"
+        ],
+        "amount_total": 1158.05
+      }
+    },
+    {
+      "prefix": "E34",
+      "status": "POSTED",
+      "invoice_id": 192,
+      "invoice": {
+        "id": 192,
+        "name": "B01 00000090",
+        "state": "posted",
+        "move_type": "out_refund",
+        "l10n_latam_document_number": "00000090",
+        "l10n_latam_document_type_id": [
+          16,
+          "(E) Nota de Crédito Electrónica"
+        ],
+        "amount_total": 1159.2
+      }
+    },
+    {
+      "prefix": "E41",
+      "status": "POSTED",
+      "invoice_id": 193,
+      "invoice": {
+        "id": 193,
+        "name": "B01 00000091",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000091",
+        "l10n_latam_document_type_id": [
+          17,
+          "(E) Compras Electrónica"
+        ],
+        "amount_total": 1160.35
+      }
+    },
+    {
+      "prefix": "E43",
+      "status": "POSTED",
+      "invoice_id": 194,
+      "invoice": {
+        "id": 194,
+        "name": "B01 00000092",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000092",
+        "l10n_latam_document_type_id": [
+          18,
+          "(E) Gasto Menor Electrónica"
+        ],
+        "amount_total": 1161.5
+      }
+    },
+    {
+      "prefix": "E44",
+      "status": "POSTED",
+      "invoice_id": 195,
+      "invoice": {
+        "id": 195,
+        "name": "B01 00000093",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000093",
+        "l10n_latam_document_type_id": [
+          19,
+          "(E) Régimen Especial Electrónica"
+        ],
+        "amount_total": 1162.65
+      }
+    },
+    {
+      "prefix": "E45",
+      "status": "POSTED",
+      "invoice_id": 196,
+      "invoice": {
+        "id": 196,
+        "name": "B01 00000094",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000094",
+        "l10n_latam_document_type_id": [
+          20,
+          "(E) Factura Gubernamental Electrónica"
+        ],
+        "amount_total": 1163.8
+      }
+    },
+    {
+      "prefix": "E46",
+      "status": "POSTED",
+      "invoice_id": 197,
+      "invoice": {
+        "id": 197,
+        "name": "B01 00000095",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000095",
+        "l10n_latam_document_type_id": [
+          21,
+          "(E) Exportación Electrónica"
+        ],
+        "amount_total": 1164.95
+      }
+    },
+    {
+      "prefix": "E47",
+      "status": "POSTED",
+      "invoice_id": 198,
+      "invoice": {
+        "id": 198,
+        "name": "B01 00000096",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000096",
+        "l10n_latam_document_type_id": [
+          22,
+          "(E) Pago al Exterior Electrónica"
+        ],
+        "amount_total": 1166.1
+      }
+    }
+  ]
+}

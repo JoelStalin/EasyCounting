@@ -7,7 +7,7 @@ from pathlib import Path
 from threading import Thread
 from urllib.error import URLError
 from urllib.parse import unquote, urlparse
-from urllib.request import urlopen
+from urllib.request import ProxyHandler, build_opener
 
 import pytest
 from selenium import webdriver
@@ -31,11 +31,12 @@ def _find_free_port() -> int:
 
 
 def _wait_for_http(url: str, *, timeout: float = 60.0) -> None:
+    opener = build_opener(ProxyHandler({}))
     deadline = time.time() + timeout
     last_error: str | None = None
     while time.time() < deadline:
         try:
-            with urlopen(url, timeout=2) as response:  # noqa: S310
+            with opener.open(url, timeout=2) as response:  # noqa: S310
                 if 200 <= response.status < 500:
                     return
         except URLError as exc:
@@ -79,6 +80,12 @@ def _start_static_portal_server(directory: Path, port: int) -> tuple[ThreadingHT
 def _start_static_site_server(directory: Path, port: int, readiness_path: str = "/") -> tuple[ThreadingHTTPServer, Thread]:
     if not directory.exists():
         raise RuntimeError(f"No existe el directorio de portal compilado: {directory}")
+    runtime_config_path = directory / "runtime-config.js"
+    api_base_url = os.getenv("API_BASE_URL", "http://127.0.0.1:18080")
+    runtime_config_path.write_text(
+        f"globalThis.__GETUPSOFT_API_BASE_URL__ = {api_base_url!r};\n",
+        encoding="utf-8",
+    )
     server = ThreadingHTTPServer(("127.0.0.1", port), _spa_handler_for(directory))
     thread = Thread(target=server.serve_forever, daemon=True)
     thread.start()

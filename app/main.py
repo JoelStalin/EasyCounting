@@ -153,6 +153,8 @@ def create_app() -> FastAPI:
             *settings.dgii_allowed_hosts,
             "localhost",
             "127.0.0.1",
+            "host.docker.internal",
+            "host.docker.internal:28080",
             "testserver",
             "test",
             "getupsoft.com.do",

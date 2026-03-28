@@ -1,5 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
 from e2e.support import dismiss_tour, ensure_tour_visible, record_step, wait_for_ready
@@ -25,22 +26,20 @@ def test_client_login_emit_ecf_profile_and_logout(driver, client_url):
     dismiss_tour(driver)
     record_step(driver, "client_tour_dismissed")
     record_step(driver, "client_emit_form_ready")
+    Select(driver.find_element(By.XPATH, "//label[contains(., 'Tipo de e-CF')]//select")).select_by_value("31")
+    driver.find_element(By.XPATH, "//label[contains(., 'RNC o Cedula del Comprador')]//input").send_keys("101000000")
     textarea.send_keys("PHhtbD48ZWNmPkRlbW88L2VjZj48L3htbD4=")
     record_step(driver, "client_emit_payload_loaded")
     driver.find_element(By.CSS_SELECTOR, "button[type='submit']").click()
 
-    success = WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.XPATH, "//*[contains(., 'e-CF enviado a DGII')]"))
-    )
+    success = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//*[contains(., 'e-CF enviado a DGII')]")))
     record_step(driver, "client_emit_success")
-    assert "simulado" in success.text
+    assert "TrackId" in success.text
 
     driver.find_element(By.LINK_TEXT, "Perfil").click()
     WebDriverWait(driver, 20).until(EC.url_contains("/profile"))
     WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//h1[contains(., 'Perfil')]")))
-    WebDriverWait(driver, 20).until(
-        EC.visibility_of_element_located((By.XPATH, "//*[contains(., 'cliente@getupsoft.com.do')]"))
-    )
+    WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//*[contains(., 'cliente@getupsoft.com.do')]")))
     record_step(driver, "client_profile_open")
 
     driver.find_element(By.XPATH, "//button[contains(., 'Salir')]").click()

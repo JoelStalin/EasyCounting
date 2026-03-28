@@ -38,7 +38,7 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-2 text-center">
-          <CardTitle>getupsoft Admin</CardTitle>
+          <CardTitle>EasyCounting Admin</CardTitle>
           <p className="text-sm text-slate-300">Autenticacion multi-factor con controles RBAC.</p>
         </CardHeader>
         <CardContent>

@@ -16,12 +16,14 @@ from app.models.platform_ai import PlatformAIProvider
 SUPPORTED_AI_PROVIDER_TYPES = {
     "openai": "ChatGPT / OpenAI",
     "gemini": "Google Gemini",
+    "anthropic": "Claude / Anthropic",
     "openai_compatible": "OpenAI Compatible",
 }
 
 DEFAULT_BASE_URLS = {
     "openai": "https://api.openai.com/v1",
     "gemini": "https://generativelanguage.googleapis.com/v1beta",
+    "anthropic": "https://api.anthropic.com/v1",
 }
 
 

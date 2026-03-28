@@ -7,6 +7,7 @@ import {
   useRevokeTenantApiToken,
   useTenantApiTokens,
 } from "../api/tenant-api";
+import { useOdooCustomers, useOdooInvoices, useOdooProducts, useOdooVendors, useSyncOdoo } from "../api/odoo-mirror";
 
 function resolveEnterpriseApiBaseUrl(): string {
   const { hostname } = window.location;
@@ -52,6 +53,11 @@ export function OdooIntegrationPage() {
   const createToken = useCreateTenantApiToken();
   const revokeToken = useRevokeTenantApiToken();
   const invoicesQuery = useInvoices({ page: 1, size: 5 });
+  const syncOdoo = useSyncOdoo();
+  const customersQuery = useOdooCustomers(10);
+  const vendorsQuery = useOdooVendors(10);
+  const productsQuery = useOdooProducts(10);
+  const odooInvoicesQuery = useOdooInvoices(10);
 
   const apiBaseUrl = useMemo(() => resolveEnterpriseApiBaseUrl(), []);
   const exampleCurl = useMemo(() => buildExampleCurl(apiBaseUrl), [apiBaseUrl]);
@@ -226,6 +232,51 @@ export function OdooIntegrationPage() {
               <pre className="overflow-x-auto whitespace-pre-wrap text-xs text-slate-200">{exampleCurl}</pre>
             </div>
           </section>
+        </section>
+
+        <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6" data-tour="odoo-master-sync">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-lg font-semibold text-white">Sincronizacion Odoo completa</h2>
+              <p className="text-sm text-slate-400">
+                Importa clientes, proveedores, productos y facturas desde Odoo 19 al hub EasyCounting.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void syncOdoo.mutateAsync({ includeCustomers: true, includeVendors: true, includeProducts: true, includeInvoices: true, limit: 100 })}
+              disabled={syncOdoo.isPending}
+              className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-slate-700"
+            >
+              {syncOdoo.isPending ? "Sincronizando..." : "Sincronizar ahora"}
+            </button>
+          </div>
+
+          {syncOdoo.data ? (
+            <div className="mt-4 rounded-xl border border-emerald-900/60 bg-emerald-950/20 p-4 text-sm text-emerald-200">
+              {syncOdoo.data.message} Clientes: {syncOdoo.data.customers}, Proveedores: {syncOdoo.data.vendors}, Productos:{" "}
+              {syncOdoo.data.products}, Facturas: {syncOdoo.data.invoices}.
+            </div>
+          ) : null}
+
+          <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-4">
+              <h3 className="text-sm font-semibold text-slate-100">Clientes Odoo</h3>
+              <p className="mt-2 text-xs text-slate-400">{customersQuery.data?.length ?? 0} registros locales.</p>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-4">
+              <h3 className="text-sm font-semibold text-slate-100">Proveedores Odoo</h3>
+              <p className="mt-2 text-xs text-slate-400">{vendorsQuery.data?.length ?? 0} registros locales.</p>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-4">
+              <h3 className="text-sm font-semibold text-slate-100">Productos Odoo</h3>
+              <p className="mt-2 text-xs text-slate-400">{productsQuery.data?.length ?? 0} registros locales.</p>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/50 p-4">
+              <h3 className="text-sm font-semibold text-slate-100">Facturas Odoo</h3>
+              <p className="mt-2 text-xs text-slate-400">{odooInvoicesQuery.data?.length ?? 0} registros locales.</p>
+            </div>
+          </div>
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900/40 p-6" data-tour="api-token-list">

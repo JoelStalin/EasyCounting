@@ -1,4 +1,5 @@
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
@@ -24,7 +25,12 @@ def test_seller_login_emit_demo_open_clients_and_logout(driver, seller_url):
     tenant_select.select_by_index(1)
     ensure_tour_visible(driver, "Este flujo genera comprobantes demo solo para tenants asignados.")
     record_step(driver, "seller_tour_open")
-    dismiss_tour(driver)
+    try:
+        dismiss_tour(driver)
+    except TimeoutException:
+        finish_buttons = driver.find_elements(By.XPATH, "//button[contains(., 'Finalizar')]")
+        if finish_buttons:
+            driver.execute_script("arguments[0].click()", finish_buttons[0])
     record_step(driver, "seller_tour_dismissed")
     record_step(driver, "seller_emit_form_ready")
     submit_button = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")

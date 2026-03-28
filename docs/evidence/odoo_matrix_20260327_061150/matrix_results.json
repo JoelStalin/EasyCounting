@@ -1,0 +1,74 @@
+{
+  "results": [
+    {
+      "prefix": "B01",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "B02",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "B03",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "B04",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E31",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E32",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E33",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E34",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E41",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E43",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E44",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E45",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E46",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    },
+    {
+      "prefix": "E47",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Fiscal invoices require partner fiscal type'>"
+    }
+  ]
+}

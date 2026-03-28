@@ -1,0 +1,23 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { RequirePermission } from "../auth/guards";
+import { useTenantChat } from "../api/chat";
+const SUGGESTIONS = [
+    "Cual es el estado del ultimo comprobante emitido?",
+    "Cuantos comprobantes aceptados tengo este mes?",
+    "Dame detalles del comprobante E310000000001",
+];
+export function AssistantPage() {
+    const [question, setQuestion] = useState(SUGGESTIONS[0]);
+    const chat = useTenantChat();
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const normalized = question.trim();
+        if (!normalized) {
+            return;
+        }
+        await chat.mutateAsync({ question: normalized, max_sources: 4 });
+    };
+    return (_jsx(RequirePermission, { anyOf: ["TENANT_CHAT_ASSIST"], children: _jsxs("div", { className: "space-y-6", children: [_jsxs("header", { className: "space-y-2", children: [_jsx("h1", { className: "text-2xl font-semibold text-white", children: "Asistente de comprobantes" }), _jsx("p", { className: "max-w-3xl text-sm text-slate-300", children: "Este chatbot solo responde con informacion del tenant autenticado. No puede acceder a comprobantes, facturas ni datos de otras empresas o clientes." })] }), _jsxs("section", { className: "grid gap-6 lg:grid-cols-[minmax(0,1.25fr)_minmax(320px,0.9fr)]", children: [_jsxs("form", { onSubmit: handleSubmit, className: "space-y-4 rounded-2xl border border-slate-800 bg-slate-900/40 p-6", children: [_jsxs("label", { className: "block space-y-2", children: [_jsx("span", { className: "text-sm font-medium text-slate-100", children: "Pregunta" }), _jsx("textarea", { value: question, onChange: (event) => setQuestion(event.target.value), rows: 7, className: "w-full rounded-xl border border-slate-700 bg-slate-950/80 px-4 py-3 text-sm text-slate-100 outline-none transition focus:border-primary", placeholder: "Ejemplo: Cual fue el ultimo comprobante rechazado y su track ID?" })] }), _jsx("div", { className: "flex flex-wrap gap-2", children: SUGGESTIONS.map((suggestion) => (_jsx("button", { type: "button", onClick: () => setQuestion(suggestion), className: "rounded-full border border-slate-700 px-3 py-1.5 text-xs text-slate-300 hover:border-primary hover:text-primary", children: suggestion }, suggestion))) }), _jsxs("div", { className: "flex items-center gap-3", children: [_jsx("button", { type: "submit", disabled: chat.isPending, className: "rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60", children: chat.isPending ? "Consultando..." : "Preguntar al asistente" }), _jsxs("span", { className: "text-xs text-slate-400", children: ["Motor activo: ", chat.data?.engine ?? "local"] })] }), chat.isError ? (_jsx("div", { className: "rounded-xl border border-rose-900/60 bg-rose-950/30 p-4 text-sm text-rose-200", children: "No se pudo procesar la consulta del asistente." })) : null] }), _jsxs("aside", { className: "space-y-4 rounded-2xl border border-slate-800 bg-slate-950/50 p-6", children: [_jsx("h2", { className: "text-lg font-semibold text-white", children: "Respuesta" }), _jsx("p", { className: "text-sm leading-7 text-slate-200", children: chat.data?.answer ?? "Todavia no hay respuesta. Haz una pregunta sobre tus comprobantes." }), chat.data?.warnings?.length ? (_jsx("div", { className: "rounded-xl border border-amber-900/60 bg-amber-950/30 p-4 text-xs text-amber-200", children: chat.data.warnings.join(" ") })) : null, _jsxs("div", { className: "space-y-3", children: [_jsx("h3", { className: "text-sm font-semibold uppercase tracking-wide text-slate-400", children: "Fuentes usadas" }), chat.data?.sources?.length ? (chat.data.sources.map((source) => (_jsxs("div", { className: "rounded-xl border border-slate-800 bg-slate-900/60 p-4", children: [_jsxs("div", { className: "flex items-center justify-between gap-3", children: [_jsx(Link, { className: "text-sm font-semibold text-primary", to: `/invoices/${source.invoice_id}`, children: source.encf }), _jsx("span", { className: "rounded-full border border-slate-700 px-2 py-1 text-[11px] text-slate-300", children: source.estado_dgii })] }), _jsx("p", { className: "mt-2 text-xs text-slate-300", children: source.snippet }), _jsxs("p", { className: "mt-2 text-[11px] text-slate-500", children: ["Track: ", source.track_id ?? "N/A", " \u00B7 Fecha: ", new Date(source.fecha_emision).toLocaleString()] })] }, source.invoice_id)))) : (_jsx("p", { className: "text-sm text-slate-500", children: "El asistente mostrara aqui las facturas usadas para responder." }))] })] })] })] }) }));
+}

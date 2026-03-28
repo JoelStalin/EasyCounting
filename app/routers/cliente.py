@@ -4,20 +4,36 @@ import base64
 import binascii
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Query, Request, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Query, Request, Response, UploadFile, status
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.application.certificates import TenantCertificateService
 from app.application.client_portal import ClientPortalService
+from app.application.odoo_mirror import OdooMirrorService
 from app.application.recurring_invoices import RecurringInvoiceService
 from app.application.tenant_api import TenantApiService
 from app.application.tenant_chat import TenantChatService
 from app.infra.settings import settings as app_settings
 from app.portal_client.schemas import (
     ChatAnswerResponse,
+    ChatMessageItem,
+    ChatMemoryCreateRequest,
+    ChatMemoryItem,
+    ChatMemoryUpdateRequest,
     ChatQuestionRequest,
+    ChatSessionItem,
     InvoiceDetailResponse,
+    InvoiceEmitRequest,
+    InvoiceEmitResponse,
     InvoiceListResponse,
+    InvoiceSendEmailRequest,
+    InvoiceSendEmailResponse,
+    OdooInvoiceItem,
+    OdooPartnerItem,
+    OdooProductItem,
+    OdooSyncRequest,
+    OdooSyncResponse,
     PlanChangeRequest,
     PlanPublic,
     TenantCertificateListResponse,
@@ -267,6 +283,136 @@ def get_invoice(
     return service.get_invoice_detail(tenant_id=tenant_id, invoice_id=invoice_id)
 
 
+@router.post("/invoices/emit", response_model=InvoiceEmitResponse, status_code=status.HTTP_201_CREATED)
+def emit_invoice(
+    body: InvoiceEmitRequest,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> InvoiceEmitResponse:
+    tenant_id = _tenant_id_from_payload(payload)
+    service = ClientPortalService(db)
+    result = service.emit_invoice(tenant_id=tenant_id, payload=body)
+    return InvoiceEmitResponse.model_validate(result.model_dump(by_alias=True))
+
+
+@router.get("/invoices/{invoice_id}/pdf")
+def download_invoice_pdf(
+    invoice_id: int,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> FileResponse:
+    tenant_id = _tenant_id_from_payload(payload)
+    service = ClientPortalService(db)
+    detail = service.get_invoice_detail(tenant_id=tenant_id, invoice_id=invoice_id)
+    if not detail.ri_pdf_path:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="PDF RI no disponible")
+    from app.shared.storage import storage
+
+    path = storage.resolve_path(detail.ri_pdf_path)
+    if not path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="PDF RI no encontrado")
+    return FileResponse(path=str(path), media_type="application/pdf", filename=f"{detail.encf}.pdf")
+
+
+@router.get("/invoices/{invoice_id}/xml")
+def download_invoice_xml(
+    invoice_id: int,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> FileResponse:
+    tenant_id = _tenant_id_from_payload(payload)
+    service = ClientPortalService(db)
+    detail = service.get_invoice_detail(tenant_id=tenant_id, invoice_id=invoice_id)
+    from app.shared.storage import storage
+
+    path = storage.resolve_path(detail.xml_path)
+    if not path.exists():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="XML no encontrado")
+    return FileResponse(path=str(path), media_type="application/json", filename=f"{detail.encf}.json")
+
+
+@router.post("/invoices/{invoice_id}/send-email", response_model=InvoiceSendEmailResponse)
+def send_invoice_email(
+    invoice_id: int,
+    body: InvoiceSendEmailRequest,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> InvoiceSendEmailResponse:
+    tenant_id = _tenant_id_from_payload(payload)
+    service = ClientPortalService(db)
+    service.send_invoice_email(tenant_id=tenant_id, invoice_id=invoice_id, recipient=body.recipient)
+    return InvoiceSendEmailResponse(status="SENT", message="Factura enviada por correo.")
+
+
+@router.post("/integrations/odoo/sync", response_model=OdooSyncResponse)
+async def sync_odoo_data(
+    body: OdooSyncRequest,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> OdooSyncResponse:
+    tenant_id = _tenant_id_from_payload(payload)
+    counts = await OdooMirrorService(db).sync(
+        tenant_id=tenant_id,
+        include_customers=body.include_customers,
+        include_vendors=body.include_vendors,
+        include_products=body.include_products,
+        include_invoices=body.include_invoices,
+        limit=body.limit,
+    )
+    return OdooSyncResponse(
+        status="SYNCED",
+        customers=counts["customers"],
+        vendors=counts["vendors"],
+        products=counts["products"],
+        invoices=counts["invoices"],
+        message="Sincronizacion Odoo completada.",
+    )
+
+
+@router.get("/integrations/odoo/customers", response_model=list[OdooPartnerItem])
+def list_odoo_customers(
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+    limit: int = Query(default=100, ge=1, le=500),
+) -> list[OdooPartnerItem]:
+    tenant_id = _tenant_id_from_payload(payload)
+    rows = OdooMirrorService(db).list_partners(tenant_id=tenant_id, partner_kind="customer", limit=limit)
+    return [OdooPartnerItem.model_validate(row, from_attributes=True) for row in rows]
+
+
+@router.get("/integrations/odoo/vendors", response_model=list[OdooPartnerItem])
+def list_odoo_vendors(
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+    limit: int = Query(default=100, ge=1, le=500),
+) -> list[OdooPartnerItem]:
+    tenant_id = _tenant_id_from_payload(payload)
+    rows = OdooMirrorService(db).list_partners(tenant_id=tenant_id, partner_kind="vendor", limit=limit)
+    return [OdooPartnerItem.model_validate(row, from_attributes=True) for row in rows]
+
+
+@router.get("/integrations/odoo/products", response_model=list[OdooProductItem])
+def list_odoo_products(
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+    limit: int = Query(default=100, ge=1, le=500),
+) -> list[OdooProductItem]:
+    tenant_id = _tenant_id_from_payload(payload)
+    rows = OdooMirrorService(db).list_products(tenant_id=tenant_id, limit=limit)
+    return [OdooProductItem.model_validate(row, from_attributes=True) for row in rows]
+
+
+@router.get("/integrations/odoo/invoices", response_model=list[OdooInvoiceItem])
+def list_odoo_invoices(
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+    limit: int = Query(default=100, ge=1, le=500),
+) -> list[OdooInvoiceItem]:
+    tenant_id = _tenant_id_from_payload(payload)
+    rows = OdooMirrorService(db).list_invoices(tenant_id=tenant_id, limit=limit)
+    return [OdooInvoiceItem.model_validate(row, from_attributes=True) for row in rows]
+
+
 @router.get("/api-tokens", response_model=list[TenantApiTokenItem])
 def list_api_tokens(
     db: Session = Depends(get_db),
@@ -373,11 +519,108 @@ def run_due_recurring_invoices(
 
 
 @router.post("/chat/ask", response_model=ChatAnswerResponse)
-def ask_chatbot(
+async def ask_chatbot(
     body: ChatQuestionRequest,
     db: Session = Depends(get_db),
     payload: dict = Depends(_require_tenant_user),
 ) -> ChatAnswerResponse:
     tenant_id = _tenant_id_from_payload(payload)
     service = TenantChatService(db)
-    return service.answer_question(tenant_id=tenant_id, payload=body)
+    return await service.answer_question(tenant_id=tenant_id, user_id=(_user_id_from_payload(payload)), payload=body)
+
+
+@router.get("/chat/sessions", response_model=list[ChatSessionItem])
+def list_chat_sessions(
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> list[ChatSessionItem]:
+    tenant_id = _tenant_id_from_payload(payload)
+    user_id = _user_id_from_payload(payload)
+    service = ClientPortalService(db)
+    return service.list_chat_sessions(tenant_id=tenant_id, user_id=user_id)
+
+
+@router.get("/chat/sessions/{session_id}/messages", response_model=list[ChatMessageItem])
+def get_chat_session_messages(
+    session_id: int,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> list[ChatMessageItem]:
+    tenant_id = _tenant_id_from_payload(payload)
+    service = ClientPortalService(db)
+    return service.get_chat_session_messages(tenant_id=tenant_id, session_id=session_id)
+
+
+@router.delete("/chat/sessions/{session_id}", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
+def delete_chat_session(
+    session_id: int,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> Response:
+    tenant_id = _tenant_id_from_payload(payload)
+    service = ClientPortalService(db)
+    service.delete_chat_session(tenant_id=tenant_id, session_id=session_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.get("/chat/memory", response_model=list[ChatMemoryItem])
+def list_chat_memory(
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+    limit: int = Query(default=50, ge=1, le=200),
+) -> list[ChatMemoryItem]:
+    tenant_id = _tenant_id_from_payload(payload)
+    user_id = _user_id_from_payload(payload)
+    service = ClientPortalService(db)
+    return service.list_memory(tenant_id=tenant_id, user_id=user_id, limit=limit)
+
+
+@router.get("/chat/memory/search", response_model=list[ChatMemoryItem])
+def search_chat_memory(
+    q: str = Query(..., min_length=2, max_length=500),
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+    limit: int = Query(default=20, ge=1, le=100),
+) -> list[ChatMemoryItem]:
+    tenant_id = _tenant_id_from_payload(payload)
+    user_id = _user_id_from_payload(payload)
+    service = ClientPortalService(db)
+    return service.search_memory(tenant_id=tenant_id, query=q, user_id=user_id, limit=limit)
+
+
+@router.post("/chat/memory", response_model=ChatMemoryItem, status_code=status.HTTP_201_CREATED)
+def create_chat_memory(
+    body: ChatMemoryCreateRequest,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> ChatMemoryItem:
+    tenant_id = _tenant_id_from_payload(payload)
+    user_id = _user_id_from_payload(payload)
+    service = ClientPortalService(db)
+    return service.create_memory(tenant_id=tenant_id, user_id=user_id, payload=body)
+
+
+@router.patch("/chat/memory/{memory_id}", response_model=ChatMemoryItem)
+def update_chat_memory(
+    memory_id: int,
+    body: ChatMemoryUpdateRequest,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> ChatMemoryItem:
+    tenant_id = _tenant_id_from_payload(payload)
+    user_id = _user_id_from_payload(payload)
+    service = ClientPortalService(db)
+    return service.update_memory(tenant_id=tenant_id, memory_id=memory_id, user_id=user_id, payload=body)
+
+
+@router.delete("/chat/memory/{memory_id}", status_code=status.HTTP_204_NO_CONTENT, response_class=Response)
+def delete_chat_memory(
+    memory_id: int,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(_require_tenant_user),
+) -> Response:
+    tenant_id = _tenant_id_from_payload(payload)
+    user_id = _user_id_from_payload(payload)
+    service = ClientPortalService(db)
+    service.delete_memory(tenant_id=tenant_id, memory_id=memory_id, user_id=user_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

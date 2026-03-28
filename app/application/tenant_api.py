@@ -7,17 +7,24 @@ import hashlib
 import secrets
 import binascii
 from uuid import uuid4
+from pathlib import Path
 
 from fastapi import HTTPException, status
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.models.invoice import Invoice
+from app.billing.validators import normalize_tipo_ecf, validate_encf_for_tipo
+from app.models.invoice import Invoice, InvoiceLine
+from app.models.sequence import Sequence
 from app.models.tenant import Tenant
 from app.models.tenant_api_token import TenantApiToken
+from app.ri.render import build_context, render_pdf
+from app.ri.schemas import RIRequest, RILineItem
+from app.services.email_service import EmailAttachment, EmailPayload, get_email_service
 from app.shared.storage import storage
 from app.tenant_api.schemas import (
+    TenantApiInvoiceLineInput,
     TenantApiInvoiceCreateRequest,
     TenantApiInvoiceCreateResponse,
     TenantApiInvoiceDetailResponse,
@@ -139,6 +146,14 @@ class TenantApiService:
             )
 
         issued_at = (payload.fecha_emision or datetime.now(timezone.utc)).replace(tzinfo=None)
+        tipo_ecf = self._normalize_tipo_ecf(payload.tipo_ecf)
+        if payload.encf:
+            try:
+                encf = self._normalize_encf(payload.encf, tipo_ecf=tipo_ecf)
+            except ValueError as exc:
+                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+        else:
+            encf = self._allocate_encf(tenant_id=tenant_id, tipo_ecf=tipo_ecf)
         if payload.xml_signed_base64:
             try:
                 b64decode(payload.xml_signed_base64, validate=True)
@@ -147,14 +162,20 @@ class TenantApiService:
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                     detail="El XML firmado en base64 no es valido",
                 ) from exc
+        subtotal, tax_total, computed_total = self._compute_totals(payload.line_items)
         track_id = f"tenant-api-{uuid4().hex[:12]}"
-        relative_path = f"tenant-api/{tenant_id}/{payload.encf}.json"
+        relative_path = f"tenant-api/{tenant_id}/{encf}.json"
         stored_payload = {
             "source": "tenant_api",
-            "encf": payload.encf,
-            "tipo_ecf": payload.tipo_ecf,
+            "encf": encf,
+            "tipo_ecf": tipo_ecf,
             "rnc_receptor": payload.rnc_receptor,
+            "receptor_nombre": payload.receptor_nombre,
+            "receptor_email": payload.receptor_email,
             "total": str(payload.total),
+            "subtotal": str(subtotal),
+            "tax_total": str(tax_total),
+            "line_items": [line.model_dump(by_alias=True) for line in payload.line_items],
             "fecha_emision": issued_at.isoformat(),
             "xml_signed_base64": payload.xml_signed_base64,
         }
@@ -166,14 +187,19 @@ class TenantApiService:
 
         invoice = Invoice(
             tenant_id=tenant_id,
-            encf=payload.encf,
-            tipo_ecf=payload.tipo_ecf,
+            encf=encf,
+            tipo_ecf=tipo_ecf,
             rnc_receptor=payload.rnc_receptor,
+            receptor_nombre=payload.receptor_nombre,
             xml_path=relative_path,
             xml_hash=xml_hash,
             estado_dgii="REGISTRADO_API",
             track_id=track_id,
             codigo_seguridad=None,
+            subtotal_source=subtotal,
+            tax_total_source=tax_total,
+            total_fiscal=computed_total,
+            total_accounting=computed_total,
             total=float(Decimal(str(payload.total))),
             fecha_emision=issued_at,
         )
@@ -182,6 +208,9 @@ class TenantApiService:
             self.db.flush()
         except IntegrityError as exc:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="El e-CF ya existe para este tenant") from exc
+
+        self._persist_invoice_lines(invoice=invoice, tenant_id=tenant_id, line_items=payload.line_items)
+        self._ensure_ri_pdf(invoice=invoice, tenant=tenant)
 
         return TenantApiInvoiceCreateResponse(
             invoiceId=invoice.id,
@@ -232,3 +261,137 @@ class TenantApiService:
     @staticmethod
     def _digest(value: str) -> str:
         return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def _normalize_tipo_ecf(raw: str) -> str:
+        return normalize_tipo_ecf(raw)
+
+    @staticmethod
+    def _normalize_encf(raw: str, *, tipo_ecf: str) -> str:
+        value = (raw or "").strip().upper()
+        validate_encf_for_tipo(value, tipo_ecf)
+        return value
+
+    def _allocate_encf(self, *, tenant_id: int, tipo_ecf: str) -> str:
+        sequence = self.db.scalar(
+            select(Sequence).where(Sequence.tenant_id == tenant_id, Sequence.doc_type == tipo_ecf).with_for_update()
+        )
+        if sequence is None:
+            sequence = Sequence(
+                tenant_id=tenant_id,
+                doc_type=tipo_ecf,
+                prefix=f"E{tipo_ecf}",
+                next_number=2,
+            )
+            self.db.add(sequence)
+            self.db.flush()
+            return f"{sequence.prefix}{str(1).zfill(10)}"
+        current = sequence.next_number
+        sequence.next_number = current + 1
+        self.db.flush()
+        return f"{sequence.prefix}{str(current).zfill(10)}"
+
+    @staticmethod
+    def _compute_totals(line_items: list[TenantApiInvoiceLineInput]) -> tuple[Decimal, Decimal, Decimal]:
+        subtotal = Decimal("0")
+        tax_total = Decimal("0")
+        total = Decimal("0")
+        for line in line_items:
+            quantity = Decimal(str(line.cantidad))
+            unit = Decimal(str(line.precio_unitario))
+            discount = Decimal(str(line.discount_amount))
+            line_subtotal = (quantity * unit) - discount
+            rate = Decimal(str(line.itbis_rate or Decimal("0")))
+            itbis = line_subtotal * rate
+            line_total = line_subtotal + itbis
+            subtotal += line_subtotal
+            tax_total += itbis
+            total += line_total
+        return subtotal, tax_total, total
+
+    def _persist_invoice_lines(self, *, invoice: Invoice, tenant_id: int, line_items: list[TenantApiInvoiceLineInput]) -> None:
+        for idx, line in enumerate(line_items, start=1):
+            quantity = Decimal(str(line.cantidad))
+            unit = Decimal(str(line.precio_unitario))
+            discount = Decimal(str(line.discount_amount))
+            line_subtotal = (quantity * unit) - discount
+            itbis_rate = Decimal(str(line.itbis_rate or Decimal("0")))
+            itbis_amount = line_subtotal * itbis_rate
+            item = InvoiceLine(
+                tenant_id=tenant_id,
+                invoice_id=invoice.id,
+                line_number=idx,
+                cantidad=quantity,
+                descripcion=line.descripcion,
+                unidad_medida=line.unidad_medida,
+                precio_unitario=unit,
+                discount_amount=discount,
+                line_subtotal=line_subtotal,
+                itbis_rate=itbis_rate,
+                itbis_amount=itbis_amount,
+                line_total=line_subtotal + itbis_amount,
+            )
+            self.db.add(item)
+        self.db.flush()
+
+    def _ensure_ri_pdf(self, *, invoice: Invoice, tenant: Tenant) -> None:
+        if invoice.ri_pdf_path:
+            return
+        ri_request = RIRequest(
+            encf=invoice.encf,
+            rncEmisor=tenant.rnc,
+            razonSocialEmisor=tenant.name,
+            rncReceptor=invoice.rnc_receptor or "00000000000",
+            razonSocialReceptor=invoice.receptor_nombre or "Consumidor final",
+            montoTotal=Decimal(str(invoice.total)),
+            fechaEmision=invoice.fecha_emision,
+            items=[
+                RILineItem(
+                    descripcion=line.descripcion,
+                    cantidad=Decimal(str(line.cantidad)),
+                    precioUnitario=Decimal(str(line.precio_unitario)),
+                )
+                for line in invoice.line_items
+            ]
+            or [RILineItem(descripcion="Servicio general", cantidad=Decimal("1"), precioUnitario=Decimal(str(invoice.total)))],
+        )
+        context = build_context(ri_request)
+        pdf_bytes = render_pdf(context)
+        relative_pdf = f"ri/{invoice.tenant_id}/{invoice.encf}.pdf"
+        try:
+            storage.store_bytes(relative_pdf, pdf_bytes)
+        except FileExistsError:
+            pass
+        invoice.ri_pdf_path = relative_pdf
+        invoice.ri_generated_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        self.db.flush()
+
+    def send_invoice_email(self, *, tenant_id: int, invoice_id: int, recipient: str) -> None:
+        invoice = self.db.get(Invoice, invoice_id)
+        if not invoice or invoice.tenant_id != tenant_id:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Factura no encontrada")
+        tenant = self._get_tenant(tenant_id)
+        self._ensure_ri_pdf(invoice=invoice, tenant=tenant)
+        attachments: list[EmailAttachment] = []
+        xml_path = storage.resolve_path(invoice.xml_path)
+        if xml_path.exists():
+            attachments.append(EmailAttachment.from_path(xml_path, content_type="application/json"))
+        if invoice.ri_pdf_path:
+            pdf_path = storage.resolve_path(invoice.ri_pdf_path)
+            if pdf_path.exists():
+                attachments.append(EmailAttachment.from_path(pdf_path, content_type="application/pdf"))
+        subject = f"EasyCounting | Factura {invoice.encf}"
+        body = (
+            f"Hola,\n\n"
+            f"Compartimos la factura {invoice.encf} ({invoice.tipo_ecf}) por un total de RD$ {Decimal(str(invoice.total)):.2f}.\n"
+            f"TrackId: {invoice.track_id or 'N/A'}\n\n"
+            f"Este correo fue generado por EasyCounting."
+        )
+        get_email_service().send(
+            EmailPayload(
+                to=[recipient],
+                subject=subject,
+                text_body=body,
+                attachments=attachments,
+            )
+        )

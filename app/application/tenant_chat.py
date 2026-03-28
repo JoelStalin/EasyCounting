@@ -9,14 +9,18 @@ from typing import Sequence
 
 import httpx
 from fastapi import HTTPException, status
-from sqlalchemy import func, select
+import sqlalchemy as sa
+from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
 from app.infra.settings import settings
 from app.models.invoice import Invoice
+from app.models.platform_ai import PlatformAIProvider
 from app.models.tenant import Tenant
+from app.models.tenant_ai import TenantAIProvider
 from app.portal_client.schemas import ChatAnswerResponse, ChatPreprocessMetadata, ChatQuestionRequest, ChatSource
-from app.services.platform_ai import PlatformAIProviderRuntime, load_default_runtime_provider
+from app.services.ai.orchestrator import ChatOrchestrator
+from app.services.ai.providers.selector import ProviderSelector
 
 
 def _get_tenant_or_404(db: Session, tenant_id: int) -> Tenant:
@@ -76,8 +80,10 @@ class ChatPreprocessDecision:
 class TenantChatService:
     def __init__(self, db: Session) -> None:
         self.db = db
+        self.orchestrator = ChatOrchestrator(db)
+        self.provider_selector = ProviderSelector(db)
 
-    def answer_question(self, *, tenant_id: int, payload: ChatQuestionRequest) -> ChatAnswerResponse:
+    async def answer_question(self, *, tenant_id: int, user_id: int | None = None, payload: ChatQuestionRequest) -> ChatAnswerResponse:
         if not settings.llm_chat_enabled:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -85,8 +91,16 @@ class TenantChatService:
             )
 
         tenant = _get_tenant_or_404(self.db, tenant_id)
-        platform_provider = load_default_runtime_provider(self.db)
-        external_provider_available = bool(platform_provider) or settings.llm_provider == "openai_compatible"
+        
+        # Check if any non-local fallback provider is available (tenant or platform)
+        has_external = self.db.scalar(select(func.count()).select_from(TenantAIProvider).where(TenantAIProvider.tenant_id == tenant_id, TenantAIProvider.enabled.is_(True))) > 0
+        if not has_external:
+             has_external = self.db.scalar(select(func.count()).select_from(PlatformAIProvider).where(PlatformAIProvider.enabled.is_(True))) > 0
+        
+        # Simpler: just check if the selector returns something that isn't the "minimal" default if we want to be strict,
+        # but for now let's just assume if it's enabled in settings it's "available".
+        external_provider_available = bool(settings.llm_api_base_url and settings.llm_api_key) or has_external
+        
         preprocess = self._preprocess_question(payload.question, provider_available=external_provider_available)
         question = preprocess.normalized_question
         invoices = self._load_tenant_invoices(tenant.id)
@@ -122,63 +136,36 @@ class TenantChatService:
                 explicit_reference=explicit_reference,
             )
             engine = "local"
-        elif platform_provider:
-            try:
-                answer = self._answer_with_platform_provider(
-                    provider=platform_provider,
-                    tenant=tenant,
-                    question=question,
-                    ranked=top_ranked,
-                    invoices=invoices,
-                    explicit_reference=explicit_reference,
-                )
-            except Exception:
-                answer = self._answer_local(
-                    tenant=tenant,
-                    question=question,
-                    ranked=top_ranked,
-                    invoices=invoices,
-                    explicit_reference=explicit_reference,
-                )
-                warnings.append(f"Fallo el proveedor IA {platform_provider.display_name}; se uso el motor local de respaldo.")
-                engine = f"{platform_provider.provider_type}-fallback"
-            else:
-                engine = platform_provider.provider_type
-        elif settings.llm_provider == "openai_compatible":
-            try:
-                answer = self._answer_with_openai_compatible(
-                    tenant=tenant,
-                    question=question,
-                    ranked=top_ranked,
-                    invoices=invoices,
-                    explicit_reference=explicit_reference,
-                )
-            except Exception:
-                answer = self._answer_local(
-                    tenant=tenant,
-                    question=question,
-                    ranked=top_ranked,
-                    invoices=invoices,
-                    explicit_reference=explicit_reference,
-                )
-                warnings.append("Fallo el proveedor LLM externo; se uso el motor local de respaldo.")
-                engine = "local-fallback"
-            else:
-                engine = settings.llm_provider
+            session_id = payload.session_id
         else:
-            answer = self._answer_local(
-                tenant=tenant,
-                question=question,
-                ranked=top_ranked,
-                invoices=invoices,
-                explicit_reference=explicit_reference,
-            )
-            engine = settings.llm_provider
+            # Usar el nuevo orquestador para análisis y preguntas abiertas
+            try:
+                ai_resp = await self.orchestrator.answer(
+                    tenant_id=tenant.id,
+                    user_id=user_id,
+                    question=question,
+                    session_id=payload.session_id
+                )
+                answer = ai_resp["answer"]
+                engine = ai_resp["engine"]
+                session_id = ai_resp["session_id"]
+            except Exception:  # noqa: BLE001
+                answer = self._answer_local(
+                    tenant=tenant,
+                    question=question,
+                    ranked=top_ranked,
+                    invoices=invoices,
+                    explicit_reference=explicit_reference,
+                )
+                engine = "local_fallback"
+                session_id = payload.session_id
+                warnings.append("Proveedor IA no disponible temporalmente; respuesta generada con contexto local.")
 
         return ChatAnswerResponse(
             answer=answer,
             engine=engine,
             tenant_id=tenant.id,
+            session_id=session_id,
             sources=sources,
             warnings=warnings,
             preprocess=self._to_preprocess_metadata(preprocess),

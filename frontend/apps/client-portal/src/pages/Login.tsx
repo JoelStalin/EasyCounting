@@ -58,7 +58,7 @@ export function LoginPage() {
       <div className="flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-2 text-center">
-            <CardTitle>getupsoft Cliente</CardTitle>
+            <CardTitle>EasyCounting Cliente</CardTitle>
             <p className="text-sm text-slate-300">Portal para emision y seguimiento de comprobantes electronicos.</p>
           </CardHeader>
           <CardContent>

@@ -1,0 +1,218 @@
+{
+  "results": [
+    {
+      "prefix": "B01",
+      "status": "POSTED",
+      "invoice_id": 101,
+      "invoice": {
+        "id": 101,
+        "name": "B01 00000001",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000001",
+        "l10n_latam_document_type_id": [
+          1,
+          "(B) Crédito Fiscal"
+        ],
+        "amount_total": 1151.15
+      }
+    },
+    {
+      "prefix": "B02",
+      "status": "POSTED",
+      "invoice_id": 102,
+      "invoice": {
+        "id": 102,
+        "name": "B01 00000002",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000002",
+        "l10n_latam_document_type_id": [
+          2,
+          "(B) Consumo"
+        ],
+        "amount_total": 1152.3
+      }
+    },
+    {
+      "prefix": "B03",
+      "status": "POSTED",
+      "invoice_id": 103,
+      "invoice": {
+        "id": 103,
+        "name": "B01 00000003",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000003",
+        "l10n_latam_document_type_id": [
+          3,
+          "(B) Nota de Débito"
+        ],
+        "amount_total": 1153.45
+      }
+    },
+    {
+      "prefix": "B04",
+      "status": "FAILED",
+      "error": "<Fault 1: 'Traceback (most recent call last):\\n  File \"/usr/lib/python3/dist-packages/odoo/addons/rpc/controllers/xmlrpc.py\", line 162, in xmlrpc_2\\n    response = self._xmlrpc(service)\\n               ^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/addons/rpc/controllers/xmlrpc.py\", line 134, in _xmlrpc\\n    result = dispatch_rpc(service, method, params)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/http.py\", line 445, in dispatch_rpc\\n    return dispatch(method, params)\\n           ^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/service/model.py\", line 130, in dispatch\\n    res = execute_cr(cr, uid, model, method_, args, kw)\\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/service/model.py\", line 147, in execute_cr\\n    result = retrying(partial(call_kw, recs, method, args, kw), env)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/service/model.py\", line 187, in retrying\\n    env.cr.flush()  # submit the changes to the database\\n    ^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/sql_db.py\", line 182, in flush\\n    self.transaction.flush()\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/environments.py\", line 592, in flush\\n    self.default_env.flush_all()\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/environments.py\", line 383, in flush_all\\n    self._recompute_all()\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/environments.py\", line 376, in _recompute_all\\n    self[field.model_name]._recompute_field(field)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/models.py\", line 6958, in _recompute_field\\n    field.recompute(records)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/fields.py\", line 1893, in recompute\\n    apply_except_missing(self.compute_value, recs)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/fields.py\", line 1863, in apply_except_missing\\n    func(records)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/fields.py\", line 1917, in compute_value\\n    records._compute_field_value(self)\\n  File \"/usr/lib/python3/dist-packages/odoo/addons/mail/models/mail_thread.py\", line 483, in _compute_field_value\\n    return super()._compute_field_value(field)\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/models.py\", line 4952, in _compute_field_value\\n    determine(field.compute, self)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/fields.py\", line 81, in determine\\n    return needle(*args)\\n           ^^^^^^^^^^^^^\\n  File \"/mnt/extra-addons/getupsoft/getupsoft_l10n_do_accounting_report/models/account_move.py\", line 295, in _compute_withheld_taxes\\n    move_ids = [p[\"move_id\"] for p in inv._get_invoice_payment_widget()]\\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/mnt/extra-addons/getupsoft/getupsoft_l10n_do_accounting_report/models/account_move.py\", line 507, in _get_invoice_payment_widget\\n    j = json.loads(self.invoice_payments_widget)\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3.12/json/__init__.py\", line 339, in loads\\n    raise TypeError(f\\'the JSON object must be str, bytes or bytearray, \\'\\nTypeError: the JSON object must be str, bytes or bytearray, not dict\\n'>"
+    },
+    {
+      "prefix": "E31",
+      "status": "POSTED",
+      "invoice_id": 105,
+      "invoice": {
+        "id": 105,
+        "name": "B01 00000004",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000004",
+        "l10n_latam_document_type_id": [
+          13,
+          "(E) Crédito Fiscal Electrónica"
+        ],
+        "amount_total": 1155.75
+      }
+    },
+    {
+      "prefix": "E32",
+      "status": "POSTED",
+      "invoice_id": 106,
+      "invoice": {
+        "id": 106,
+        "name": "B01 00000005",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000005",
+        "l10n_latam_document_type_id": [
+          14,
+          "(E) Consumo Electrónica"
+        ],
+        "amount_total": 1156.9
+      }
+    },
+    {
+      "prefix": "E33",
+      "status": "POSTED",
+      "invoice_id": 107,
+      "invoice": {
+        "id": 107,
+        "name": "B01 00000006",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000006",
+        "l10n_latam_document_type_id": [
+          15,
+          "(E) Nota de Débito Electrónica"
+        ],
+        "amount_total": 1158.05
+      }
+    },
+    {
+      "prefix": "E34",
+      "status": "FAILED",
+      "error": "<Fault 1: 'Traceback (most recent call last):\\n  File \"/usr/lib/python3/dist-packages/odoo/addons/rpc/controllers/xmlrpc.py\", line 162, in xmlrpc_2\\n    response = self._xmlrpc(service)\\n               ^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/addons/rpc/controllers/xmlrpc.py\", line 134, in _xmlrpc\\n    result = dispatch_rpc(service, method, params)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/http.py\", line 445, in dispatch_rpc\\n    return dispatch(method, params)\\n           ^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/service/model.py\", line 130, in dispatch\\n    res = execute_cr(cr, uid, model, method_, args, kw)\\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/service/model.py\", line 147, in execute_cr\\n    result = retrying(partial(call_kw, recs, method, args, kw), env)\\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/service/model.py\", line 187, in retrying\\n    env.cr.flush()  # submit the changes to the database\\n    ^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/sql_db.py\", line 182, in flush\\n    self.transaction.flush()\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/environments.py\", line 592, in flush\\n    self.default_env.flush_all()\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/environments.py\", line 383, in flush_all\\n    self._recompute_all()\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/environments.py\", line 376, in _recompute_all\\n    self[field.model_name]._recompute_field(field)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/models.py\", line 6958, in _recompute_field\\n    field.recompute(records)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/fields.py\", line 1893, in recompute\\n    apply_except_missing(self.compute_value, recs)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/fields.py\", line 1863, in apply_except_missing\\n    func(records)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/fields.py\", line 1917, in compute_value\\n    records._compute_field_value(self)\\n  File \"/usr/lib/python3/dist-packages/odoo/addons/mail/models/mail_thread.py\", line 483, in _compute_field_value\\n    return super()._compute_field_value(field)\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/models.py\", line 4952, in _compute_field_value\\n    determine(field.compute, self)\\n  File \"/usr/lib/python3/dist-packages/odoo/orm/fields.py\", line 81, in determine\\n    return needle(*args)\\n           ^^^^^^^^^^^^^\\n  File \"/mnt/extra-addons/getupsoft/getupsoft_l10n_do_accounting_report/models/account_move.py\", line 295, in _compute_withheld_taxes\\n    move_ids = [p[\"move_id\"] for p in inv._get_invoice_payment_widget()]\\n                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/mnt/extra-addons/getupsoft/getupsoft_l10n_do_accounting_report/models/account_move.py\", line 507, in _get_invoice_payment_widget\\n    j = json.loads(self.invoice_payments_widget)\\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\n  File \"/usr/lib/python3.12/json/__init__.py\", line 339, in loads\\n    raise TypeError(f\\'the JSON object must be str, bytes or bytearray, \\'\\nTypeError: the JSON object must be str, bytes or bytearray, not dict\\n'>"
+    },
+    {
+      "prefix": "E41",
+      "status": "POSTED",
+      "invoice_id": 109,
+      "invoice": {
+        "id": 109,
+        "name": "B01 00000007",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000007",
+        "l10n_latam_document_type_id": [
+          17,
+          "(E) Compras Electrónica"
+        ],
+        "amount_total": 1160.35
+      }
+    },
+    {
+      "prefix": "E43",
+      "status": "POSTED",
+      "invoice_id": 110,
+      "invoice": {
+        "id": 110,
+        "name": "B01 00000008",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000008",
+        "l10n_latam_document_type_id": [
+          18,
+          "(E) Gasto Menor Electrónica"
+        ],
+        "amount_total": 1161.5
+      }
+    },
+    {
+      "prefix": "E44",
+      "status": "POSTED",
+      "invoice_id": 111,
+      "invoice": {
+        "id": 111,
+        "name": "B01 00000009",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000009",
+        "l10n_latam_document_type_id": [
+          19,
+          "(E) Régimen Especial Electrónica"
+        ],
+        "amount_total": 1162.65
+      }
+    },
+    {
+      "prefix": "E45",
+      "status": "POSTED",
+      "invoice_id": 112,
+      "invoice": {
+        "id": 112,
+        "name": "B01 00000010",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000010",
+        "l10n_latam_document_type_id": [
+          20,
+          "(E) Factura Gubernamental Electrónica"
+        ],
+        "amount_total": 1163.8
+      }
+    },
+    {
+      "prefix": "E46",
+      "status": "POSTED",
+      "invoice_id": 113,
+      "invoice": {
+        "id": 113,
+        "name": "B01 00000011",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000011",
+        "l10n_latam_document_type_id": [
+          21,
+          "(E) Exportación Electrónica"
+        ],
+        "amount_total": 1164.95
+      }
+    },
+    {
+      "prefix": "E47",
+      "status": "POSTED",
+      "invoice_id": 114,
+      "invoice": {
+        "id": 114,
+        "name": "B01 00000012",
+        "state": "posted",
+        "move_type": "out_invoice",
+        "l10n_latam_document_number": "00000012",
+        "l10n_latam_document_type_id": [
+          22,
+          "(E) Pago al Exterior Electrónica"
+        ],
+        "amount_total": 1166.1
+      }
+    }
+  ]
+}

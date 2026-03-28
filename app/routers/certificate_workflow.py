@@ -12,6 +12,10 @@ from sqlalchemy.orm import Session
 
 from app.certificate_workflow.certificate_validation import validate_p12_file
 from app.certificate_workflow.models import IntakePayload, WorkflowStatus
+from app.certificate_workflow.mail_intake_service import (
+    check_certificate_mail_intake_health,
+    process_certificate_mail_intake,
+)
 from app.certificate_workflow.notifications import notify_reminder_due
 from app.certificate_workflow.persistence import CertificateWorkflowRepository
 from app.certificate_workflow.secrets import SecretStoreError, store_certificate_secret
@@ -24,6 +28,8 @@ from app.certificate_workflow.schemas import (
     DgiiTrackPollResponse,
     DgiiTrackStatusResponse,
     IntakeRequest,
+    MailIntakeHealthResponse,
+    MailIntakeProcessResponse,
     PrecheckResponse,
     ReminderCreateRequest,
     ReminderItemResponse,
@@ -458,6 +464,39 @@ def process_due_reminders_endpoint(
         )
         processed += 1
     return {"processed": processed}
+
+
+@router.post("/mail-intake/process", response_model=MailIntakeProcessResponse)
+def process_mail_intake_endpoint(
+    limit: int = 25,
+    _internal: None = Depends(_require_internal_secret),
+) -> MailIntakeProcessResponse:
+    stats = process_certificate_mail_intake(limit=limit)
+    return MailIntakeProcessResponse(
+        scanned=stats.scanned,
+        skipped_sender=stats.skipped_sender,
+        skipped_case=stats.skipped_case,
+        attachments_saved=stats.attachments_saved,
+        cases_updated=stats.cases_updated,
+        validations_ok=stats.validations_ok,
+        validations_failed=stats.validations_failed,
+    )
+
+
+@router.get("/mail-intake/health", response_model=MailIntakeHealthResponse)
+def mail_intake_health_endpoint(
+    _internal: None = Depends(_require_internal_secret),
+) -> MailIntakeHealthResponse:
+    health = check_certificate_mail_intake_health()
+    return MailIntakeHealthResponse(
+        enabled=health.enabled,
+        imap_host=health.imap_host,
+        imap_port=health.imap_port,
+        mailbox=health.mailbox,
+        use_ssl=health.use_ssl,
+        can_connect=health.can_connect,
+        error=health.error,
+    )
 
 
 @router.post("/{case_id}/dgii-certification-check", response_model=DgiiCertificationCheckResponse)

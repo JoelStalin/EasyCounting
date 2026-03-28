@@ -1,0 +1,38 @@
+{
+  "service": {
+    "host": "0.0.0.0",
+    "port": 8930,
+    "logLevel": "info"
+  },
+  "mcp": {
+    "host": "127.0.0.1",
+    "port": 8931,
+    "proxyPath": "/mcp",
+    "ssePath": "/sse",
+    "enabled": true
+  },
+  "browser": {
+    "browserName": "chromium",
+    "chromiumChannel": "",
+    "headless": true,
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "userAgent": "",
+    "proxyServer": "",
+    "allowedOrigins": [],
+    "blockedOrigins": [],
+    "actionTimeoutMs": 10000,
+    "navigationTimeoutMs": 60000,
+    "outputRoot": "../../tests/artifacts/browser-mcp",
+    "sessionsRoot": "../../tests/artifacts/browser-mcp/sessions"
+  },
+  "artifacts": {
+    "trace": true,
+    "screenshot": true,
+    "pdf": false,
+    "snapshot": true,
+    "saveSession": false
+  }
+}

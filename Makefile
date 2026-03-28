@@ -1,4 +1,4 @@
-.PHONY: up down logs migrate test lint typecheck build requirements sh rebuild check-bins image-build
+.PHONY: up down logs migrate test lint typecheck build requirements sh rebuild check-bins image-build browser-mcp-build browser-mcp-up browser-mcp-logs
 
 COMPOSE_FILE ?= docker-compose.yml
 
@@ -40,3 +40,12 @@ image-build: ## Build production image
 
 requirements: ## Export locked dependencies for Docker builds
 	poetry export --only main --without-hashes --format requirements.txt --output requirements.txt
+
+browser-mcp-build: ## Build browser-mcp sidecar image
+	docker compose -f $(COMPOSE_FILE) build browser-mcp
+
+browser-mcp-up: ## Start browser-mcp sidecar
+	docker compose -f $(COMPOSE_FILE) up -d browser-mcp
+
+browser-mcp-logs: ## Tail browser-mcp logs
+	docker compose -f $(COMPOSE_FILE) logs -f browser-mcp

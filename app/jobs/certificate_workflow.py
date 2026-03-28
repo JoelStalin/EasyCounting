@@ -5,6 +5,7 @@ import asyncio
 from contextlib import suppress
 import os
 
+from app.certificate_workflow.mail_intake_service import process_certificate_mail_intake
 from app.certificate_workflow.reminder_service import process_due_reminders
 from app.certificate_workflow.track_polling_service import process_ready_cases_track_poll_from_settings
 from app.infra.settings import settings
@@ -41,10 +42,19 @@ class CertificateWorkflowReminderRunner:
             except Exception:
                 pass
             try:
+                if settings.certificate_workflow_mail_intake_enabled:
+                    await asyncio.to_thread(process_certificate_mail_intake)
+            except Exception:
+                pass
+            try:
                 await process_ready_cases_track_poll_from_settings()
             except Exception:
                 pass
-            await asyncio.sleep(settings.certificate_workflow_reminder_poll_seconds)
+            sleep_seconds = min(
+                settings.certificate_workflow_reminder_poll_seconds,
+                settings.certificate_workflow_mail_intake_poll_seconds,
+            )
+            await asyncio.sleep(max(10, sleep_seconds))
 
 
 runner = CertificateWorkflowReminderRunner()

@@ -89,3 +89,6 @@ class User(Base):
         back_populates="user",
         cascade="all, delete-orphan",
     )
+    ai_chat_sessions: Mapped[list["ChatSession"]] = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
+    memories: Mapped[list["SemanticMemory"]] = relationship("SemanticMemory", back_populates="user", cascade="all, delete-orphan")
+    ai_providers: Mapped[list["UserAIProvider"]] = relationship("UserAIProvider", back_populates="user", cascade="all, delete-orphan")

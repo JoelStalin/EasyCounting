@@ -49,6 +49,9 @@ class Tenant(Base):
     pending_plan: Mapped["Plan | None"] = relationship("Plan", foreign_keys=[pending_plan_id])
     usage_records: Mapped[List["UsageRecord"]] = relationship("UsageRecord", back_populates="tenant")
     sequences: Mapped[List["Sequence"]] = relationship("Sequence", back_populates="tenant")
+    ai_providers: Mapped[List["TenantAIProvider"]] = relationship("TenantAIProvider", back_populates="tenant", cascade="all, delete-orphan")
+    chat_sessions: Mapped[List["ChatSession"]] = relationship("ChatSession", back_populates="tenant", cascade="all, delete-orphan")
+    memories: Mapped[List["SemanticMemory"]] = relationship("SemanticMemory", back_populates="tenant", cascade="all, delete-orphan")
 
 
 class Delegation(Base):

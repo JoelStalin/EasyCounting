@@ -18,7 +18,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 
 from app.infra.settings import settings
-from app.security.signing import sign_xml_enveloped
+from app.security.signing import sign_xml_enveloped, validate_signed_xml_details
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -29,9 +29,18 @@ DEFAULT_API_BASE = "https://api.getupsoft.com.do"
 DEFAULT_INTERNAL_API_BASE = "http://127.0.0.1:8000"
 DEFAULT_SOFTWARE_NAME = "GetUpSoft DGII e-CF API"
 DEFAULT_SOFTWARE_VERSION = "1.0"
-DEFAULT_DGII_APP_EXE = str(
-    PROJECT_ROOT / "tests" / "artifacts" / "dgii_tools" / "App_Firma_Digital" / "App Firma Digital.exe"
-)
+def _default_dgii_app_exe() -> str:
+    candidates = [
+        PROJECT_ROOT / "tools" / "App Firma Digital.exe",
+        PROJECT_ROOT / "tests" / "artifacts" / "dgii_tools" / "App_Firma_Digital" / "App Firma Digital.exe",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+    return str(candidates[0])
+
+
+DEFAULT_DGII_APP_EXE = _default_dgii_app_exe()
 DEFAULT_CERT_STORE_PATH = "CurrentUser\\My"
 
 
@@ -41,6 +50,13 @@ def _timestamp() -> str:
 
 def _write_json(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _default_tenant_rnc() -> str:
+    return (
+        os.getenv("DGII_POSTULACION_TENANT_RNC", "").strip()
+        or os.getenv("DGII_REAL_USERNAME", "").strip()
+    )
 
 
 def _normalize_software_version(raw: str) -> str:
@@ -56,6 +72,15 @@ def _normalize_software_version(raw: str) -> str:
     return DEFAULT_SOFTWARE_VERSION
 
 
+def _normalize_api_host(raw: str) -> str:
+    candidate = (raw or "").strip().rstrip("/")
+    if not candidate:
+        return ""
+    if not re.match(r"^https?://", candidate, flags=re.IGNORECASE):
+        candidate = f"https://{candidate}"
+    return candidate.rstrip("/")
+
+
 def _chrome_path() -> str:
     candidates = [
         r"C:\Program Files\Google\Chrome\Application\chrome.exe",
@@ -69,16 +94,28 @@ def _chrome_path() -> str:
 
 def _launch_debug_chrome(port: int, run_dir: Path, start_url: str) -> None:
     chrome = _chrome_path()
-    profile_dir = run_dir / "chrome-profile"
-    profile_dir.mkdir(parents=True, exist_ok=True)
+    user_data_dir_raw = os.getenv("DGII_CHROME_USER_DATA_DIR", "").strip()
+    profile_directory = os.getenv("DGII_CHROME_PROFILE_DIRECTORY", "").strip()
+    if user_data_dir_raw:
+        profile_dir = Path(user_data_dir_raw)
+        profile_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        profile_dir = run_dir / "chrome-profile"
+        profile_dir.mkdir(parents=True, exist_ok=True)
+    cmd = [
+        chrome,
+        f"--remote-debugging-port={port}",
+        f"--user-data-dir={profile_dir}",
+        "--new-window",
+        "--disable-popup-blocking",
+        "--no-first-run",
+        "--no-default-browser-check",
+        start_url,
+    ]
+    if profile_directory:
+        cmd.insert(3, f"--profile-directory={profile_directory}")
     subprocess.Popen(
-        [
-            chrome,
-            f"--remote-debugging-port={port}",
-            f"--user-data-dir={profile_dir}",
-            "--new-window",
-            start_url,
-        ],
+        cmd,
         cwd=PROJECT_ROOT,
     )
 
@@ -183,11 +220,26 @@ def _login_cert_portal_if_needed(driver: webdriver.Chrome, username: str, passwo
     pass_el.send_keys(password)
     submit_el.click()
 
-    _wait_until(lambda: "portalcertificacion/login" not in (driver.current_url or "").lower(), timeout=30)
+    try:
+        _wait_until(lambda: "portalcertificacion/login" not in (driver.current_url or "").lower(), timeout=30)
+    except TimeoutError:
+        human_wait_seconds = int(os.getenv("DGII_HUMAN_PORTAL_LOGIN_SECONDS", "0") or "0")
+        if human_wait_seconds > 0:
+            print(
+                "[DGII] Login automatico en Portal Certificacion no avanzo. "
+                f"Esperando login manual por {human_wait_seconds}s..."
+            )
+            _wait_until(
+                lambda: "portalcertificacion/login" not in (driver.current_url or "").lower(),
+                timeout=human_wait_seconds,
+                poll=2.0,
+            )
+        else:
+            raise
     return True
 
 
-def _login_ofv(driver: webdriver.Chrome, username: str, password: str) -> None:
+def _login_ofv(driver: webdriver.Chrome, run_dir: Path, username: str, password: str) -> None:
     if _is_postulacion_open(driver):
         return
     driver.get(DEFAULT_OFV_URL)
@@ -205,11 +257,20 @@ def _login_ofv(driver: webdriver.Chrome, username: str, password: str) -> None:
         pass_input[0].clear()
         pass_input[0].send_keys(password)
         submit_btn[0].click()
-        _wait_until(
-            lambda: "/OFV/home.aspx" in driver.current_url
-            or _is_postulacion_open(driver)
-            or "portalcertificacion" in driver.current_url.lower()
-        )
+        try:
+            _wait_until(
+                lambda: "/OFV/home.aspx" in driver.current_url
+                or _is_postulacion_open(driver)
+                or "portalcertificacion" in driver.current_url.lower(),
+                timeout=60,
+            )
+        except TimeoutError as exc:
+            _capture(driver, run_dir, "ofv_login_failed_after_submit")
+            body = driver.find_element(By.TAG_NAME, "body").text[:4000]
+            raise RuntimeError(
+                "Login OFV no completo transicion a home/postulacion. "
+                f"URL={driver.current_url!r} title={driver.title!r} body_preview={body!r}"
+            ) from exc
         return
 
     if "/OFV/home.aspx" in driver.current_url or "portalcertificacion" in driver.current_url.lower():
@@ -218,7 +279,14 @@ def _login_ofv(driver: webdriver.Chrome, username: str, password: str) -> None:
     raise RuntimeError("No fue posible ubicar el formulario de login OFV ni detectar una sesiÃ³n activa")
 
 
+def _portal_credentials(ofv_username: str, ofv_password: str) -> tuple[str, str]:
+    portal_user = os.getenv("DGII_CERT_PORTAL_USERNAME", "").strip() or ofv_username
+    portal_pass = os.getenv("DGII_CERT_PORTAL_PASSWORD", "").strip() or ofv_password
+    return portal_user, portal_pass
+
+
 def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path, username: str, password: str) -> None:
+    portal_username, portal_password = _portal_credentials(username, password)
     if _is_postulacion_open(driver):
         return
     driver.get("https://dgii.gov.do/OFV/FacturaElectronica/FE_Facturador_Electronico.aspx")
@@ -228,14 +296,28 @@ def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path, username: str, pa
     if not access_buttons:
         _capture(driver, run_dir, "postulacion_missing_access_button")
         raise RuntimeError("No se encontro el boton de acceso al portal de certificacion en OFV")
+    pre_handles = set(driver.window_handles)
     access_buttons[0].click()
     try:
         _wait_until(
             lambda: "portalcertificacion" in driver.current_url.lower()
             or _switch_to_window_with_url_fragment(driver, "portalcertificacion"),
-            timeout=25,
+            timeout=60,
+            poll=1.0,
         )
     except TimeoutError:
+        # If popup opened but url fragment is not yet matched, switch explicitly.
+        post_handles = set(driver.window_handles)
+        new_handles = [h for h in post_handles if h not in pre_handles]
+        for handle in new_handles:
+            try:
+                driver.switch_to.window(handle)
+                time.sleep(3)
+                if "ecf.dgii.gov.do" in (driver.current_url or "").lower():
+                    _capture(driver, run_dir, "postulacion_popup_opened")
+                    return
+            except Exception:
+                continue
         _capture(driver, run_dir, "postulacion_portal_timeout_after_access")
         fallback_urls = [
             "https://ecf.dgii.gov.do/certecf/portalcertificacion/Postulacion/Registrado",
@@ -248,7 +330,7 @@ def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path, username: str, pa
             driver.get(url)
             time.sleep(6)
             _capture(driver, run_dir, f"postulacion_fallback_{idx}")
-            _login_cert_portal_if_needed(driver, username, password)
+            _login_cert_portal_if_needed(driver, portal_username, portal_password)
             if _is_postulacion_open(driver):
                 opened = True
                 break
@@ -266,14 +348,32 @@ def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path, username: str, pa
     view_buttons = driver.find_elements(By.ID, "btnVerPostulacionEmisor")
     if view_buttons:
         view_buttons[0].click()
-        _wait_until(lambda: _is_postulacion_open(driver) or "/Postulacion/" in driver.current_url, timeout=25)
-        _capture(driver, run_dir, "postulacion_after_view_button")
-        return
+        try:
+            _wait_until(lambda: _is_postulacion_open(driver) or "/Postulacion/" in driver.current_url, timeout=25)
+            _capture(driver, run_dir, "postulacion_after_view_button")
+            return
+        except TimeoutError:
+            _capture(driver, run_dir, "postulacion_view_button_timeout")
+            # Continue with explicit portal fallback below
 
-    if _login_cert_portal_if_needed(driver, username, password):
+    if _login_cert_portal_if_needed(driver, portal_username, portal_password):
         time.sleep(4)
         _capture(driver, run_dir, "postulacion_after_cert_login")
         if _is_postulacion_open(driver) or "/Postulacion/" in driver.current_url:
+            return
+
+    fallback_urls = [
+        "https://ecf.dgii.gov.do/certecf/portalcertificacion/Postulacion/Registrado",
+        "https://ecf.dgii.gov.do/CerteCF/PortalCertificacion/Postulacion/Registrado",
+    ]
+    for idx, url in enumerate(fallback_urls, start=1):
+        driver.get(url)
+        time.sleep(5)
+        _capture(driver, run_dir, f"postulacion_direct_fallback_{idx}")
+        _login_cert_portal_if_needed(driver, portal_username, portal_password)
+        time.sleep(2)
+        if _is_postulacion_open(driver) or "/Postulacion/" in driver.current_url:
+            _capture(driver, run_dir, f"postulacion_direct_fallback_{idx}_open")
             return
 
     _capture(driver, run_dir, "postulacion_unknown_state")
@@ -284,7 +384,7 @@ def _goto_postulacion(driver: webdriver.Chrome, run_dir: Path, username: str, pa
 
 
 def _fill_form_and_generate(driver: webdriver.Chrome, run_dir: Path, api_base: str, software_name: str, software_version: str) -> Path:
-    api_base = api_base.rstrip("/")
+    api_base = _normalize_api_host(api_base)
     fields = {
         "inputNombreSoftware": software_name,
         "inputVersionSoftware": software_version,
@@ -297,6 +397,9 @@ def _fill_form_and_generate(driver: webdriver.Chrome, run_dir: Path, api_base: s
         el.clear()
         el.send_keys(value)
     _capture(driver, run_dir, "filled_postulacion")
+    pause_before_generate_seconds = int(os.getenv("DGII_POSTULACION_PAUSE_BEFORE_GENERATE_SECONDS", "0") or "0")
+    if pause_before_generate_seconds > 0:
+        time.sleep(pause_before_generate_seconds)
 
     before = {item.name for item in run_dir.iterdir()}
     driver.execute_cdp_cmd("Page.setDownloadBehavior", {"behavior": "allow", "downloadPath": str(run_dir)})
@@ -321,7 +424,7 @@ def _sign_via_internal_api(run_dir: Path, generated_xml: Path) -> tuple[Path | N
         "allowEnvFallback": True,
     }
     tenant_id = os.getenv("DGII_POSTULACION_TENANT_ID", "").strip()
-    tenant_rnc = os.getenv("DGII_POSTULACION_TENANT_RNC", "").strip()
+    tenant_rnc = _default_tenant_rnc()
     if tenant_id:
         try:
             payload["tenantId"] = int(tenant_id)
@@ -423,7 +526,7 @@ def _register_certificate_via_internal_api(run_dir: Path) -> str:
         return "register_skipped_internal_api_not_configured"
 
     tenant_id = os.getenv("DGII_POSTULACION_TENANT_ID", "").strip()
-    tenant_rnc = os.getenv("DGII_POSTULACION_TENANT_RNC", "").strip()
+    tenant_rnc = _default_tenant_rnc()
     alias = os.getenv("DGII_SIGNING_CERT_ALIAS", p12_path.stem).strip() or p12_path.stem
 
     fields = {"alias": alias, "password": p12_password, "activate": "true"}
@@ -502,7 +605,8 @@ def _sign_via_dgii_app_service(run_dir: Path, generated_xml: Path) -> tuple[Path
         f"$pass = '{p12_password}'\n"
         f"$out = '{str(signed_path)}'\n"
         "try {\n"
-        "  $asm=[Reflection.Assembly]::LoadFile($exe)\n"
+        "  try { Unblock-File -LiteralPath $exe -ErrorAction Stop } catch {}\n"
+        "  $asm=[Reflection.Assembly]::LoadFrom($exe)\n"
         "  $svcType=$asm.GetType('wfFirma.Services.SignServices')\n"
         "  if(-not $svcType){ throw 'No se encontro wfFirma.Services.SignServices' }\n"
         "  $svc=$svcType.GetProperty('Current',[Reflection.BindingFlags]'Public,Static').GetValue($null,$null)\n"
@@ -522,6 +626,30 @@ def _sign_via_dgii_app_service(run_dir: Path, generated_xml: Path) -> tuple[Path
         text=True,
     )
     if proc.returncode == 0 and signed_path.exists():
+        validation = validate_signed_xml_details(signed_path.read_bytes())
+        if not validation.valid:
+            _write_json(
+                run_dir / "dgii-app-sign-error.json",
+                {
+                    "status": "error",
+                    "app_exe": str(app_exe),
+                    "p12_path": str(p12_path),
+                    "returncode": proc.returncode,
+                    "stdout": proc.stdout[-4000:],
+                    "stderr": proc.stderr[-4000:],
+                    "validation": {
+                        "valid": validation.valid,
+                        "hasSignature": validation.has_signature,
+                        "hasX509Certificate": validation.has_x509_certificate,
+                        "signatureMethod": validation.signature_method,
+                        "digestMethod": validation.digest_method,
+                        "c14nMethod": validation.c14n_method,
+                        "referenceUri": validation.reference_uri,
+                        "errors": validation.errors,
+                    },
+                },
+            )
+            return None, "dgii_app_invalid_signature"
         _write_json(
             run_dir / "dgii-app-sign-result.json",
             {
@@ -532,6 +660,20 @@ def _sign_via_dgii_app_service(run_dir: Path, generated_xml: Path) -> tuple[Path
             },
         )
         return signed_path, "signed_with_dgii_app_service"
+    if proc.returncode == 0 and not signed_path.exists():
+        _write_json(
+            run_dir / "dgii-app-sign-error.json",
+            {
+                "status": "error",
+                "app_exe": str(app_exe),
+                "p12_path": str(p12_path),
+                "returncode": proc.returncode,
+                "stdout": proc.stdout[-4000:],
+                "stderr": proc.stderr[-4000:],
+                "error": "dgii_app_no_output",
+            },
+        )
+        return None, "dgii_app_no_output"
 
     _write_json(
         run_dir / "dgii-app-sign-error.json",
@@ -682,7 +824,7 @@ def main() -> int:
     driver = _attach(port)
     try:
         _capture(driver, run_dir, "ofv_login")
-        _login_ofv(driver, username, password)
+        _login_ofv(driver, run_dir, username, password)
         _capture(driver, run_dir, "ofv_authenticated")
         _goto_postulacion(driver, run_dir, username, password)
         _capture(driver, run_dir, "postulacion_open")
