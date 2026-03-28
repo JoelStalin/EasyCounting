@@ -106,6 +106,16 @@ class JobRunner {
                 tracingStarted = false;
                 artifactContext.artifacts.splice(artifactContext.artifacts.indexOf(tracePath), 1, finalTracePath);
             }
+            const retainOnSuccess = Boolean(normalizedJob.keepOpenOnSuccess &&
+                normalizedJob.mode === 'persistent_profile' &&
+                normalizedJob.headless === false);
+            if (retainOnSuccess) {
+                this.retainedRuntimes.set(normalizedJob.jobId, {
+                    handles: runtime.handles,
+                    retainedAt: new Date().toISOString(),
+                });
+                retainRuntime = true;
+            }
             await artifactContext.writeJson('run.json', {
                 job: normalizedJob,
                 scenarioResult,
@@ -118,7 +128,10 @@ class JobRunner {
                 finalUrl: runtime.handles.page.url(),
                 sessionRef,
                 artifacts: artifactContext.artifacts,
-                result: scenarioResult || {},
+                result: {
+                    ...(scenarioResult || {}),
+                    browserRetained: retainOnSuccess,
+                },
             }, runtime.telemetry);
             this.jobs.set(normalizedJob.jobId, {
                 request: normalizedJob,

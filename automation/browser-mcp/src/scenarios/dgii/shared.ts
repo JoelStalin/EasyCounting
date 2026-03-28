@@ -187,8 +187,13 @@ export function loadCredentials(ctx: ScenarioContext): DgiiPortalCredentials {
   const metadata = ctx.job.target?.metadata || {};
   const username = getString(metadata, 'username');
   const password = getString(metadata, 'password');
-  const portalUsername = getString(metadata, 'portalUsername');
-  const portalPassword = getString(metadata, 'portalPassword');
+  let portalUsername = getString(metadata, 'portalUsername');
+  let portalPassword = getString(metadata, 'portalPassword');
+  const fallbackPolicy = getString(metadata, 'portalCredentialFallback', 'none').toLowerCase();
+  if (fallbackPolicy === 'ofv') {
+    portalUsername = portalUsername || username;
+    portalPassword = portalPassword || password;
+  }
   if (!username || !password) {
     throw new Error('DGII scenario requires target.metadata.username and target.metadata.password');
   }
@@ -256,17 +261,67 @@ export async function loginCertPortalIfNeeded(
 
   await userLocator.fill(credentials.portalUsername);
   await passLocator.fill(credentials.portalPassword);
-  await submitLocator.click();
+  type SignInPostCapture = {
+    posted: boolean;
+    statusCode?: number;
+    location?: string;
+    setCookiePresent?: boolean;
+  };
+  const waitForSignInPost = () =>
+    page
+      .waitForResponse(
+        (response) =>
+          response.request().method().toUpperCase() === 'POST' &&
+          response.url().toLowerCase().includes('/portalcertificacion/login/signin'),
+        { timeout: 8000 },
+      )
+      .then<SignInPostCapture>((response) => {
+        const headers = response.headers();
+        return {
+          posted: true,
+          statusCode: response.status(),
+          location: headers.location || '',
+          setCookiePresent: Boolean(headers['set-cookie']),
+        };
+      })
+      .catch<SignInPostCapture>(() => ({ posted: false }));
+
+  let signInCapture: SignInPostCapture = { posted: false };
+  const postWaitPromise = waitForSignInPost();
+  await submitLocator.click({ force: true }).catch(() => null);
+  signInCapture = await postWaitPromise;
+
+  if (!signInCapture.posted) {
+    const fallbackPostWaitPromise = waitForSignInPost();
+    await page.evaluate(() => {
+      const form = document.querySelector('#formularioLogin') as HTMLFormElement | null;
+      if (form) {
+        form.submit();
+      }
+    });
+    signInCapture = await fallbackPostWaitPromise;
+  }
+
   await page.waitForTimeout(4000);
   await page.waitForLoadState('domcontentloaded').catch(() => null);
   await capturePageState(ctx, page, 'postulacion_after_cert_login');
-  const result = await classifyPortalAuthResult(page);
+  let result = await classifyPortalAuthResult(page);
+  if (result === 'login_required') {
+    await page.waitForTimeout(2000);
+    result = await classifyPortalAuthResult(page);
+  }
   recordAuthStep(ctx, authFlow, {
     strategy: 'portal_credentials',
     status: result === 'authenticated' ? 'ok' : 'error',
     currentUrl: page.url(),
     pageState: await classifyPageState(page),
     portalAuthResult: result,
+    details: {
+      postedToSignIn: signInCapture.posted,
+      signInStatusCode: signInCapture.statusCode ?? null,
+      signInLocation: signInCapture.location ?? null,
+      signInSetCookiePresent: signInCapture.setCookiePresent ?? false,
+    },
   });
   return result;
 }
@@ -400,13 +455,22 @@ export async function openPostulacionPage(
     return { page, authFlow, portalAuthResult: 'authenticated' };
   }
 
-  const menuEntry = await firstExisting(page, [
-    'td#2786',
-    'td.menu#2786',
-    'text=Solicitud para ser Emisor Electrónico',
-  ]);
-  if (menuEntry) {
-    await menuEntry.click();
+  const clickedMenuEntry = await page.evaluate(() => {
+    const direct = document.getElementById('2786');
+    if (direct instanceof HTMLElement) {
+      direct.click();
+      return true;
+    }
+    const fallback = Array.from(document.querySelectorAll('td.menu')).find((element) =>
+      (element.textContent || '').includes('Solicitud para ser Emisor Electrónico'),
+    );
+    if (fallback instanceof HTMLElement) {
+      fallback.click();
+      return true;
+    }
+    return false;
+  });
+  if (clickedMenuEntry) {
     await page.waitForLoadState('domcontentloaded').catch(() => null);
     await page.waitForTimeout(2000);
   } else {
@@ -506,17 +570,29 @@ export function postulacionFormData(ctx: ScenarioContext): Record<string, string
   const apiBase = normalizeApiBase(getString(metadata, 'apiBase'));
   const softwareName = getString(metadata, 'softwareName', 'getupsoft');
   const softwareVersion = getString(metadata, 'softwareVersion', '1.0');
+  const endpointMode = getString(metadata, 'endpointMode', 'api').toLowerCase();
 
   if (!apiBase) {
     throw new Error('DGII postulacion requires target.metadata.apiBase');
   }
 
+  const contract = endpointMode === 'fe' ? 'fe' : 'api';
+  if (contract === 'fe') {
+    return {
+      inputNombreSoftware: softwareName,
+      inputVersionSoftware: softwareVersion,
+      inputUrlRecepcion: `${apiBase}/fe/recepcion/api/ecf`,
+      inputUrlAprobacionComercial: `${apiBase}/fe/aprobacioncomercial/api/ecf`,
+      inputUrlAutenticacion: `${apiBase}/fe/autenticacion/api/semilla`,
+    };
+  }
+
   return {
     inputNombreSoftware: softwareName,
     inputVersionSoftware: softwareVersion,
-    inputUrlRecepcion: `${apiBase}/fe/recepcion/api/ecf`,
-    inputUrlAprobacionComercial: `${apiBase}/fe/aprobacioncomercial/api/ecf`,
-    inputUrlAutenticacion: `${apiBase}/fe/autenticacion/api/semilla`,
+    inputUrlRecepcion: `${apiBase}/api/ecf/receive`,
+    inputUrlAprobacionComercial: `${apiBase}/api/ecf/approve`,
+    inputUrlAutenticacion: `${apiBase}/api/auth`,
   };
 }
 

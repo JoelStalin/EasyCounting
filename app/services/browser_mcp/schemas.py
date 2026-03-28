@@ -45,6 +45,7 @@ class BrowserMcpJobRequest(BaseModel):
     mode: Literal["persistent_profile", "isolated_session", "cdp_attach"] = "isolated_session"
     headless: bool | None = None
     keep_open_on_failure: bool | None = Field(default=None, alias="keepOpenOnFailure")
+    keep_open_on_success: bool | None = Field(default=None, alias="keepOpenOnSuccess")
     target: BrowserMcpTarget = Field(default_factory=BrowserMcpTarget)
     steps: list[dict[str, Any]] = Field(default_factory=list)
     session_ref: str | None = Field(default=None, alias="sessionRef")

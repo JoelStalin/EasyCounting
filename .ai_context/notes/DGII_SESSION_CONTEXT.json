@@ -1,0 +1,513 @@
+{
+  "schema_version": "3.0",
+  "last_updated": "2026-03-28T15:38:06.449874Z",
+  "session_id": "ee83ac4d-10b2-4b7a-948f-bb9b794668c8",
+  "state_map": {
+    "S0_INIT_CONTEXT": "DONE",
+    "S1_LAUNCH_CHROME": "DONE",
+    "S2_LOGIN_OFV": "DONE",
+    "S3_NAVIGATE_PORTAL": "DONE",
+    "S4_FILL_FORM": "DONE",
+    "S5_GENERATE_XML": "DONE",
+    "S6_SIGN_XML": "ERROR",
+    "S7_HUMAN_CONFIRM_SEND": "PENDING",
+    "S8_CAPTURE_RESPONSE": "PENDING",
+    "S9_CLOSE_SESSION": "PENDING",
+    "active_errors": [
+      {
+        "id": "ERR-20260328042809-GENERATE_XML_FAILED",
+        "step": "S2_LOGIN_OFV",
+        "code": "GENERATE_XML_FAILED",
+        "description": "Portal de certificacion abierto pero no se detecto formulario de postulacion. URL=https://ecf.dgii.gov.do/CerteCF/PortalCertificacion/Login?ReturnUrl=%2FCerteCF%2FPortalCertificacion portalAuthResult=manual_seed_timeout",
+        "stack": "",
+        "screenshot": "",
+        "status": "RESOLVED",
+        "investigation": "",
+        "solution": "",
+        "resolved_at": "manual-reset-for-next-run"
+      },
+      {
+        "id": "ERR-20260328043345-GENERATE_XML_FAILED",
+        "step": "S2_LOGIN_OFV",
+        "code": "GENERATE_XML_FAILED",
+        "description": "Portal de certificacion abierto pero no se detecto formulario de postulacion. URL=https://ecf.dgii.gov.do/CerteCF/PortalCertificacion/Login?ReturnUrl=%2FCerteCF%2FPortalCertificacion portalAuthResult=manual_seed_timeout",
+        "stack": "",
+        "screenshot": "",
+        "status": "RESOLVED",
+        "investigation": "",
+        "solution": "",
+        "resolved_at": "manual-reset-for-next-run"
+      },
+      {
+        "id": "ERR-20260328044033-GENERATE_XML_FAILED",
+        "step": "S2_LOGIN_OFV",
+        "code": "GENERATE_XML_FAILED",
+        "description": "Portal de certificacion abierto pero no se detecto formulario de postulacion. URL=https://ecf.dgii.gov.do/CerteCF/PortalCertificacion/Login/SignIn portalAuthResult=manual_seed_timeout",
+        "stack": "",
+        "screenshot": "",
+        "status": "RESOLVED",
+        "investigation": "",
+        "solution": "",
+        "resolved_at": "manual-reset-for-next-run"
+      },
+      {
+        "id": "ERR-20260328044714-GENERATE_XML_FAILED",
+        "step": "S2_LOGIN_OFV",
+        "code": "GENERATE_XML_FAILED",
+        "description": "Portal de certificacion abierto pero no se detecto formulario de postulacion. URL=https://ecf.dgii.gov.do/CerteCF/PortalCertificacion/Login/SignIn portalAuthResult=manual_seed_timeout",
+        "stack": "",
+        "screenshot": "",
+        "status": "RESOLVED",
+        "investigation": "",
+        "solution": "resolved from CLI by operator=unknown",
+        "causa_raiz": "manual_pre_run_reset",
+        "resolved_at": "2026-03-28T14:42:48.742140Z"
+      },
+      {
+        "id": "ERR-20260328153806-SIGNING_FAILED",
+        "step": "S6_SIGN_XML",
+        "code": "SIGNING_FAILED",
+        "description": "No se pudo obtener XML firmado",
+        "stack": "",
+        "screenshot": "",
+        "status": "ACTIVE",
+        "investigation": "",
+        "solution": ""
+      }
+    ]
+  },
+  "execution_history": [
+    {
+      "timestamp": "2026-03-28T04:23:48.230335Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "RUNNING",
+      "detail": "Inicializando contexto y validando entorno"
+    },
+    {
+      "timestamp": "2026-03-28T04:23:48.233332Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "DONE",
+      "detail": "Contexto y preflight completados"
+    },
+    {
+      "timestamp": "2026-03-28T04:23:48.236864Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "RUNNING",
+      "detail": "Preparando sesion Browser MCP"
+    },
+    {
+      "timestamp": "2026-03-28T04:23:48.249567Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "DONE",
+      "detail": "Sesion preparada en C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-28_00-23-48_dgii_direct_session\\dgii_session_98xejy_y"
+    },
+    {
+      "timestamp": "2026-03-28T04:23:48.251571Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "RUNNING",
+      "detail": "Autenticando OFV y navegando a portal"
+    },
+    {
+      "timestamp": "2026-03-28T04:24:08.164348Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "RUNNING",
+      "detail": "Inicializando contexto y validando entorno"
+    },
+    {
+      "timestamp": "2026-03-28T04:24:08.167349Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "DONE",
+      "detail": "Contexto y preflight completados"
+    },
+    {
+      "timestamp": "2026-03-28T04:24:08.168351Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "RUNNING",
+      "detail": "Preparando sesion Browser MCP"
+    },
+    {
+      "timestamp": "2026-03-28T04:24:08.175434Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "DONE",
+      "detail": "Sesion preparada en C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-28_00-24-08_dgii_direct_session\\dgii_session_j5fj2rwo"
+    },
+    {
+      "timestamp": "2026-03-28T04:24:08.176456Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "RUNNING",
+      "detail": "Autenticando OFV y navegando a portal"
+    },
+    {
+      "timestamp": "2026-03-28T04:28:09.561133Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "ERROR",
+      "detail": "Fallo en autenticacion/navegacion"
+    },
+    {
+      "timestamp": "2026-03-28T04:28:09.563132Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "ERROR",
+      "detail": "Error registrado: ERR-20260328042809-GENERATE_XML_FAILED"
+    },
+    {
+      "timestamp": "2026-03-28T04:28:54.428516Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "RUNNING",
+      "detail": "Inicializando contexto y validando entorno"
+    },
+    {
+      "timestamp": "2026-03-28T04:28:54.430505Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "DONE",
+      "detail": "Contexto y preflight completados"
+    },
+    {
+      "timestamp": "2026-03-28T04:29:34.733122Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "RUNNING",
+      "detail": "Inicializando contexto y validando entorno"
+    },
+    {
+      "timestamp": "2026-03-28T04:29:34.735371Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "DONE",
+      "detail": "Contexto y preflight completados"
+    },
+    {
+      "timestamp": "2026-03-28T04:29:34.736560Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "RUNNING",
+      "detail": "Preparando sesion Browser MCP"
+    },
+    {
+      "timestamp": "2026-03-28T04:29:34.740584Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "DONE",
+      "detail": "Sesion preparada en C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-28_00-29-34_dgii_direct_session\\dgii_session_s6oe6xsc"
+    },
+    {
+      "timestamp": "2026-03-28T04:29:34.741583Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "RUNNING",
+      "detail": "Autenticando OFV y navegando a portal"
+    },
+    {
+      "timestamp": "2026-03-28T04:33:45.755781Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "ERROR",
+      "detail": "Fallo en autenticacion/navegacion"
+    },
+    {
+      "timestamp": "2026-03-28T04:33:45.757794Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "ERROR",
+      "detail": "Error registrado: ERR-20260328043345-GENERATE_XML_FAILED"
+    },
+    {
+      "timestamp": "2026-03-28T04:36:07.243948Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "RUNNING",
+      "detail": "Inicializando contexto y validando entorno"
+    },
+    {
+      "timestamp": "2026-03-28T04:36:07.245960Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "DONE",
+      "detail": "Contexto y preflight completados"
+    },
+    {
+      "timestamp": "2026-03-28T04:36:07.247450Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "RUNNING",
+      "detail": "Preparando sesion Browser MCP"
+    },
+    {
+      "timestamp": "2026-03-28T04:36:07.252473Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "DONE",
+      "detail": "Sesion preparada en C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-28_00-36-07_dgii_direct_session\\dgii_session_71k1bv8g"
+    },
+    {
+      "timestamp": "2026-03-28T04:36:07.254476Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "RUNNING",
+      "detail": "Autenticando OFV y navegando a portal"
+    },
+    {
+      "timestamp": "2026-03-28T04:40:33.355664Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "ERROR",
+      "detail": "Fallo en autenticacion/navegacion"
+    },
+    {
+      "timestamp": "2026-03-28T04:40:33.357845Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "ERROR",
+      "detail": "Error registrado: ERR-20260328044033-GENERATE_XML_FAILED"
+    },
+    {
+      "timestamp": "2026-03-28T04:42:48.583748Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "RUNNING",
+      "detail": "Inicializando contexto y validando entorno"
+    },
+    {
+      "timestamp": "2026-03-28T04:42:48.585744Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "DONE",
+      "detail": "Contexto y preflight completados"
+    },
+    {
+      "timestamp": "2026-03-28T04:42:48.587756Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "RUNNING",
+      "detail": "Preparando sesion Browser MCP"
+    },
+    {
+      "timestamp": "2026-03-28T04:42:48.593741Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "DONE",
+      "detail": "Sesion preparada en C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-28_00-42-48_dgii_direct_session\\dgii_session_h7j9d62o"
+    },
+    {
+      "timestamp": "2026-03-28T04:42:48.596101Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "RUNNING",
+      "detail": "Autenticando OFV y navegando a portal"
+    },
+    {
+      "timestamp": "2026-03-28T04:47:14.986291Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "ERROR",
+      "detail": "Fallo en autenticacion/navegacion"
+    },
+    {
+      "timestamp": "2026-03-28T04:47:14.986291Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "ERROR",
+      "detail": "Error registrado: ERR-20260328044714-GENERATE_XML_FAILED"
+    },
+    {
+      "timestamp": "2026-03-28T14:42:48.777246Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "RUNNING",
+      "detail": "Inicializando contexto y validando entorno"
+    },
+    {
+      "timestamp": "2026-03-28T14:42:48.778085Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "DONE",
+      "detail": "Contexto y preflight completados"
+    },
+    {
+      "timestamp": "2026-03-28T14:42:48.778085Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "RUNNING",
+      "detail": "Preparando sesion Browser MCP"
+    },
+    {
+      "timestamp": "2026-03-28T14:42:48.787188Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "DONE",
+      "detail": "Sesion preparada en C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-28_10-42-48_dgii_direct_session\\dgii_session_wuu2lod0"
+    },
+    {
+      "timestamp": "2026-03-28T14:42:48.788190Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "RUNNING",
+      "detail": "Autenticando OFV y navegando a portal"
+    },
+    {
+      "timestamp": "2026-03-28T14:43:33.729596Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "DONE",
+      "detail": "Login OFV completado"
+    },
+    {
+      "timestamp": "2026-03-28T14:43:33.731973Z",
+      "step": "S3_NAVIGATE_PORTAL",
+      "state": "RUNNING",
+      "detail": "Navegando al portal de certificacion"
+    },
+    {
+      "timestamp": "2026-03-28T14:43:33.733030Z",
+      "step": "S3_NAVIGATE_PORTAL",
+      "state": "DONE",
+      "detail": "Portal de certificacion abierto"
+    },
+    {
+      "timestamp": "2026-03-28T14:43:33.735994Z",
+      "step": "S4_FILL_FORM",
+      "state": "RUNNING",
+      "detail": "Completando formulario de postulacion"
+    },
+    {
+      "timestamp": "2026-03-28T14:43:33.735994Z",
+      "step": "S4_FILL_FORM",
+      "state": "DONE",
+      "detail": "Formulario completado"
+    },
+    {
+      "timestamp": "2026-03-28T14:43:33.735994Z",
+      "step": "S5_GENERATE_XML",
+      "state": "RUNNING",
+      "detail": "Generando XML de postulacion"
+    },
+    {
+      "timestamp": "2026-03-28T14:43:33.746368Z",
+      "step": "S5_GENERATE_XML",
+      "state": "DONE",
+      "detail": "XML generado"
+    },
+    {
+      "timestamp": "2026-03-28T14:43:33.746368Z",
+      "step": "S6_SIGN_XML",
+      "state": "WAITING_HUMAN",
+      "detail": "Esperando confirmacion humana para firmar"
+    },
+    {
+      "timestamp": "2026-03-28T14:44:02.283802Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "RUNNING",
+      "detail": "Inicializando contexto y validando entorno"
+    },
+    {
+      "timestamp": "2026-03-28T14:44:02.286342Z",
+      "step": "S0_INIT_CONTEXT",
+      "state": "DONE",
+      "detail": "Contexto y preflight completados"
+    },
+    {
+      "timestamp": "2026-03-28T14:44:02.287381Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "RUNNING",
+      "detail": "Preparando sesion Browser MCP"
+    },
+    {
+      "timestamp": "2026-03-28T14:44:02.290872Z",
+      "step": "S1_LAUNCH_CHROME",
+      "state": "DONE",
+      "detail": "Sesion preparada en C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-28_10-44-02_dgii_direct_session\\dgii_session_x7recf56"
+    },
+    {
+      "timestamp": "2026-03-28T14:44:02.290872Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "RUNNING",
+      "detail": "Autenticando OFV y navegando a portal"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:04.266493Z",
+      "step": "S2_LOGIN_OFV",
+      "state": "DONE",
+      "detail": "Login OFV completado"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:04.279743Z",
+      "step": "S3_NAVIGATE_PORTAL",
+      "state": "RUNNING",
+      "detail": "Navegando al portal de certificacion"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:04.289244Z",
+      "step": "S3_NAVIGATE_PORTAL",
+      "state": "DONE",
+      "detail": "Portal de certificacion abierto"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:04.295878Z",
+      "step": "S4_FILL_FORM",
+      "state": "RUNNING",
+      "detail": "Completando formulario de postulacion"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:04.300736Z",
+      "step": "S4_FILL_FORM",
+      "state": "DONE",
+      "detail": "Formulario completado"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:04.309965Z",
+      "step": "S5_GENERATE_XML",
+      "state": "RUNNING",
+      "detail": "Generando XML de postulacion"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:04.348187Z",
+      "step": "S5_GENERATE_XML",
+      "state": "DONE",
+      "detail": "XML generado"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:04.355208Z",
+      "step": "S6_SIGN_XML",
+      "state": "WAITING_HUMAN",
+      "detail": "Esperando confirmacion humana para firmar"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:04.363775Z",
+      "step": "S6_SIGN_XML",
+      "state": "RUNNING",
+      "detail": "Firmando XML"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:06.441894Z",
+      "step": "S6_SIGN_XML",
+      "state": "ERROR",
+      "detail": "No se pudo firmar XML"
+    },
+    {
+      "timestamp": "2026-03-28T15:38:06.449874Z",
+      "step": "S6_SIGN_XML",
+      "state": "ERROR",
+      "detail": "Error registrado: ERR-20260328153806-SIGNING_FAILED"
+    }
+  ],
+  "prompt_modifications": [],
+  "technical_decisions": [],
+  "test_results": {
+    "unit": {
+      "last_run": null,
+      "passed": 0,
+      "failed": 0,
+      "log": null
+    },
+    "functional": {
+      "last_run": null,
+      "passed": 0,
+      "failed": 0,
+      "log": null
+    },
+    "e2e": {
+      "last_run": null,
+      "passed": 0,
+      "failed": 0,
+      "log": null
+    },
+    "regression": []
+  },
+  "env_vars_present": [
+    "DGII_CONFIRM_SIGN_MCP",
+    "DGII_CONFIRM_SIGN_TERMINAL",
+    "DGII_CONFIRM_UPLOAD_MCP",
+    "DGII_ENDPOINT_MODE",
+    "DGII_PORTAL_CRED_FALLBACK",
+    "DGII_POSTULACION_MANUAL_SEED_TIMEOUT_SECONDS",
+    "DGII_POSTULACION_SIGNED_XML_PATH",
+    "DGII_PUBLIC_API_BASE_URL",
+    "DGII_REQUIRE_CONFIRM_SIGN",
+    "DGII_REQUIRE_CONFIRM_UPLOAD",
+    "DGII_SESSION_MODE",
+    "DGII_SOFTWARE_NAME",
+    "DGII_SOFTWARE_VERSION"
+  ],
+  "artifacts": {
+    "session_dir": null,
+    "xml_generated": null,
+    "xml_signed": null,
+    "xml_sha256": null,
+    "screenshots": [],
+    "run_summary": null
+  },
+  "operator_notes": [],
+  "signing_method_detected": "PROVIDED_SIGNED_XML"
+}

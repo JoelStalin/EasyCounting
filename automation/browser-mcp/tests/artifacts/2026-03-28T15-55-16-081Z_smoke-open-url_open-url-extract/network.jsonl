@@ -1,0 +1,2 @@
+{"event":"request","url":"http://127.0.0.1:63543/","method":"GET","resourceType":"document"}
+{"event":"response","url":"http://127.0.0.1:63543/","status":200}

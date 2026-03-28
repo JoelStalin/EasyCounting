@@ -61,7 +61,7 @@ Official references:
 
 1. Start backend and verify `/health` and `/readyz`.
 2. Ensure real certificate is loaded/available.
-3. Bootstrap DGII browser baseline from a cloned Chrome profile, never from the live profile.
+3. Run Browser MCP postulacion flow in direct session mode (`DGII_SESSION_MODE=direct`) or profile clone mode when explicitly required.
 4. Run Browser MCP postulacion flow with persistent `userDataDir`.
 4. Generate postulacion XML.
 5. Sign XML with real certificate.
@@ -70,10 +70,16 @@ Official references:
 
 ## Repeatable DGII Browser Baseline
 
-- Source profile: `Default / JOEL STALIN`
-- Clone root: `DGII_POSTULACION_PROFILE_CLONE_ROOT`
-- Working profile dir: `DGII_POSTULACION_PROFILE_DIR`
+- Default mode: `DGII_SESSION_MODE=direct` (ephemeral `session_dir` per run)
+- Optional mode: `DGII_SESSION_MODE=profile_clone`
+- Source profile (only profile_clone): `Default / JOEL STALIN`
+- Clone root (only profile_clone): `DGII_POSTULACION_PROFILE_CLONE_ROOT`
+- Working profile dir: `DGII_POSTULACION_PROFILE_DIR` (or temporary folder in direct mode)
 - Auth strategy order: `session_reuse,portal_credentials,manual_seed`
+- Endpoint contract: `DGII_ENDPOINT_MODE=auto` (`/api` then fallback `/fe`)
+- Sensitive actions must be confirmed by both MCP and terminal:
+  - `DGII_REQUIRE_CONFIRM_SIGN=true`
+  - `DGII_REQUIRE_CONFIRM_UPLOAD=true`
 - Warnings `Feature-Policy/Permissions-Policy` are non-blocking unless correlated with a functional failure
 - Persist after each run:
   - `docs/certificados/autoasistido/dgii_postulacion_test_manifest.json`

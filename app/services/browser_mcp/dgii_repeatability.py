@@ -60,6 +60,13 @@ def _parse_csv(raw: str | None, default: list[str]) -> list[str]:
     return values or list(default)
 
 
+def session_mode() -> str:
+    raw = os.getenv("DGII_SESSION_MODE", "").strip().lower()
+    if raw in {"direct", "profile_clone"}:
+        return raw
+    return "direct"
+
+
 def _chrome_user_data_dir() -> Path:
     raw = os.getenv("DGII_CHROME_USER_DATA_DIR", "").strip()
     if raw:
@@ -235,12 +242,18 @@ def ensure_profile_clone() -> dict[str, object]:
 
 
 def build_test_manifest() -> dict[str, object]:
+    mode = session_mode()
+    if mode == "profile_clone":
+        opening_step = "profile_clone_bootstrap"
+    else:
+        opening_step = "direct_session_bootstrap"
     return {
         "version": "2026-03-27.repeatable-baseline.v1",
         "policyBaseline": _policy_baseline(),
+        "sessionMode": mode,
         "sourceProfile": _source_profile_name(),
         "steps": [
-            "profile_clone_bootstrap",
+            opening_step,
             "ofv_session_reuse",
             "portal_state_probe",
             "portal_credentials_attempt",
@@ -336,6 +349,7 @@ def write_latest_known_state(summary: dict[str, object]) -> Path:
     DOCS_ROOT.mkdir(parents=True, exist_ok=True)
     payload = {
         "updatedAt": datetime.now().isoformat(),
+        "sessionMode": summary.get("session_mode", session_mode()),
         "rootCause": summary.get("root_cause"),
         "runtimeRetained": summary.get("runtime_retained"),
         "currentUrl": summary.get("current_url"),
@@ -360,6 +374,7 @@ def write_run_note(summary: dict[str, object]) -> Path:
             "",
             f"- Timestamp: {datetime.now().isoformat()}",
             f"- Run dir: {summary.get('run_dir')}",
+            f"- Session mode: {summary.get('session_mode', session_mode())}",
             f"- Profile source: {summary.get('profile_source')}",
             f"- Profile dir: {summary.get('profile_dir')}",
             f"- Runtime job id: {summary.get('runtime_job_id')}",

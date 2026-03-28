@@ -1,9 +1,10 @@
 {
   "version": "2026-03-27.repeatable-baseline.v1",
   "policyBaseline": "strict_normal_browser",
+  "sessionMode": "direct",
   "sourceProfile": "Default",
   "steps": [
-    "profile_clone_bootstrap",
+    "direct_session_bootstrap",
     "ofv_session_reuse",
     "portal_state_probe",
     "portal_credentials_attempt",
@@ -18,6 +19,6 @@
     "portal_credentials",
     "manual_seed"
   ],
-  "manualSeedTimeoutSeconds": 60,
+  "manualSeedTimeoutSeconds": 30,
   "notes": "Warnings Feature-Policy/Permissions-Policy se registran como warning_non_blocking salvo evidencia funcional."
 }

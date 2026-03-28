@@ -45,6 +45,7 @@ export interface BrowserMcpJobRequest {
   mode?: BrowserMode;
   headless?: boolean;
   keepOpenOnFailure?: boolean;
+  keepOpenOnSuccess?: boolean;
   target?: BrowserMcpTarget;
   storageStatePath?: string;
   userDataDir?: string;

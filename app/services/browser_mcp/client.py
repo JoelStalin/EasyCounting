@@ -54,6 +54,14 @@ class BrowserMcpRemoteClient:
             raise BrowserMcpClientError(f"Browser MCP remote error {response.status_code}: {response.text}")
         return BrowserMcpJobResponse.model_validate(parsed)
 
+    def release_runtime(self, job_id: str) -> bool:
+        with httpx.Client(timeout=self.config.remote_timeout_seconds) as client:
+            response = client.delete(f"{self.config.base_url}/api/v1/jobs/{job_id}/runtime")
+        if response.status_code >= 400:
+            raise BrowserMcpClientError(f"Browser MCP runtime release error {response.status_code}: {response.text}")
+        parsed = response.json()
+        return bool(parsed.get("released"))
+
 
 @dataclass(slots=True)
 class BrowserMcpStdioClient:

@@ -1,12 +1,13 @@
 {
-  "updatedAt": "2026-03-27T22:54:28.159583",
+  "updatedAt": "2026-03-28T11:38:06.469433",
+  "sessionMode": "direct",
   "rootCause": "unknown",
-  "runtimeRetained": true,
-  "currentUrl": null,
-  "profileDir": "c:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\_persistent_sessions\\dgii_postulacion_browser_mcp",
-  "sourceProfile": "Default",
-  "authStrategyAttempted": "unknown",
-  "portalAuthResult": "unknown",
-  "runDir": "C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-27_22-54-20_dgii_postulacion_browser_mcp",
-  "resumeAction": "resume_from_retained_runtime"
+  "runtimeRetained": false,
+  "currentUrl": "https://ecf.dgii.gov.do/certecf/portalcertificacion/Postulacion/Registrado",
+  "profileDir": "C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-28_10-44-02_dgii_direct_session\\dgii_session_x7recf56",
+  "sourceProfile": "direct_session",
+  "authStrategyAttempted": "ofv_session_reuse,portal_state_probe",
+  "portalAuthResult": "authenticated",
+  "runDir": "C:\\Users\\yoeli\\Documents\\dgii_encf\\tests\\artifacts\\2026-03-28_10-44-02_dgii_direct_session",
+  "resumeAction": "resume_from_persistent_profile"
 }

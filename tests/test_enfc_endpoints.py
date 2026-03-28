@@ -4,12 +4,15 @@ from __future__ import annotations
 
 import asyncio
 import base64
+from datetime import datetime
 from pathlib import Path
+from xml.etree import ElementTree as ET
 
 import pytest
 from httpx import ASGITransport, AsyncClient
 
 from app.main import app
+from app.security.xml import validate_with_xsd
 from app.services.idempotency import idempotency_store
 
 ECF_SAMPLE = Path("tests/assets/sample_ecf_32.xml").read_bytes()
@@ -42,6 +45,75 @@ async def test_semilla_returns_seed():
     assert "valor" in data
     assert "fecha" in data
     assert data["expiraEn"] == 300
+
+
+@pytest.mark.asyncio
+async def test_semilla_returns_xml_contract():
+    async with _build_client() as client:
+        response = await client.get("/fe/autenticacion/api/semilla", headers={"Accept": "application/xml"})
+
+    assert response.status_code == 200
+    assert response.headers.get("content-type", "").startswith("application/xml")
+    root = ET.fromstring(response.content)
+    assert root.tag == "SemillaModel"
+    valor = (root.findtext("valor") or "").strip()
+    fecha = (root.findtext("fecha") or "").strip()
+    assert valor
+    decoded = base64.b64decode(valor).decode("utf-8")
+    assert ":" in decoded
+    parsed_fecha = datetime.fromisoformat(fecha)
+    assert parsed_fecha.tzinfo is not None
+
+
+@pytest.mark.asyncio
+async def test_signed_semilla_payload_validates_with_xsd():
+    async with _build_client() as client:
+        response = await client.get("/fe/autenticacion/api/semilla", headers={"Accept": "application/xml"})
+
+    assert response.status_code == 200
+    semilla_root = ET.fromstring(response.content)
+    valor = (semilla_root.findtext("valor") or "").strip()
+    fecha = (semilla_root.findtext("fecha") or "").strip()
+    signed_payload = (
+        '<?xml version="1.0" encoding="utf-8"?>'
+        '<SemillaModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+        'xmlns:xsd="http://www.w3.org/2001/XMLSchema">'
+        f"<valor>{valor}</valor>"
+        f"<fecha>{fecha}</fecha>"
+        "<Signature><SignedInfo/></Signature>"
+        "</SemillaModel>"
+    ).encode("utf-8")
+    validate_with_xsd(signed_payload, "xsd/Semilla v.1.0.xsd")
+
+
+@pytest.mark.asyncio
+async def test_validacion_semilla_xml_returns_token_xml(monkeypatch):
+    monkeypatch.setattr("app.api.enfc_routes.verify_xml_signature_details", lambda *_args, **_kwargs: None)
+    monkeypatch.setattr("app.api.enfc_routes.validate_with_xsd", lambda *_args, **_kwargs: None)
+
+    async with _build_client() as client:
+        semilla_res = await client.get("/fe/autenticacion/api/semilla", headers={"Accept": "application/xml"})
+        semilla_root = ET.fromstring(semilla_res.content)
+        valor = (semilla_root.findtext("valor") or "").strip()
+        fecha = (semilla_root.findtext("fecha") or "").strip()
+        body = (
+            '<?xml version="1.0" encoding="utf-8"?>'
+            '<SemillaModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+            'xmlns:xsd="http://www.w3.org/2001/XMLSchema">'
+            f"<valor>{valor}</valor><fecha>{fecha}</fecha></SemillaModel>"
+        )
+        token_res = await client.post(
+            "/fe/autenticacion/api/validacioncertificado",
+            content=body.encode("utf-8"),
+            headers={"Content-Type": "text/xml", "Accept": "application/xml"},
+        )
+
+    assert token_res.status_code == 200
+    token_root = ET.fromstring(token_res.content)
+    assert token_root.tag == "RespuestaAutenticacion"
+    assert (token_root.findtext("token") or "").strip()
+    assert (token_root.findtext("expira") or "").strip()
+    assert (token_root.findtext("expedido") or "").strip()
 
 
 @pytest.mark.asyncio
