@@ -19,9 +19,6 @@ from app.api.routes.receptor import router as receptor_router
 from app.api.routes.ri import router as ri_router
 from app.api.enfc_routes import router as enfc_router
 from app.api.router import api_router
-from app.dgii.jobs import start_dispatcher, stop_dispatcher
-from app.jobs.recurring_invoices import start_recurring_invoice_runner, stop_recurring_invoice_runner
-from app.jobs.certificate_workflow import start_certificate_workflow_runner, stop_certificate_workflow_runner
 from app.core.logging import bind_request_context, reset_request_context
 from app.routers.acuse import router as arecef_router
 from app.routers.admin import router as admin_router
@@ -40,11 +37,18 @@ from app.routers.recepcion import router as recepcion_router
 from app.routers.rfce import router as rfce_router
 from app.routers.tenant_api import router as tenant_api_router
 from app.routers.ui_tours import router as ui_tours_router
+from app.application.lifecycle import (
+    shutdown_background_jobs,
+    shutdown_runtime_dependencies,
+    startup_background_jobs,
+    startup_runtime_dependencies,
+)
+from app.application.router_registration import include_router_entries
 from app.db import check_database_connection
 from app.infra.logging import configure_logging
 from app.infra.settings import settings
 from app.security.auth import setup_security
-from app.security.rate_limit import configure_rate_limiter, init_rate_limiter, shutdown_rate_limiter
+from app.security.rate_limit import configure_rate_limiter
 from app.shared.tracing import ensure_trace_id, get_request_id
 
 LOGGER = logging.getLogger(__name__)
@@ -89,46 +93,13 @@ def create_app() -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
-        try:
-            if settings.environment.lower() in {"production", "prod"}:
-                await init_rate_limiter(app, settings.redis_url)
-        except Exception as exc:  # pragma: no cover - fail fast
-            LOGGER.exception("Failed to initialise rate limiter", extra={"redis_url": settings.redis_url})
-            if settings.environment.lower() in {"production", "prod"}:
-                raise RuntimeError("Redis connection failed during startup") from exc
-
-        try:
-            if settings.jobs_enabled:
-                await start_dispatcher()
-        except Exception as exc:  # pragma: no cover - defensive
-            LOGGER.exception("Failed to start DGII dispatcher", exc_info=exc)
-
-        try:
-            if settings.jobs_enabled:
-                await start_recurring_invoice_runner()
-        except Exception as exc:  # pragma: no cover - defensive
-            LOGGER.exception("Failed to start recurring invoice runner", exc_info=exc)
-        try:
-            if settings.jobs_enabled:
-                await start_certificate_workflow_runner()
-        except Exception as exc:  # pragma: no cover - defensive
-            LOGGER.exception("Failed to start certificate workflow runner", exc_info=exc)
+        await startup_runtime_dependencies(app)
+        await startup_background_jobs()
 
         yield
 
-        await shutdown_rate_limiter(app)
-        try:
-            await stop_dispatcher()
-        except Exception as exc:  # pragma: no cover - defensive
-            LOGGER.exception("Failed to stop DGII dispatcher", exc_info=exc)
-        try:
-            await stop_recurring_invoice_runner()
-        except Exception as exc:  # pragma: no cover - defensive
-            LOGGER.exception("Failed to stop recurring invoice runner", exc_info=exc)
-        try:
-            await stop_certificate_workflow_runner()
-        except Exception as exc:  # pragma: no cover - defensive
-            LOGGER.exception("Failed to stop certificate workflow runner", exc_info=exc)
+        await shutdown_runtime_dependencies(app)
+        await shutdown_background_jobs()
 
     app = FastAPI(
         title=settings.app_name,
@@ -146,7 +117,7 @@ def create_app() -> FastAPI:
         SessionMiddleware,
         secret_key=settings.social_auth_session_secret,
         same_site="lax",
-        https_only=settings.environment.lower() in {"production", "prod"},
+        https_only=settings.is_production,
     )
     trusted_hosts = sorted(
         {
@@ -169,50 +140,41 @@ def create_app() -> FastAPI:
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=trusted_hosts)
 
     setup_security(app, allowed_origins=settings.cors_allow_origins)
-    if settings.environment.lower() in {"production", "prod"}:
+    if settings.is_production:
         configure_rate_limiter(app, rate_limit_per_minute=settings.rate_limit_per_minute)
 
     # Portal endpoints (used by React admin/client portals)
     app.include_router(portal_auth_router, prefix="/auth", tags=["portal-auth"])
     app.include_router(portal_me_router, tags=["portal-auth"])
 
+    shared_router_entries = [
+        (admin_router, None),
+        (cliente_router, None),
+        (internal_router, None),
+        (odoo_router, None),
+        (operations_router, None),
+        (partner_router, None),
+        (tenant_api_router, None),
+        (ui_tours_router, None),
+        (dgii_auth_router, None),
+        (recepcion_router, None),
+        (rfce_router, None),
+        (anecf_router, None),
+        (acecf_router, None),
+        (arecef_router, None),
+    ]
+
     # Versioned API (future stable contract)
     app.include_router(portal_auth_router, prefix="/api/v1/auth", tags=["portal-auth"])
     app.include_router(portal_me_router, prefix="/api/v1", tags=["portal-auth"])
-    app.include_router(admin_router, prefix="/api/v1")
-    app.include_router(cliente_router, prefix="/api/v1")
-    app.include_router(internal_router, prefix="/api/v1")
+    include_router_entries(app, shared_router_entries, prefix="/api/v1")
     app.include_router(certificate_workflow_router, prefix="/api/v1/internal")
-    app.include_router(odoo_router, prefix="/api/v1")
-    app.include_router(operations_router, prefix="/api/v1")
-    app.include_router(partner_router, prefix="/api/v1")
-    app.include_router(tenant_api_router, prefix="/api/v1")
-    app.include_router(ui_tours_router, prefix="/api/v1")
-    app.include_router(dgii_auth_router, prefix="/api/v1")
-    app.include_router(recepcion_router, prefix="/api/v1")
-    app.include_router(rfce_router, prefix="/api/v1")
-    app.include_router(anecf_router, prefix="/api/v1")
-    app.include_router(acecf_router, prefix="/api/v1")
-    app.include_router(arecef_router, prefix="/api/v1")
-    app.include_router(dgii_router, prefix="/api/v1/dgii", tags=["dgii-scraper"])
-    app.include_router(ecf_router, prefix="/api/v1/ecf", tags=["ecf-engine"])
+    include_router_entries(app, [(dgii_router, "dgii-scraper")], prefix="/api/v1/dgii")
+    include_router_entries(app, [(ecf_router, "ecf-engine")], prefix="/api/v1/ecf")
 
     # Legacy paths (kept for existing tests/integrations)
-    app.include_router(admin_router, prefix="/api")
-    app.include_router(cliente_router, prefix="/api")
-    app.include_router(internal_router, prefix="/api")
+    include_router_entries(app, shared_router_entries, prefix="/api")
     app.include_router(certificate_workflow_router, prefix="/api/internal")
-    app.include_router(odoo_router, prefix="/api")
-    app.include_router(operations_router, prefix="/api")
-    app.include_router(partner_router, prefix="/api")
-    app.include_router(tenant_api_router, prefix="/api")
-    app.include_router(ui_tours_router, prefix="/api")
-    app.include_router(dgii_auth_router, prefix="/api")
-    app.include_router(recepcion_router, prefix="/api")
-    app.include_router(rfce_router, prefix="/api")
-    app.include_router(anecf_router, prefix="/api")
-    app.include_router(acecf_router, prefix="/api")
-    app.include_router(arecef_router, prefix="/api")
 
     app.include_router(api_router, prefix="/api")
     app.include_router(api_router, prefix="/api/1")
