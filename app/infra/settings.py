@@ -565,6 +565,11 @@ class Settings(BaseSettings):
 
     @computed_field
     @property
+    def is_production(self) -> bool:
+        return self.environment.lower() in {"production", "prod"}
+
+    @computed_field
+    @property
     def cors_allow_origins(self) -> List[str]:
         if self.cors_allow_origins_raw is None:
             origins = [
