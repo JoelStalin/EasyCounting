@@ -4,10 +4,20 @@ from __future__ import annotations
 import hashlib
 import json
 from datetime import datetime, timezone
+from decimal import Decimal
 from pathlib import Path
 from typing import Any, Dict
 
 from app.shared.settings import settings
+
+
+def _json_default(obj: Any) -> Any:
+    """Encoder por defecto para tipos no serializables por json estándar."""
+    if isinstance(obj, Decimal):
+        return float(obj)
+    if isinstance(obj, (datetime,)):
+        return obj.isoformat()
+    return str(obj)
 
 
 class LocalStorage:
@@ -30,7 +40,13 @@ class LocalStorage:
     def store_json(self, relative_path: str, payload: Dict[str, Any]) -> Path:
         """Serializa un JSON y lo guarda en disco."""
 
-        serialized = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        serialized = json.dumps(
+            payload,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+            default=_json_default,
+        ).encode("utf-8")
         return self.store_bytes(relative_path, serialized)
 
     def compute_hash(self, relative_path: str) -> str:

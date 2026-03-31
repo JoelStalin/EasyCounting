@@ -1,6 +1,9 @@
-import requests
 import json
 import sys
+
+import pytest
+
+requests = pytest.importorskip("requests", reason="requests no instalado; omitiendo test de integración Odoo payloads")
 
 API_URL = "http://127.0.0.1:28080/api/v1/odoo/invoices/transmit"
 # The Local proxy routes /api/v1/ via nginx to the FastAPI container

@@ -74,8 +74,9 @@ class ChatOrchestrator:
         return {
             "answer": response.content,
             "session_id": session.id,
-            "engine": response.model,
+            "engine": response.provider,
+            "model": response.model,
             "provider": response.provider,
             "latency_ms": response.latency_ms,
-            "usage": response.usage
+            "usage": response.usage,
         }

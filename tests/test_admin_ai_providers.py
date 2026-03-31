@@ -175,14 +175,25 @@ def test_chatbot_uses_default_platform_ai_provider(monkeypatch) -> None:
                 ]
             }
 
-    def fake_post(url: str, *, headers: dict[str, str], json: dict[str, object], timeout: float):
-        captured["url"] = url
-        captured["headers"] = headers
-        captured["json"] = json
-        captured["timeout"] = timeout
-        return _Response()
+    # The orchestrator uses OpenAIProvider which calls httpx.AsyncClient (async).
+    # We patch the AsyncClient at the provider module level with an async context manager mock.
+    class _MockAsyncClient:
+        def __init__(self, **kwargs: object) -> None:
+            pass
 
-    monkeypatch.setattr("app.application.tenant_chat.httpx.post", fake_post)
+        async def __aenter__(self) -> "_MockAsyncClient":
+            return self
+
+        async def __aexit__(self, *args: object) -> None:
+            pass
+
+        async def post(self, url: str, *, headers: dict[str, str], json: dict[str, object]) -> _Response:
+            captured["url"] = url
+            captured["headers"] = headers
+            captured["json"] = json
+            return _Response()
+
+    monkeypatch.setattr("app.services.ai.providers.openai.httpx.AsyncClient", _MockAsyncClient)
 
     response = client.post(
         "/api/v1/cliente/chat/ask",

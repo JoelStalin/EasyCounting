@@ -7,7 +7,7 @@ do_country = env.ref("base.do")
 company.country_id = do_country
 company.partner_id.country_id = do_country
 company.name = "Chefalitas Lab"
-company.vat = "13100000001"
+company.vat = "13199999999"
 company.partner_id.name = company.name
 company.partner_id.vat = company.vat
 

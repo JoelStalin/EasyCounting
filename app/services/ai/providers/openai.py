@@ -12,10 +12,9 @@ class OpenAIProvider(BaseLLMProvider):
     """Adaptador para OpenAI y endpoints compatibles."""
 
     async def chat(self, messages: list[dict[str, str]], **kwargs: Any) -> LLMResponse:
-        if not self.base_url:
-            raise ValueError("base_url es obligatorio para OpenAIProvider")
-        
-        url = f"{self.base_url.rstrip('/')}/chat/completions"
+        # Default to official OpenAI endpoint when no base_url is configured
+        base_url = (self.base_url or "https://api.openai.com/v1").rstrip("/")
+        url = f"{base_url}/chat/completions"
         headers = {
             "Content-Type": "application/json",
             **self.extra_headers

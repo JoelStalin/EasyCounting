@@ -1,0 +1,74 @@
+{
+  "results": [
+    {
+      "prefix": "B01",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "B02",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "B03",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "B04",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E31",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E32",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E33",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E34",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E41",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E43",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E44",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E45",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E46",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    },
+    {
+      "prefix": "E47",
+      "status": "FAILED",
+      "error": "<Fault 2: 'Este asiento contiene uno o más impuestos que no son compatibles con su país fiscal. Compruebe el país fiscal de la empresa en los ajustes y el país de los impuestos en la configuración de impuestos.'>"
+    }
+  ]
+}

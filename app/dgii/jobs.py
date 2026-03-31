@@ -60,15 +60,18 @@ class DGIIJobDispatcher:
         if self._queue is None:
             return
         while True:
+            item_retrieved = False
             try:
                 track_id, token, operation_id = await self._queue.get()
+                item_retrieved = True
                 await self._poll_status(track_id, token, operation_id)
             except asyncio.CancelledError:
                 raise
             except Exception as exc:  # pragma: no cover
                 bind_request_context(job="dgii_status").error("Fallo en job DGII", error=str(exc))
             finally:
-                self._queue.task_done()
+                if item_retrieved:
+                    self._queue.task_done()
 
     async def _poll_status(self, track_id: str, token: str, operation_id: str) -> None:
         bind_request_context(job="dgii_status", track_id=track_id, operation_id=operation_id)
@@ -108,7 +111,15 @@ def _persist_status_and_sync(operation_id: str, track_id: str, result: dict) -> 
         session.flush()
 
         if normalized_state in {"ACCEPTED", "ACCEPTED_CONDITIONAL"} and operation.invoice is not None:
-            sync_result = asyncio.run(OdooAccountingSyncService(session).sync_operation(operation))
+            # Fix: asyncio.run() inside a thread that may already have an event loop
+            # is unsafe. Use a dedicated new event loop for the sync call instead.
+            loop = asyncio.new_event_loop()
+            try:
+                sync_result = loop.run_until_complete(
+                    OdooAccountingSyncService(session).sync_operation(operation)
+                )
+            finally:
+                loop.close()
             if sync_result.get("status") == "SYNCED_TO_ODOO":
                 if normalized_state != operation.state:
                     operations.update_remote_status(operation, raw_status or normalized_state)

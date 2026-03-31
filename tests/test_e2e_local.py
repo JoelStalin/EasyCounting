@@ -1,13 +1,25 @@
 from __future__ import annotations
 
+import socket
 from datetime import datetime, timezone
 
+import pytest
 import respx
 from fastapi.testclient import TestClient
 
 from app.main import app
 
 
+def _db_reachable() -> bool:
+    """Comprueba si el hostname Docker 'db' es alcanzable (solo dentro de Docker network)."""
+    try:
+        socket.getaddrinfo("db", 5432, proto=socket.IPPROTO_TCP)
+        return True
+    except OSError:
+        return False
+
+
+@pytest.mark.skipif(not _db_reachable(), reason="PostgreSQL en db:5432 no alcanzable fuera de Docker network")
 @respx.mock
 def test_e2e_seed_token_send_ecf_status_and_ri(configured_settings) -> None:
     from app.core.config import settings

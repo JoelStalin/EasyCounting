@@ -6,8 +6,9 @@ from decimal import Decimal
 from typing import Optional
 
 from sqlalchemy import DateTime, ForeignKey, Index, Numeric, String, Text, UniqueConstraint
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.shared.types import PortableJSONB
 
 from app.models.base import Base
 from app.models.tenant import Tenant
@@ -28,7 +29,7 @@ class OdooPartnerMirror(Base):
     email: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
     phone: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     company_type: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
-    raw_json: Mapped[dict] = mapped_column(JSONB, default=dict)
+    raw_json: Mapped[dict] = mapped_column(PortableJSONB, default=dict)
     synced_at: Mapped[datetime] = mapped_column(DateTime)
 
     tenant: Mapped[Tenant] = relationship(backref="odoo_partners")
@@ -48,7 +49,7 @@ class OdooProductMirror(Base):
     list_price: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
     standard_price: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
     active: Mapped[bool] = mapped_column(default=True)
-    raw_json: Mapped[dict] = mapped_column(JSONB, default=dict)
+    raw_json: Mapped[dict] = mapped_column(PortableJSONB, default=dict)
     synced_at: Mapped[datetime] = mapped_column(DateTime)
 
     tenant: Mapped[Tenant] = relationship(backref="odoo_products")
@@ -75,8 +76,8 @@ class OdooInvoiceMirror(Base):
     amount_tax: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
     amount_untaxed: Mapped[Decimal] = mapped_column(Numeric(20, 6), default=Decimal("0"))
     encf: Mapped[Optional[str]] = mapped_column(String(20), nullable=True)
-    raw_json: Mapped[dict] = mapped_column(JSONB, default=dict)
-    lines_json: Mapped[dict] = mapped_column(JSONB, default=dict)
+    raw_json: Mapped[dict] = mapped_column(PortableJSONB, default=dict)
+    lines_json: Mapped[dict] = mapped_column(PortableJSONB, default=dict)
     synced_at: Mapped[datetime] = mapped_column(DateTime)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
