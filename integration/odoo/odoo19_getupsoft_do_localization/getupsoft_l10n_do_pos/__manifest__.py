@@ -29,6 +29,7 @@
         ],
     },
     'post_init_hook': '_getupsoft_l10n_do_pos_post_init',
-    'installable': False,
+    'auto_install': True,
+    'installable': True,
     'application': False,
 }

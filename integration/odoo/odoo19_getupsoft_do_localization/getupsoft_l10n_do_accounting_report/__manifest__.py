@@ -12,4 +12,5 @@
     "license": "LGPL-3",
     "external_dependencies": {"python": ["pycountry"]},
     "installable": True,
+    "auto_install": True,
 }

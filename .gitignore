@@ -47,3 +47,6 @@ automation/browser/evidence/
 # Local debugging files
 seller_debug.png
 .DS_Store
+
+# Lab Enterprise Addons
+labs/**/enterprise/

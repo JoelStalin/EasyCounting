@@ -31,4 +31,6 @@
         ],
     },
     'post_init_hook': '_l10n_do_pos_post_init',
+    'installable': True,
+    'auto_install': True,
 }

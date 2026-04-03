@@ -1,6 +1,6 @@
 from odoo import SUPERUSER_ID, api
 
-from . import models, wizard
+from . import models, wizard, services
 
 
 def _update_account_fiscal_position(env):

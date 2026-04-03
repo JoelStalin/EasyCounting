@@ -1,60 +1,98 @@
-# This file is part of NCF Manager.
-
-# NCF Manager is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-
-# NCF Manager is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-
-# You should have received a copy of the GNU General Public License
-# along with NCF Manager.  If not, see <https://www.gnu.org/licenses/>.
-
 import json
-import re
 import logging
-
-import requests
+import re
 
 from odoo import http
+from odoo.http import request
+from odoo.addons.l10n_do_rnc_search.services.dgii_rnc_web import (
+    lookup_rnc_cedula,
+    lookup_rnc_name,
+    normalize_fiscal_id,
+    _sort_by_similarity,
+)
 
 _logger = logging.getLogger(__name__)
-
-try:
-    from stdnum.do import rnc
-except (ImportError, IOError) as err:
-    _logger.debug(str(err))
 
 
 class Odoojs(http.Controller):
 
-    @http.route('/dgii_ws', auth='public', cors="*")
+    # ── DGII (official source) ──────────────────────────────────────────────
+
+    def _dgii_search(self, term):
+        """
+        Route the term to the appropriate DGII scraper.
+        Always returns a list (possibly empty). Never raises.
+        """
+        fiscal_id = normalize_fiscal_id(term)
+        if fiscal_id:
+            match = lookup_rnc_cedula(fiscal_id)
+            return [match] if match else []
+        elif len(term) >= 3:
+            return lookup_rnc_name(term)
+        return []
+
+    # ── Local Odoo DB search ────────────────────────────────────────────────
+
+    def _local_partner_search(self, term):
+        """Search local res.partner records (ilike on name and vat)."""
+        domain = ["|", ("name", "ilike", term), ("vat", "ilike", term)]
+        partners = request.env["res.partner"].sudo().search(domain, limit=20)
+        results = []
+        for partner in partners:
+            fiscal_id = re.sub(r"[^0-9]", "", partner.vat or "")
+            name = (partner.name or "").strip()
+            if not fiscal_id and not name:
+                continue
+            results.append({
+                "rnc": fiscal_id,
+                "vat": fiscal_id,
+                "name": name,
+                "label": "{} - {}".format(fiscal_id, name) if fiscal_id else name,
+                "commercial_name": name,
+                "status": "LOCAL",
+                "category": "PARTNER",
+                "comment": "Registro local Odoo.",
+                "company_type": "company" if len(fiscal_id) == 9 else "person",
+                "is_company": len(fiscal_id) == 9,
+                "source": "odoo",
+            })
+        if results and not normalize_fiscal_id(term):
+            results = _sort_by_similarity(term, results)
+        return results
+
+    # ── Merge and deduplicate ───────────────────────────────────────────────
+
+    def _merge_results(self, *groups):
+        merged = []
+        seen = set()
+        for group in groups:
+            for item in group:
+                key = (
+                    item.get("vat") or item.get("rnc") or "",
+                    (item.get("name") or "").upper(),
+                )
+                if key in seen:
+                    continue
+                seen.add(key)
+                merged.append(item)
+        return merged
+
+    # ── HTTP endpoint ───────────────────────────────────────────────────────
+
+    @http.route(['/dgii_ws'], type='http', auth="public", methods=['GET'], csrf=False, cors='*')
     def index(self, **kwargs):
-        term = kwargs.get("term", False)
+        term = (kwargs.get("term") or "").strip()
+        if not term or len(term) < 2:
+            return request.make_response(
+                "[]", headers=[("Content-Type", "application/json")]
+            )
 
-        if not term:
-            return json.dumps([])
+        dgii_results = self._dgii_search(term)
+        local_results = self._local_partner_search(term)
 
-        try:
-            if term.isdigit() and len(term) in [9, 11]:
-                result = rnc.check_dgii(term)
-            else:
-                result = rnc.search_dgii(term, end_at=20, start_at=1)
+        results = self._merge_results(dgii_results, local_results)
 
-            if result is not None:
-                if not isinstance(result, list):
-                    result = [result]
-
-                for d in result:
-                    d["name"] = " ".join(
-                        re.split(r"\s+", d["name"], flags=re.UNICODE)
-                    )  # remove all duplicate white space from the name
-                    d["label"] = u"{} - {}".format(d["rnc"], d["name"])
-                return json.dumps(result)
-        except requests.exceptions.ConnectionError:
-            _logger.error("RncSearchError by %s", str(term), exc_info=True)
-
-        return json.dumps([])
+        return request.make_response(
+            json.dumps(results),
+            headers=[("Content-Type", "application/json")],
+        )

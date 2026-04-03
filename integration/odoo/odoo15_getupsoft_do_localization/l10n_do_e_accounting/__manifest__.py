@@ -12,7 +12,7 @@
         "views/res_company_views.xml",
     ],
     "installable": True,
-    "auto_install": False,
+    "auto_install": True,
     "application": False,
     "post_init_hook": "_l10n_do_e_accounting_post_init",
 }

@@ -190,20 +190,23 @@ class ResPartner(models.Model):
 
     @api.onchange("vat", "country_id")
     def _set_position_fiscal(self):
-        if self.vat and self.country_id:
-            if self.country_id.id == self.env.ref("base.do").id:
-                if len(self.vat) == 9:
-                    self.property_account_position_id = self.env.ref(
-                        "l10n_do.position_service_moral"
-                    ).id
+        try:
+            if self.vat and self.country_id:
+                if self.country_id.id == self.env.ref("base.do").id:
+                    if len(self.vat) == 9:
+                        self.property_account_position_id = self.env.ref(
+                            "l10n_do.position_service_moral", raise_if_not_found=False
+                        ).id if self.env.ref("l10n_do.position_service_moral", raise_if_not_found=False) else False
+                    else:
+                        self.property_account_position_id = self.env.ref(
+                            "getupsoft_l10n_do_accounting.final_consumer", raise_if_not_found=False
+                        ).id if self.env.ref("getupsoft_l10n_do_accounting.final_consumer", raise_if_not_found=False) else False
                 else:
                     self.property_account_position_id = self.env.ref(
-                        "getupsoft_l10n_do_accounting.final_consumer"
-                    ).id
-            else:
-                self.property_account_position_id = self.env.ref(
-                    "l10n_do.position_exterior"
-                ).id
+                        "l10n_do.position_exterior", raise_if_not_found=False
+                    ).id if self.env.ref("l10n_do.position_exterior", raise_if_not_found=False) else False
+        except Exception:
+            pass
 
     @api.onchange("name", "vat")
     def onchange_partner_name(self):

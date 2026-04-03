@@ -1,9 +1,7 @@
 import logging
 import re
 
-from zeep import Client
-from zeep.transports import Transport
-
+from ..services import dgii_rnc_web
 from odoo import _, api, fields, models
 
 _logger = logging.getLogger(__name__)
@@ -149,22 +147,23 @@ class ResPartner(models.Model):
 
     @api.onchange("vat", "country_id")
     def _set_position_fiscal(self):
-        if self.vat and self.country_id:
-            if self.country_id.id == self.env.ref("base.do").id:
-                if len(self.vat) == 9:
-                    self.property_account_position_id = self.env.ref(
-                        "l10n_do.position_service_moral"
-                    ).id
-                # elif len(self.vat) == 11:
-                #     self.property_account_position_id = self.env.ref("l10n_do.position_person").id
+        try:
+            if self.vat and self.country_id:
+                if self.country_id.id == self.env.ref("base.do").id:
+                    if len(self.vat) == 9:
+                        self.property_account_position_id = self.env.ref(
+                            "l10n_do.position_service_moral", raise_if_not_found=False
+                        ).id if self.env.ref("l10n_do.position_service_moral", raise_if_not_found=False) else False
+                    else:
+                        self.property_account_position_id = self.env.ref(
+                            "l10n_do_accounting.final_consumer", raise_if_not_found=False
+                        ).id if self.env.ref("l10n_do_accounting.final_consumer", raise_if_not_found=False) else False
                 else:
                     self.property_account_position_id = self.env.ref(
-                        "l10n_do_accounting.final_consumer"
-                    ).id
-            else:
-                self.property_account_position_id = self.env.ref(
-                    "l10n_do.position_exterior"
-                ).id
+                        "l10n_do.position_exterior", raise_if_not_found=False
+                    ).id if self.env.ref("l10n_do.position_exterior", raise_if_not_found=False) else False
+        except Exception:
+            pass
 
     @api.onchange("name", "vat")
     def onchange_partner_name(self):
@@ -192,37 +191,19 @@ class ResPartner(models.Model):
 
     @api.model
     def validate_rnc_cedula(self, fiscal_id):
-        invalid_fiscal_id_message = (
-            500,
-            u"RNC/Cédula invalido",
-            u"El número de RNC/Cedula no es valido.",
-        )
+        """
+        Validate RNC/Cedula using the new web scraper.
+        Returns (success_code, data_or_msg).
+        success_code: 1 for success, 0 for failure.
+        """
         try:
-            transport = Transport(timeout=10)
-            res = Client(
-                wsdl="https://dgii.gov.do/wsMovilDGII/WSMovilDGII.asmx?WSDL",
-                transport=transport,
-            )
-            dgii_data = eval(res.service.GetContribuyentes(fiscal_id, 0, 0, 1, ""))
+            dgii_data = dgii_rnc_web.lookup_rnc_cedula(fiscal_id)
             if dgii_data:
-                dgii_data.update(
-                    {
-                        "vat": dgii_data["RGE_RUC"],
-                        "name": dgii_data["RGE_NOMBRE"],
-                        "comment": u"Nombre Comercial: {}, regimen de pago: {}, estatus: {}, categoria: {}".format(
-                            dgii_data["NOMBRE_COMERCIAL"],
-                            dgii_data.get("REGIMEN_PAGOS", ""),
-                            dgii_data["ESTATUS"],
-                            dgii_data["CATEGORIA"],
-                        ),
-                        "company_type": "company" if len(fiscal_id) == 9 else "person",
-                        "is_company": len(fiscal_id) == 9,
-                    }
-                )
-
+                # The scraper returns a dict with 'vat', 'name', 'comment', etc.
+                # We return 1 (success) and the data dict.
                 return 1, dgii_data
             else:
-                return 0, invalid_fiscal_id_message
+                return 0, _("RNC/Cédula no encontrado en DGII.")
         except Exception as e:
-            _logger.error(e)
-            return 0, "Error conexion DGII"
+            _logger.error("Error validando RNC via scraper: %s", e)
+            return 0, _("Error de conexión con DGII.")

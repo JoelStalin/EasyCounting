@@ -16,6 +16,10 @@ class AccountMove(models.Model):
         string="Company in contingency",
         compute="_compute_company_in_contingency",
     )
+    l10n_do_ecf_modification_code = fields.Char(string="e-CF Modification Code", copy=False)
+    l10n_do_ecf_security_code = fields.Char(string="e-CF Security Code", copy=False)
+    l10n_do_ecf_sign_date = fields.Datetime(string="e-CF Sign Date", copy=False)
+    l10n_do_electronic_stamp = fields.Char(string="Electronic Stamp", copy=False)
 
     @api.depends("company_id", "company_id.l10n_do_ecf_issuer")
     def _compute_company_in_contingency(self):

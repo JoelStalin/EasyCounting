@@ -55,18 +55,24 @@
                                     <t t-esc="receiptEnv.order.l10n_latam_document_type.name"/>
                                 </strong>
                                 <br/>
-                                <strong>NCF:
+                                <strong>
+                                    <t t-if="receiptEnv.order.l10n_latam_document_number and receiptEnv.order.l10n_latam_document_number.startsWith('E')">e-NCF:</t>
+                                    <t t-else="">NCF:</t>
                                     <t t-esc="receiptEnv.order.l10n_latam_document_number"/>
                                 </strong>
                                 <t t-if="receiptEnv.order.l10n_do_origin_ncf">
                                     <br/>
-                                    <strong>NCF Modificado:
+                                    <strong>
+                                        <t t-if="receiptEnv.order.l10n_do_origin_ncf and receiptEnv.order.l10n_do_origin_ncf.startsWith('E')">e-NCF Modificado:</t>
+                                        <t t-else="">NCF Modificado:</t>
                                         <t t-esc="receiptEnv.order.l10n_do_origin_ncf"/>
                                     </strong>
                                 </t>
                                 <t t-if="receiptEnv.order.l10n_latam_document_type.doc_code_prefix != 'B02'">
                                     <br/>
-                                    <strong>Válida hasta:
+                                    <strong>
+                                        <t t-if="receiptEnv.order.l10n_latam_document_number and receiptEnv.order.l10n_latam_document_number.startsWith('E')">Vencimiento e-NCF:</t>
+                                        <t t-else="">Válida hasta:</t>
                                         <t t-esc="receiptEnv.order.l10n_do_ncf_expiration_date"/>
                                     </strong>
                                 </t>
