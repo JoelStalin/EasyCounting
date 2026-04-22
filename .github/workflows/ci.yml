@@ -21,7 +21,7 @@ jobs:
         run: pip install poetry==1.8.2
 
       - name: Install dependencies
-        run: poetry install --with dev
+        run: poetry install --with dev --no-root
 
       - name: Lint (ruff)
         run: poetry run ruff check .
@@ -36,7 +36,7 @@ jobs:
         run: poetry run pip-audit || true
 
       - name: Build docker image
-        run: docker build -t dgii-ecf-api .
+        run: docker build -f deploy/Dockerfile.api -t dgii-ecf-api .
 
       - name: Trivy scan
         uses: aquasecurity/trivy-action@0.18.0

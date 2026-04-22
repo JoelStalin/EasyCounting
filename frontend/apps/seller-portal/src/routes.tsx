@@ -1,14 +1,26 @@
+import { Suspense, lazy, type ReactNode } from "react";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { RequireAuth, RequirePermission, RequireScope } from "./auth/guards";
-import { DashboardPage } from "./pages/Dashboard";
-import { TenantsPage } from "./pages/Tenants";
-import { InvoicesPage } from "./pages/Invoices";
-import { EmitECFPage } from "./pages/EmitECF";
-import { ProfilePage } from "./pages/Profile";
-import { LoginPage } from "./pages/Login";
-import { MFAPage } from "./pages/MFA";
-import { AuthCallbackPage } from "./pages/AuthCallback";
+
+const DashboardPage = lazy(() => import("./pages/Dashboard").then((module) => ({ default: module.DashboardPage })));
+const TenantsPage = lazy(() => import("./pages/Tenants").then((module) => ({ default: module.TenantsPage })));
+const InvoicesPage = lazy(() => import("./pages/Invoices").then((module) => ({ default: module.InvoicesPage })));
+const EmitECFPage = lazy(() => import("./pages/EmitECF").then((module) => ({ default: module.EmitECFPage })));
+const ProfilePage = lazy(() => import("./pages/Profile").then((module) => ({ default: module.ProfilePage })));
+const LoginPage = lazy(() => import("./pages/Login").then((module) => ({ default: module.LoginPage })));
+const MFAPage = lazy(() => import("./pages/MFA").then((module) => ({ default: module.MFAPage })));
+const AuthCallbackPage = lazy(() =>
+  import("./pages/AuthCallback").then((module) => ({ default: module.AuthCallbackPage })),
+);
+
+function suspended(element: ReactNode) {
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-sm text-slate-400">Cargando...</div>}>
+      {element}
+    </Suspense>
+  );
+}
 
 export const router = createBrowserRouter([
   {
@@ -17,15 +29,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: suspended(<LoginPage />),
   },
   {
     path: "/mfa",
-    element: <MFAPage />,
+    element: suspended(<MFAPage />),
   },
   {
     path: "/auth/callback",
-    element: <AuthCallbackPage />,
+    element: suspended(<AuthCallbackPage />),
   },
   {
     path: "/",
@@ -37,12 +49,12 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { path: "dashboard", element: <DashboardPage /> },
+      { path: "dashboard", element: suspended(<DashboardPage />) },
       {
         path: "clients",
         element: (
           <RequirePermission anyOf={["PARTNER_TENANT_VIEW"]}>
-            <TenantsPage />
+            {suspended(<TenantsPage />)}
           </RequirePermission>
         ),
       },
@@ -50,7 +62,7 @@ export const router = createBrowserRouter([
         path: "invoices",
         element: (
           <RequirePermission anyOf={["PARTNER_INVOICE_READ"]}>
-            <InvoicesPage />
+            {suspended(<InvoicesPage />)}
           </RequirePermission>
         ),
       },
@@ -58,11 +70,11 @@ export const router = createBrowserRouter([
         path: "emit/ecf",
         element: (
           <RequirePermission anyOf={["PARTNER_INVOICE_EMIT"]}>
-            <EmitECFPage />
+            {suspended(<EmitECFPage />)}
           </RequirePermission>
         ),
       },
-      { path: "profile", element: <ProfilePage /> },
+      { path: "profile", element: suspended(<ProfilePage />) },
     ],
   },
   {

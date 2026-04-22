@@ -6,6 +6,7 @@
   color-scheme: light;
 }
 
+html,
 body {
   @apply min-h-screen bg-sand text-ink;
   font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
@@ -16,4 +17,28 @@ body {
 
 a {
   @apply transition-colors;
+}
+
+#root {
+  @apply min-h-screen;
+}
+
+.site-shell {
+  @apply mx-auto max-w-7xl px-6;
+}
+
+.eyebrow {
+  @apply text-sm font-semibold uppercase tracking-[0.24em] text-accent;
+}
+
+.display-title {
+  @apply text-4xl font-semibold leading-tight text-ink md:text-5xl;
+}
+
+.lead-copy {
+  @apply text-lg text-slate-600;
+}
+
+.surface-card {
+  @apply rounded-[1.75rem] border border-slate-200 bg-white/90 p-6 shadow-sm;
 }

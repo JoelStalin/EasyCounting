@@ -1,0 +1,92 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: dgii
+      POSTGRES_USER: dgii
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: ${TZ:-America/Santo_Domingo}
+      PGTZ: ${TZ:-America/Santo_Domingo}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dgii -d dgii"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "no"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    command: ["--smtp-auth-allow-insecure"]
+    ports:
+      - "127.0.0.1:8025:8025"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8025/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: /opt/EasyCounting
+      args:
+        INSTALL_BROWSER_AUTOMATION: "false"
+    image: easycounting-web:latest
+    env_file:
+      - /opt/EasyCounting/.env.production
+    environment:
+      TZ: ${TZ:-America/Santo_Domingo}
+      ARTIFACTS_ROOT: /app/tests/artifacts
+      STORAGE_BASE_PATH: /var/getupsoft/storage
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - /opt/EasyCounting/xsd:/app/xsd:ro
+      - /opt/EasyCounting/alembic:/app/alembic:ro
+      - /opt/EasyCounting/secrets:/secrets:ro
+      - /opt/EasyCounting/tests/artifacts:/app/tests/artifacts
+      - /opt/EasyCounting/logs:/app/logs
+      - storage_data:/var/getupsoft/storage
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/readyz').read()"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      web:
+        condition: service_started
+    ports:
+      - "127.0.0.1:80:80"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - /opt/EasyCounting/deploy/server/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - /opt/EasyCounting/frontend/apps/admin-portal/dist:/usr/share/nginx/html/admin:ro
+      - /opt/EasyCounting/frontend/apps/client-portal/dist:/usr/share/nginx/html/client:ro
+      - /opt/EasyCounting/frontend/apps/seller-portal/dist:/usr/share/nginx/html/seller:ro
+      - /opt/EasyCounting/frontend/apps/corporate-portal/dist:/usr/share/nginx/html/corporate:ro
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  storage_data:

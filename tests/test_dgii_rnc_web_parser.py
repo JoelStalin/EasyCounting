@@ -8,7 +8,7 @@ MODULE_PATH = (
     Path(__file__).resolve().parents[1]
     / "integration"
     / "odoo"
-    / "getupsoft_do_localization"
+    / "odoo19_getupsoft_do_localization"
     / "getupsoft_l10n_do_accounting"
     / "services"
     / "dgii_rnc_web.py"

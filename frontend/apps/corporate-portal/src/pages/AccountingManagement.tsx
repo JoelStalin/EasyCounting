@@ -1,55 +1,57 @@
-const features = [
-  "Control de facturas, comprobantes y trazabilidad documental.",
-  "Operacion contable y conciliacion con visibilidad multiempresa.",
-  "Reportes orientados a DGII y seguimiento fiscal por tenant.",
-  "Integracion con Odoo y portales diferenciados por perfil operativo.",
-];
+import { useSite } from "../site-context";
 
-export function AccountingManagementPage() {
+export function EasyCountingPage() {
+  const { content, pathFor } = useSite();
+
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
+    <div className="site-shell py-16">
       <header className="grid gap-8 lg:grid-cols-[1.15fr,0.85fr] lg:items-end">
         <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent">Accounting Management</p>
-          <h1 className="text-4xl font-semibold text-ink">Gestion contable y cumplimiento fiscal para operaciones reales.</h1>
-          <p className="text-lg text-slate-600">
-            Diseñado para empresas, firmas operativas y equipos administrativos que necesitan combinar control contable, emision y cumplimiento en un mismo flujo.
-          </p>
+          <p className="eyebrow">{content.productDetail.eyebrow}</p>
+          <h1 className="display-title">{content.productDetail.title}</h1>
+          <p className="lead-copy">{content.productDetail.description}</p>
         </div>
-        <div className="rounded-[1.75rem] border border-slate-200 bg-white/90 p-6">
-          <p className="text-sm font-semibold text-ink">Incluye</p>
+        <div className="surface-card">
+          <p className="text-sm font-semibold text-ink">{content.ui.productIncludesLabel}</p>
           <ul className="mt-4 space-y-3 text-sm text-slate-600">
-            {features.map((feature) => (
-              <li key={feature}>{feature}</li>
+            {content.productDetail.includes.map((feature) => (
+              <li key={feature}>• {feature}</li>
             ))}
           </ul>
         </div>
       </header>
 
       <section className="mt-14 grid gap-6 md:grid-cols-2">
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/90 p-6">
-          <h2 className="text-xl font-semibold text-ink">Casos de uso</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Equipos de facturacion, backoffice financiero, firmas de outsourcing y grupos empresariales que requieren segregacion por tenant y trazabilidad clara.
-          </p>
+        <article className="surface-card">
+          <h2 className="text-xl font-semibold text-ink">{content.ui.productAudienceLabel}</h2>
+          <ul className="mt-4 space-y-3 text-sm text-slate-600">
+            {content.productDetail.audiences.map((item) => (
+              <li key={item}>• {item}</li>
+            ))}
+          </ul>
         </article>
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/90 p-6">
-          <h2 className="text-xl font-semibold text-ink">Resultado esperado</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Menos friccion operativa, mejor visibilidad de cumplimiento y una sola base para administracion, clientes y partners comerciales.
-          </p>
+        <article className="surface-card">
+          <h2 className="text-xl font-semibold text-ink">{content.ui.productOutcomesLabel}</h2>
+          <ul className="mt-4 space-y-3 text-sm text-slate-600">
+            {content.productDetail.outcomes.map((item) => (
+              <li key={item}>• {item}</li>
+            ))}
+          </ul>
         </article>
       </section>
 
       <section className="mt-14 rounded-[2rem] bg-ink px-8 py-10 text-white">
-        <p className="text-sm uppercase tracking-[0.24em] text-slate-300">Siguiente paso</p>
-        <h2 className="mt-3 text-3xl font-semibold">Solicita una demo del servicio Accounting Management.</h2>
+        <p className="text-sm uppercase tracking-[0.24em] text-slate-300">{content.ui.productNextStepLabel}</p>
+        <h2 className="mt-3 text-3xl font-semibold">{content.ui.productNextStepTitle}</h2>
         <div className="mt-6 flex flex-wrap gap-4">
           <a className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-ink" href="https://cliente.getupsoft.com.do/login">
-            Ver portal cliente
+            {content.ui.productPortalClientLabel}
           </a>
           <a className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white" href="https://admin.getupsoft.com.do/login">
-            Ver portal admin
+            {content.ui.productPortalAdminLabel}
+          </a>
+          <a className="rounded-full border border-white/30 px-6 py-3 text-sm font-semibold text-white" href={pathFor("diagnostic")}>
+            {content.ui.productDiagnosticCta}
           </a>
         </div>
       </section>

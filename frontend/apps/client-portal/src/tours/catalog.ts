@@ -77,11 +77,11 @@ export const CLIENT_TOURS: ViewTourDefinition[] = [
       },
       { 
         target: "#tour-step-itbis", 
-        content: "📊 **ITBIS Facturado (Opcional)**\nEl tributo calculado (18% típico). En Certia puedes parametrizarlo para que asuma productos exentos (0%) según el catálogo o lo declare automáticamente." 
+        content: "📊 **ITBIS Facturado (Opcional)**\nEl tributo calculado (18% típico). En EasyCounting puedes parametrizarlo para que asuma productos exentos (0%) según el catálogo o lo declare automáticamente." 
       },
       { 
         target: "#tour-step-payload", 
-        content: "🧩 **Payload JSON/XML**\nA nivel de API, Certia procesará todos los artículos, ITBIS retenidos y retenciones de ISR. Si hay dependencias estructurales, las explicamos en la validación." 
+        content: "🧩 **Payload JSON/XML**\nA nivel de API, EasyCounting procesará todos los artículos, ITBIS retenidos y retenciones de ISR. Si hay dependencias estructurales, las explicamos en la validación." 
       },
       { 
         target: "#tour-step-sync", 
@@ -89,7 +89,7 @@ export const CLIENT_TOURS: ViewTourDefinition[] = [
       },
       { 
         target: "#tour-step-submit", 
-        content: "✅ **Botón Inteligente de Emisión**\nAl presionar este botón, antes de ir a DGII, Certia detectará ERRORES de captura (Ej.. RNC inventado, montos ilógicos). ¡Si todo está correcto, habrás emitido tu e-CF!" 
+        content: "✅ **Botón Inteligente de Emisión**\nAl presionar este botón, antes de ir a DGII, EasyCounting detectará ERRORES de captura (Ej.. RNC inventado, montos ilógicos). ¡Si todo está correcto, habrás emitido tu e-CF!" 
       },
     ],
   },

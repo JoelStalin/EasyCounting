@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title>GetUpSoft</title>
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f766e" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="28" fill="url(#g)" />
+  <path
+    d="M28 38c0-7.732 6.268-14 14-14h22c7.732 0 14 6.268 14 14v4H64v-2c0-2.209-1.791-4-4-4H46c-2.209 0-4 1.791-4 4v48c0 2.209 1.791 4 4 4h14c2.209 0 4-1.791 4-4v-2h14v4c0 7.732-6.268 14-14 14H42c-7.732 0-14-6.268-14-14V38Z"
+    fill="#f8fafc"
+  />
+  <path
+    d="M68 38c0-7.732 6.268-14 14-14h4c7.732 0 14 6.268 14 14v4H86v-2c0-2.209-1.791-4-4-4s-4 1.791-4 4v6c0 2.209 1.791 4 4 4h4c7.732 0 14 6.268 14 14v24c0 7.732-6.268 14-14 14h-4c-7.732 0-14-6.268-14-14v-4h14v2c0 2.209 1.791 4 4 4s4-1.791 4-4V68c0-2.209-1.791-4-4-4h-4c-7.732 0-14-6.268-14-14V38Z"
+    fill="#ccfbf1"
+  />
+</svg>

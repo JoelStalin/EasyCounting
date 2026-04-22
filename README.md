@@ -25,7 +25,7 @@ Backend FastAPI (Python 3.12) listo para desplegar en producción con Docker, Gu
 ## Puesta en marcha
 
 ```bash
-poetry install --sync  # o bien: pip install -r requirements-dev.txt
+poetry install --sync --no-root  # o bien: pip install -r requirements-dev.txt
 make requirements      # exporta requirements.txt para la imagen
 make up                # levanta web + nginx + postgres + redis usando `.env.example`
 ```
@@ -213,14 +213,23 @@ La carpeta `alembic/versions/` contiene un ejemplo de migración inicial. El `do
 
 El workflow `.github/workflows/ci-cd.yml` ejecuta:
 
-1. Lint + pruebas (`pytest`).
-2. Construcción de la imagen Docker y push a `${{ github.repository }}/web` (modifica `IMAGE` según tu registro).
-3. Paso de despliegue: placeholder via webhook/SSH (ajusta a tu infraestructura).
+1. Pruebas (`pytest`) y validación de export de dependencias.
+2. Construcción de la imagen de API con `deploy/Dockerfile.api` y push a `ghcr.io/getupsoft/dgii-ecf`.
+3. Despliegue productivo por webhook autenticado hacia `deploy/server/deploy_hook.py`, que en el host hace `git pull`, recompila los portales y reinicia `docker compose`.
 
 Variables necesarias en GitHub Secrets:
 
 - `REGISTRY_USER` / `REGISTRY_PAT`
+- `DEPLOY_WEBHOOK_URL`
 - `DEPLOY_TOKEN` (para el webhook de despliegue)
+
+La configuración del host productivo versionada vive en `deploy/server/`:
+
+- `deploy_hook.py`: webhook `POST /deploy`
+- `deploy.sh`: flujo de despliegue en el servidor
+- `docker-compose.server.yml`: stack productivo
+- `nginx.conf`: virtual hosts y proxy para API/webhook
+- `deploy-hook.env.example`: variables requeridas por el servicio systemd
 
 ## Endurecimiento Nginx
 

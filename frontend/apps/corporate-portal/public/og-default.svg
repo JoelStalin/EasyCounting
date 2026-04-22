@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">GetUpSoft social preview</title>
+  <desc id="desc">Consultoria, implementacion, integracion, operacion y productos digitales.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="60%" stop-color="#111827" />
+      <stop offset="100%" stop-color="#0f766e" />
+    </linearGradient>
+    <linearGradient id="panel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#14b8a6" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#22c55e" stop-opacity="0.10" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <circle cx="1015" cy="118" r="210" fill="#14b8a6" fill-opacity="0.08" />
+  <circle cx="112" cy="566" r="250" fill="#34d399" fill-opacity="0.08" />
+  <rect x="64" y="64" width="1072" height="502" rx="32" fill="url(#panel)" stroke="#94a3b8" stroke-opacity="0.18" />
+  <text x="112" y="148" fill="#99f6e4" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="8">
+    GETUPSOFT
+  </text>
+  <text x="112" y="250" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="74" font-weight="700">
+    Digitalizacion, implementacion
+  </text>
+  <text x="112" y="332" fill="#f8fafc" font-family="Segoe UI, Arial, sans-serif" font-size="74" font-weight="700">
+    y operacion tecnologica.
+  </text>
+  <text x="112" y="416" fill="#cbd5e1" font-family="Segoe UI, Arial, sans-serif" font-size="30">
+    Consultoria, integraciones, automatizacion y productos propios
+  </text>
+  <text x="112" y="460" fill="#cbd5e1" font-family="Segoe UI, Arial, sans-serif" font-size="30">
+    como EasyCounting para empresas que necesitan ejecucion real.
+  </text>
+  <rect x="112" y="504" width="292" height="58" rx="29" fill="#14b8a6" />
+  <text x="151" y="542" fill="#0f172a" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">
+    getupsoft.com
+  </text>
+</svg>

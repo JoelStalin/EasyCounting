@@ -1,27 +1,28 @@
-export function PlatformPage() {
+import { useSite } from "../site-context";
+
+export function SolutionsPage() {
+  const { content } = useSite();
+
   return (
-    <div className="mx-auto max-w-7xl px-6 py-16">
+    <div className="site-shell py-16">
       <header className="max-w-3xl space-y-4">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent">Plataforma</p>
-        <h1 className="text-4xl font-semibold text-ink">Arquitectura operativa para admin, clientes y socios.</h1>
-        <p className="text-lg text-slate-600">
-          GetUpSoft organiza la operacion sobre portales separados, control de permisos, evidencia funcional y una base preparada para integraciones contables y fiscales.
-        </p>
+        <p className="eyebrow">{content.solutions.eyebrow}</p>
+        <h1 className="display-title">{content.solutions.title}</h1>
+        <p className="lead-copy">{content.solutions.description}</p>
       </header>
-      <div className="mt-10 grid gap-6 md:grid-cols-3">
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/90 p-6">
-          <h2 className="text-xl font-semibold text-ink">Admin</h2>
-          <p className="mt-3 text-sm text-slate-600">Gobierno multi-tenant, planes, auditoria, proveedores IA y configuracion global.</p>
-        </article>
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/90 p-6">
-          <h2 className="text-xl font-semibold text-ink">Clientes</h2>
-          <p className="mt-3 text-sm text-slate-600">Portal de emision, consulta, certificados, planes y asistente acotado por tenant.</p>
-        </article>
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/90 p-6">
-          <h2 className="text-xl font-semibold text-ink">Socios</h2>
-          <p className="mt-3 text-sm text-slate-600">Canal de revendedores con cartera asignada, emision demo y trazabilidad de cuenta.</p>
-        </article>
-      </div>
+      <section className="mt-12 grid gap-6 lg:grid-cols-3">
+        {content.solutions.segments.map((segment) => (
+          <article key={segment.title} className="surface-card">
+            <h2 className="text-xl font-semibold text-ink">{segment.title}</h2>
+            <p className="mt-3 text-sm leading-6 text-slate-600">{segment.summary}</p>
+            <ul className="mt-5 space-y-2 text-sm text-slate-700">
+              {segment.bullets.map((bullet) => (
+                <li key={bullet}>• {bullet}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </section>
     </div>
   );
 }

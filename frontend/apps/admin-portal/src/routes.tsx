@@ -1,26 +1,56 @@
+import { Suspense, lazy, type ReactNode } from "react";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { RequireAuth, RequirePermission, RequireScope } from "./auth/guards";
-import { DashboardPage } from "./pages/Dashboard";
-import { CompaniesPage } from "./pages/Companies";
-import {
-  CompanyCertificatesTab,
-  CompanyDetailLayout,
-  CompanyInvoicesTab,
-  CompanyOverviewTab,
-  CompanyAccountingTab,
-  CompanyPlansTab,
-  CompanySettingsTab,
-  CompanyUsersTab,
-} from "./pages/CompanyDetail";
-import { PlansPage } from "./pages/Plans";
-import { PlanEditorPage } from "./pages/PlanEditor";
-import { AuditLogsPage } from "./pages/AuditLogs";
-import { PlatformUsersPage } from "./pages/Users";
-import { LoginPage } from "./pages/Login";
-import { MFAPage } from "./pages/MFA";
-import { AIProvidersPage } from "./pages/AIProviders";
-import { AuthCallbackPage } from "./pages/AuthCallback";
+
+const DashboardPage = lazy(() => import("./pages/Dashboard").then((module) => ({ default: module.DashboardPage })));
+const CompaniesPage = lazy(() => import("./pages/Companies").then((module) => ({ default: module.CompaniesPage })));
+const CompanyDetailLayout = lazy(() =>
+  import("./pages/CompanyDetail").then((module) => ({ default: module.CompanyDetailLayout })),
+);
+const CompanyOverviewTab = lazy(() =>
+  import("./pages/CompanyDetail").then((module) => ({ default: module.CompanyOverviewTab })),
+);
+const CompanyInvoicesTab = lazy(() =>
+  import("./pages/CompanyDetail").then((module) => ({ default: module.CompanyInvoicesTab })),
+);
+const CompanyAccountingTab = lazy(() =>
+  import("./pages/CompanyDetail").then((module) => ({ default: module.CompanyAccountingTab })),
+);
+const CompanyPlansTab = lazy(() =>
+  import("./pages/CompanyDetail").then((module) => ({ default: module.CompanyPlansTab })),
+);
+const CompanyCertificatesTab = lazy(() =>
+  import("./pages/CompanyDetail").then((module) => ({ default: module.CompanyCertificatesTab })),
+);
+const CompanyUsersTab = lazy(() =>
+  import("./pages/CompanyDetail").then((module) => ({ default: module.CompanyUsersTab })),
+);
+const CompanySettingsTab = lazy(() =>
+  import("./pages/CompanyDetail").then((module) => ({ default: module.CompanySettingsTab })),
+);
+const PlansPage = lazy(() => import("./pages/Plans").then((module) => ({ default: module.PlansPage })));
+const PlanEditorPage = lazy(() =>
+  import("./pages/PlanEditor").then((module) => ({ default: module.PlanEditorPage })),
+);
+const AuditLogsPage = lazy(() => import("./pages/AuditLogs").then((module) => ({ default: module.AuditLogsPage })));
+const PlatformUsersPage = lazy(() => import("./pages/Users").then((module) => ({ default: module.PlatformUsersPage })));
+const LoginPage = lazy(() => import("./pages/Login").then((module) => ({ default: module.LoginPage })));
+const MFAPage = lazy(() => import("./pages/MFA").then((module) => ({ default: module.MFAPage })));
+const AIProvidersPage = lazy(() =>
+  import("./pages/AIProviders").then((module) => ({ default: module.AIProvidersPage })),
+);
+const AuthCallbackPage = lazy(() =>
+  import("./pages/AuthCallback").then((module) => ({ default: module.AuthCallbackPage })),
+);
+
+function suspended(element: ReactNode) {
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-sm text-slate-400">Cargando...</div>}>
+      {element}
+    </Suspense>
+  );
+}
 
 export const router = createBrowserRouter([
   {
@@ -29,15 +59,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: suspended(<LoginPage />),
   },
   {
     path: "/mfa",
-    element: <MFAPage />,
+    element: suspended(<MFAPage />),
   },
   {
     path: "/auth/callback",
-    element: <AuthCallbackPage />,
+    element: suspended(<AuthCallbackPage />),
   },
   {
     path: "/",
@@ -51,49 +81,49 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "dashboard",
-        element: <DashboardPage />,
+        element: suspended(<DashboardPage />),
       },
       {
         path: "companies",
-        element: <CompaniesPage />,
+        element: suspended(<CompaniesPage />),
       },
       {
         path: "companies/:id",
-        element: <CompanyDetailLayout />,
+        element: suspended(<CompanyDetailLayout />),
         children: [
           { index: true, element: <Navigate to="overview" replace /> },
-          { path: "overview", element: <CompanyOverviewTab /> },
-          { path: "invoices", element: <CompanyInvoicesTab /> },
-          { path: "accounting", element: <CompanyAccountingTab /> },
-          { path: "plans", element: <CompanyPlansTab /> },
-          { path: "certificates", element: <CompanyCertificatesTab /> },
-          { path: "users", element: <CompanyUsersTab /> },
-          { path: "settings", element: <CompanySettingsTab /> },
+          { path: "overview", element: suspended(<CompanyOverviewTab />) },
+          { path: "invoices", element: suspended(<CompanyInvoicesTab />) },
+          { path: "accounting", element: suspended(<CompanyAccountingTab />) },
+          { path: "plans", element: suspended(<CompanyPlansTab />) },
+          { path: "certificates", element: suspended(<CompanyCertificatesTab />) },
+          { path: "users", element: suspended(<CompanyUsersTab />) },
+          { path: "settings", element: suspended(<CompanySettingsTab />) },
         ],
       },
       {
         path: "plans",
-        element: <PlansPage />,
+        element: suspended(<PlansPage />),
       },
       {
         path: "ai-providers",
         element: (
           <RequirePermission anyOf={["PLATFORM_AI_PROVIDER_MANAGE"]}>
-            <AIProvidersPage />
+            {suspended(<AIProvidersPage />)}
           </RequirePermission>
         ),
       },
       {
         path: "plans/new",
-        element: <PlanEditorPage />,
+        element: suspended(<PlanEditorPage />),
       },
       {
         path: "audit-logs",
-        element: <AuditLogsPage />,
+        element: suspended(<AuditLogsPage />),
       },
       {
         path: "users",
-        element: <PlatformUsersPage />,
+        element: suspended(<PlatformUsersPage />),
       },
     ],
   },

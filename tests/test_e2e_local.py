@@ -1,11 +1,19 @@
 from __future__ import annotations
 
+import os
 from datetime import datetime, timezone
 
+import pytest
 import respx
 from fastapi.testclient import TestClient
 
 from app.main import app
+
+
+pytestmark = pytest.mark.skipif(
+    os.getenv("RUN_LOCAL_E2E", "0") != "1",
+    reason="Prueba e2e local deshabilitada por defecto; habilitar con RUN_LOCAL_E2E=1",
+)
 
 
 @respx.mock

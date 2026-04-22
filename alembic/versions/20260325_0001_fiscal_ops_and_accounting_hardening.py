@@ -194,9 +194,8 @@ def upgrade() -> None:
 
     _create_index_if_missing("ix_invoices_estado", "invoices", ["estado_dgii"])
     _create_index_if_missing("ix_invoices_rnc_receptor", "invoices", ["rnc_receptor"])
-    if _has_table("invoices") and not _has_unique_constraint("invoices", "ux_invoices_tenant_encf"):
-        with op.batch_alter_table("invoices") as batch_op:
-            batch_op.create_unique_constraint("ux_invoices_tenant_encf", ["tenant_id", "encf"])
+    if _has_table("invoices"):
+        _create_index_if_missing("ux_invoices_tenant_encf", "invoices", ["tenant_id", "encf"], unique=True)
 
     if not _has_table("invoice_lines"):
         op.create_table(

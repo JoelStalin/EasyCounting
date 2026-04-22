@@ -30,11 +30,15 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+webdriver = pytest.importorskip("selenium.webdriver")
+selenium_exceptions = pytest.importorskip("selenium.common.exceptions")
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+
+NoSuchElementException = selenium_exceptions.NoSuchElementException
+StaleElementReferenceException = selenium_exceptions.StaleElementReferenceException
+TimeoutException = selenium_exceptions.TimeoutException
 
 
 pytestmark = pytest.mark.skipif(

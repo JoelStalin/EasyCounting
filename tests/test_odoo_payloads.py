@@ -1,6 +1,7 @@
-import requests
 import json
 import sys
+
+import httpx
 
 API_URL = "http://127.0.0.1:28080/api/v1/odoo/invoices/transmit"
 # The Local proxy routes /api/v1/ via nginx to the FastAPI container
@@ -33,7 +34,7 @@ def test_odoo_15_legacy_payload():
     }
     
     try:
-        response = requests.post(API_URL_DIRECT, json=payload, timeout=5)
+        response = httpx.post(API_URL_DIRECT, json=payload, timeout=5)
         print(f"Status: {response.status_code}")
         print(f"Respuesta Certia: {json.dumps(response.json(), indent=2)}")
         assert response.status_code == 200, "Error en Odoo 15"
@@ -65,7 +66,7 @@ def test_odoo_19_modern_payload():
     }
     
     try:
-        response = requests.post(API_URL_DIRECT, json=payload, timeout=5)
+        response = httpx.post(API_URL_DIRECT, json=payload, timeout=5)
         print(f"Status: {response.status_code}")
         print(f"Respuesta Certia: {json.dumps(response.json(), indent=2)}")
         assert response.status_code == 200, "Error en Odoo 19"

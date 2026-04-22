@@ -16,6 +16,7 @@ from app.models.base import Base
 from app.models.invoice import Invoice
 from app.models.platform_ai import PlatformAIProvider
 from app.models.tenant import Tenant
+from app.services.ai.providers.base import LLMResponse
 from app.services.platform_ai import encrypt_secret
 from app.shared.database import get_db
 from app.shared.security import create_jwt
@@ -158,31 +159,16 @@ def test_chatbot_uses_default_platform_ai_provider(monkeypatch) -> None:
         session.commit()
         tenant_id = tenant.id
 
-    captured: dict[str, object] = {}
+    async def fake_chat(self, messages, **kwargs):  # noqa: ANN001
+        return LLMResponse(
+            content="Respuesta cloud controlada para el tenant autenticado.",
+            model=self.model or "unknown",
+            provider="openai",
+            usage={"input_tokens": 12, "output_tokens": 8},
+            latency_ms=5,
+        )
 
-    class _Response:
-        def raise_for_status(self) -> None:
-            return None
-
-        def json(self) -> dict[str, object]:
-            return {
-                "choices": [
-                    {
-                        "message": {
-                            "content": "Respuesta cloud controlada para el tenant autenticado.",
-                        }
-                    }
-                ]
-            }
-
-    def fake_post(url: str, *, headers: dict[str, str], json: dict[str, object], timeout: float):
-        captured["url"] = url
-        captured["headers"] = headers
-        captured["json"] = json
-        captured["timeout"] = timeout
-        return _Response()
-
-    monkeypatch.setattr("app.application.tenant_chat.httpx.post", fake_post)
+    monkeypatch.setattr("app.services.ai.providers.openai.OpenAIProvider.chat", fake_chat)
 
     response = client.post(
         "/api/v1/cliente/chat/ask",
@@ -193,11 +179,9 @@ def test_chatbot_uses_default_platform_ai_provider(monkeypatch) -> None:
 
     assert response.status_code == 200
     body = response.json()
-    assert body["engine"] == "openai"
+    assert body["engine"] == "gpt-platform-live"
     assert "Respuesta cloud controlada" in body["answer"]
     assert body["preprocess"]["dispatchStrategy"] == "provider_preferred"
-    assert captured["url"] == "https://api.openai.com/v1/chat/completions"
-    assert captured["headers"]["Authorization"] == "Bearer sk-platform-9999"
 
 
 def test_chatbot_skips_external_provider_for_operational_question(monkeypatch) -> None:

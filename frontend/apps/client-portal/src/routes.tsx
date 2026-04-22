@@ -1,22 +1,44 @@
+import { Suspense, lazy, type ReactNode } from "react";
 import { Navigate, Outlet, createBrowserRouter } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import { RequireAuth, RequireOnboardingComplete, RequireScope } from "./auth/guards";
-import { DashboardPage } from "./pages/Dashboard";
-import { InvoicesPage } from "./pages/Invoices";
-import { InvoiceDetailPage } from "./pages/InvoiceDetail";
-import { PlansPage } from "./pages/Plans";
-import { AssistantPage } from "./pages/Assistant";
-import { EmitECFPage } from "./pages/EmitECF";
-import { RecurringInvoicesPage } from "./pages/RecurringInvoices";
-import { EmitRFCEPage } from "./pages/EmitRFCE";
-import { ApprovalsPage } from "./pages/Approvals";
-import { CertificatesPage } from "./pages/Certificates";
-import { OdooIntegrationPage } from "./pages/OdooIntegration";
-import { ProfilePage } from "./pages/Profile";
-import { LoginPage } from "./pages/Login";
-import { MFAPage } from "./pages/MFA";
-import { AuthCallbackPage } from "./pages/AuthCallback";
-import { OnboardingPage } from "./pages/Onboarding";
+
+const DashboardPage = lazy(() => import("./pages/Dashboard").then((module) => ({ default: module.DashboardPage })));
+const InvoicesPage = lazy(() => import("./pages/Invoices").then((module) => ({ default: module.InvoicesPage })));
+const InvoiceDetailPage = lazy(() =>
+  import("./pages/InvoiceDetail").then((module) => ({ default: module.InvoiceDetailPage })),
+);
+const PlansPage = lazy(() => import("./pages/Plans").then((module) => ({ default: module.PlansPage })));
+const AssistantPage = lazy(() => import("./pages/Assistant").then((module) => ({ default: module.AssistantPage })));
+const EmitECFPage = lazy(() => import("./pages/EmitECF").then((module) => ({ default: module.EmitECFPage })));
+const RecurringInvoicesPage = lazy(() =>
+  import("./pages/RecurringInvoices").then((module) => ({ default: module.RecurringInvoicesPage })),
+);
+const EmitRFCEPage = lazy(() => import("./pages/EmitRFCE").then((module) => ({ default: module.EmitRFCEPage })));
+const ApprovalsPage = lazy(() => import("./pages/Approvals").then((module) => ({ default: module.ApprovalsPage })));
+const CertificatesPage = lazy(() =>
+  import("./pages/Certificates").then((module) => ({ default: module.CertificatesPage })),
+);
+const OdooIntegrationPage = lazy(() =>
+  import("./pages/OdooIntegration").then((module) => ({ default: module.OdooIntegrationPage })),
+);
+const ProfilePage = lazy(() => import("./pages/Profile").then((module) => ({ default: module.ProfilePage })));
+const LoginPage = lazy(() => import("./pages/Login").then((module) => ({ default: module.LoginPage })));
+const MFAPage = lazy(() => import("./pages/MFA").then((module) => ({ default: module.MFAPage })));
+const AuthCallbackPage = lazy(() =>
+  import("./pages/AuthCallback").then((module) => ({ default: module.AuthCallbackPage })),
+);
+const OnboardingPage = lazy(() =>
+  import("./pages/Onboarding").then((module) => ({ default: module.OnboardingPage })),
+);
+
+function suspended(element: ReactNode) {
+  return (
+    <Suspense fallback={<div className="flex min-h-[40vh] items-center justify-center text-sm text-slate-400">Cargando...</div>}>
+      {element}
+    </Suspense>
+  );
+}
 
 export const router = createBrowserRouter([
   {
@@ -25,15 +47,15 @@ export const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: suspended(<LoginPage />),
   },
   {
     path: "/mfa",
-    element: <MFAPage />,
+    element: suspended(<MFAPage />),
   },
   {
     path: "/auth/callback",
-    element: <AuthCallbackPage />,
+    element: suspended(<AuthCallbackPage />),
   },
   {
     path: "/",
@@ -45,7 +67,7 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
     children: [
-      { path: "onboarding", element: <OnboardingPage /> },
+      { path: "onboarding", element: suspended(<OnboardingPage />) },
       {
         element: (
           <RequireOnboardingComplete>
@@ -53,18 +75,18 @@ export const router = createBrowserRouter([
           </RequireOnboardingComplete>
         ),
         children: [
-          { path: "dashboard", element: <DashboardPage /> },
-          { path: "invoices", element: <InvoicesPage /> },
-          { path: "invoices/:id", element: <InvoiceDetailPage /> },
-          { path: "plans", element: <PlansPage /> },
-          { path: "assistant", element: <AssistantPage /> },
-          { path: "emit/ecf", element: <EmitECFPage /> },
-          { path: "recurring-invoices", element: <RecurringInvoicesPage /> },
-          { path: "emit/rfce", element: <EmitRFCEPage /> },
-          { path: "approvals", element: <ApprovalsPage /> },
-          { path: "certificates", element: <CertificatesPage /> },
-          { path: "integrations/odoo", element: <OdooIntegrationPage /> },
-          { path: "profile", element: <ProfilePage /> },
+          { path: "dashboard", element: suspended(<DashboardPage />) },
+          { path: "invoices", element: suspended(<InvoicesPage />) },
+          { path: "invoices/:id", element: suspended(<InvoiceDetailPage />) },
+          { path: "plans", element: suspended(<PlansPage />) },
+          { path: "assistant", element: suspended(<AssistantPage />) },
+          { path: "emit/ecf", element: suspended(<EmitECFPage />) },
+          { path: "recurring-invoices", element: suspended(<RecurringInvoicesPage />) },
+          { path: "emit/rfce", element: suspended(<EmitRFCEPage />) },
+          { path: "approvals", element: suspended(<ApprovalsPage />) },
+          { path: "certificates", element: suspended(<CertificatesPage />) },
+          { path: "integrations/odoo", element: suspended(<OdooIntegrationPage />) },
+          { path: "profile", element: suspended(<ProfilePage />) },
         ],
       },
     ],

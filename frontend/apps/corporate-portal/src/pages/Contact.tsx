@@ -1,29 +1,51 @@
+import { LeadForm } from "../components/LeadForm";
+import { useSite } from "../site-context";
+
 export function ContactPage() {
+  const { content } = useSite();
+
   return (
-    <div className="mx-auto max-w-5xl px-6 py-16">
-      <header className="space-y-4">
-        <p className="text-sm font-semibold uppercase tracking-[0.24em] text-accent">Contacto</p>
-        <h1 className="text-4xl font-semibold text-ink">Coordina una demo comercial o tecnica.</h1>
-        <p className="text-lg text-slate-600">
-          Para prospectos, integradores y partners que necesitan una revision guiada del producto y sus portales.
-        </p>
+    <div className="site-shell py-16">
+      <header className="max-w-3xl space-y-4">
+        <p className="eyebrow">{content.contact.eyebrow}</p>
+        <h1 className="display-title">{content.contact.title}</h1>
+        <p className="lead-copy">{content.contact.description}</p>
       </header>
-      <div className="mt-10 grid gap-6 md:grid-cols-2">
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/90 p-6">
-          <h2 className="text-xl font-semibold text-ink">Accesos directos</h2>
-          <ul className="mt-4 space-y-3 text-sm text-slate-600">
-            <li><a href="https://admin.getupsoft.com.do/login">Portal Admin</a></li>
-            <li><a href="https://cliente.getupsoft.com.do/login">Portal Cliente</a></li>
-            <li><a href="https://socios.getupsoft.com.do/login">Portal Socios</a></li>
+
+      <section className="mt-12 grid gap-6 lg:grid-cols-[0.9fr,1.1fr]">
+        <article className="surface-card">
+          <h2 className="text-xl font-semibold text-ink">{content.ui.contactChannelsLabel}</h2>
+          <ul className="mt-4 space-y-4">
+            {content.contact.channels.map((channel) => (
+              <li key={channel.label} className="rounded-2xl bg-slate-50 px-5 py-4">
+                <p className="text-sm font-semibold text-ink">{channel.label}</p>
+                <p className="mt-1 text-sm text-slate-600">{channel.description}</p>
+                {channel.href ? (
+                  <a className="mt-2 inline-flex text-sm font-semibold text-accent" href={channel.href}>
+                    {content.ui.contactOpenLabel}
+                  </a>
+                ) : null}
+              </li>
+            ))}
           </ul>
         </article>
-        <article className="rounded-[1.75rem] border border-slate-200 bg-white/90 p-6">
-          <h2 className="text-xl font-semibold text-ink">Canal sugerido</h2>
-          <p className="mt-4 text-sm leading-6 text-slate-600">
-            Usa el portal cliente para la demo funcional y el portal admin para la demostracion de gobierno, planes y proveedores IA.
-          </p>
+
+        <LeadForm />
+      </section>
+
+      <section className="mt-8">
+        <article className="surface-card">
+          <h2 className="text-xl font-semibold text-ink">{content.ui.contactJourneyLabel}</h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {content.contact.journeys.map((journey) => (
+              <div key={journey.title} className="rounded-2xl border border-slate-200 px-5 py-4">
+                <p className="text-sm font-semibold text-ink">{journey.title}</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">{journey.description}</p>
+              </div>
+            ))}
+          </div>
         </article>
-      </div>
+      </section>
     </div>
   );
 }

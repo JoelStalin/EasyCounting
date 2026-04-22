@@ -35,7 +35,7 @@ jobs:
       - name: Install toolchain
         run: |
           pip install poetry ruff bandit
-          poetry install --with dev
+          poetry install --with dev --no-root
       - name: Ruff lint
         run: ruff check app
       - name: Static analysis (Bandit)
@@ -77,7 +77,7 @@ jobs:
         run: |
           pip install safety
           pip install poetry
-          poetry install --with dev
+          poetry install --with dev --no-root
       - name: Safety check
         run: safety check --full-report
         continue-on-error: true

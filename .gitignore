@@ -37,6 +37,8 @@ package-lock.json
 # Logs and runtime artifacts
 logs/
 *.log
+deploy/server/deploy.log
+deploy/server/deploy.lock
 
 # Test and automation artifacts
 tests/artifacts/
@@ -47,3 +49,5 @@ automation/browser/evidence/
 # Local debugging files
 seller_debug.png
 .DS_Store
+deploy/server/deploy-hook.env
+deploy/server/created-secrets.env

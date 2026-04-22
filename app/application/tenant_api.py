@@ -175,7 +175,7 @@ class TenantApiService:
             "total": str(payload.total),
             "subtotal": str(subtotal),
             "tax_total": str(tax_total),
-            "line_items": [line.model_dump(by_alias=True) for line in payload.line_items],
+            "line_items": [line.model_dump(by_alias=True, mode="json") for line in payload.line_items],
             "fecha_emision": issued_at.isoformat(),
             "xml_signed_base64": payload.xml_signed_base64,
         }
