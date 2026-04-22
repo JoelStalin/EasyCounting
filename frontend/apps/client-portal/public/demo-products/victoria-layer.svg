@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <rect width="1200" height="1200" fill="#111827"/>
+  <path d="M290 290c85 170 190 255 310 255s225-85 310-255" fill="none" stroke="#f4d06f" stroke-width="20" stroke-linecap="round"/>
+  <path d="M350 380c75 150 160 225 250 225s175-75 250-225" fill="none" stroke="#fff1bf" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="520" cy="610" r="56" fill="#fff1bf" stroke="#f4d06f" stroke-width="14"/>
+  <circle cx="680" cy="690" r="72" fill="#fff1bf" stroke="#f4d06f" stroke-width="14"/>
+  <text x="600" y="1030" fill="#f8e7b0" font-family="Arial" font-size="72" text-anchor="middle">Victoria Layer</text>
+</svg>

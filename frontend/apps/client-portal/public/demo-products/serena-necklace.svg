@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <rect width="1200" height="1200" fill="#111827"/>
+  <path d="M300 280c90 210 210 320 300 320s210-110 300-320" fill="none" stroke="#e9d5a1" stroke-width="28" stroke-linecap="round"/>
+  <path d="M600 600l90 190-90 120-90-120z" fill="#f8e7b0" stroke="#f2c86b" stroke-width="18"/>
+  <text x="600" y="1030" fill="#f8e7b0" font-family="Arial" font-size="72" text-anchor="middle">Serena Drop</text>
+</svg>

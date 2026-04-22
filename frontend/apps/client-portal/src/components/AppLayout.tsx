@@ -3,6 +3,8 @@ import { useAuth } from "../auth/use-auth";
 import { TourController } from "../tours/TourController";
 
 const NAV = [
+  { to: "/catalog", label: "Catalogo demo", permissions: [] },
+  { to: "/checkout", label: "Cotizacion demo", permissions: [] },
   { to: "/dashboard", label: "Dashboard", permissions: ["TENANT_INVOICE_READ"] },
   { to: "/invoices", label: "Comprobantes", permissions: ["TENANT_INVOICE_READ"] },
   { to: "/plans", label: "Planes", permissions: ["TENANT_PLAN_VIEW", "TENANT_PLAN_UPGRADE"] },

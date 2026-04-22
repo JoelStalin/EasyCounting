@@ -24,6 +24,8 @@ const OdooIntegrationPage = lazy(() =>
 );
 const ProfilePage = lazy(() => import("./pages/Profile").then((module) => ({ default: module.ProfilePage })));
 const LoginPage = lazy(() => import("./pages/Login").then((module) => ({ default: module.LoginPage })));
+const CatalogPage = lazy(() => import("./pages/Catalog").then((module) => ({ default: module.CatalogPage })));
+const CheckoutPage = lazy(() => import("./pages/Checkout").then((module) => ({ default: module.CheckoutPage })));
 const MFAPage = lazy(() => import("./pages/MFA").then((module) => ({ default: module.MFAPage })));
 const AuthCallbackPage = lazy(() =>
   import("./pages/AuthCallback").then((module) => ({ default: module.AuthCallbackPage })),
@@ -48,6 +50,22 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: suspended(<LoginPage />),
+  },
+  {
+    path: "/auth/login",
+    element: suspended(<LoginPage />),
+  },
+  {
+    path: "/auth/logi",
+    element: suspended(<LoginPage />),
+  },
+  {
+    path: "/catalog",
+    element: suspended(<CatalogPage />),
+  },
+  {
+    path: "/checkout",
+    element: suspended(<CheckoutPage />),
   },
   {
     path: "/mfa",

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <rect width="1200" height="1200" fill="#0b1120"/>
+  <circle cx="420" cy="370" r="58" fill="#f7e3a4"/>
+  <circle cx="780" cy="370" r="58" fill="#f7e3a4"/>
+  <path d="M420 430v210" stroke="#f7e3a4" stroke-width="22" stroke-linecap="round"/>
+  <path d="M780 430v210" stroke="#f7e3a4" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="420" cy="720" r="110" fill="#fff4cf" stroke="#f0c96b" stroke-width="18"/>
+  <circle cx="780" cy="720" r="110" fill="#fff4cf" stroke="#f0c96b" stroke-width="18"/>
+  <text x="600" y="1030" fill="#f8e7b0" font-family="Arial" font-size="72" text-anchor="middle">Nova Spark</text>
+</svg>

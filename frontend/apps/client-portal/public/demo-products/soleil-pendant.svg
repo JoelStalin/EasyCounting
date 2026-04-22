@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <rect width="1200" height="1200" fill="#111827"/>
+  <path d="M350 270c60 170 145 250 250 250s190-80 250-250" fill="none" stroke="#f7d57a" stroke-width="26" stroke-linecap="round"/>
+  <circle cx="600" cy="620" r="150" fill="#fff1bf" stroke="#f4d06f" stroke-width="18"/>
+  <g stroke="#f4d06f" stroke-width="18" stroke-linecap="round">
+    <path d="M600 390V300"/><path d="M600 850v90"/><path d="M370 620H280"/><path d="M920 620h-90"/>
+  </g>
+  <text x="600" y="1030" fill="#f8e7b0" font-family="Arial" font-size="72" text-anchor="middle">Soleil Pendant</text>
+</svg>

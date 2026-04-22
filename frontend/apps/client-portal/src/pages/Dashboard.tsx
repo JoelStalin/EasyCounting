@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { FileText, ScanBarcode, ShieldCheck } from "lucide-react";
 import { CardKPI } from "../components/CardKPI";
 
@@ -35,6 +36,23 @@ export function DashboardPage() {
         {KPIS.map((kpi) => (
           <CardKPI key={kpi.title} {...kpi} />
         ))}
+      </section>
+      <section className="grid gap-4 lg:grid-cols-2">
+        <article className="rounded-xl border border-slate-800 bg-slate-900/40 p-6">
+          <p className="text-xs uppercase tracking-[0.22em] text-slate-400">Sales demo</p>
+          <h2 className="mt-2 text-xl font-semibold text-white">Catalogo comercial para Galantes</h2>
+          <p className="mt-2 text-sm leading-6 text-slate-300">
+            Accede a la muestra con 10 productos, imagenes demo, precios estimados y construccion de cotizacion.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-950" to="/catalog">
+              Ver catalogo
+            </Link>
+            <Link className="rounded-full border border-slate-700 px-4 py-2 text-sm font-semibold text-white" to="/checkout">
+              Ver cotizacion
+            </Link>
+          </div>
+        </article>
       </section>
       <section className="space-y-3 text-sm text-slate-300">
         <h2 className="text-lg font-semibold text-white">Próximas acciones</h2>

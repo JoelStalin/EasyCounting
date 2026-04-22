@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <rect width="1200" height="1200" fill="#111827"/>
+  <path d="M370 380c-80 70-120 160-120 270 0 165 120 290 350 290 230 0 350-125 350-290 0-110-40-200-120-270" fill="none" stroke="#f8e7b0" stroke-width="46" stroke-linecap="round"/>
+  <circle cx="600" cy="315" r="70" fill="#fff1bf" stroke="#f4d06f" stroke-width="18"/>
+  <text x="600" y="1030" fill="#f8e7b0" font-family="Arial" font-size="72" text-anchor="middle">Monaco Cuff</text>
+</svg>

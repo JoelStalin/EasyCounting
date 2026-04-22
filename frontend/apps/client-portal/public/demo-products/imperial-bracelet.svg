@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <rect width="1200" height="1200" fill="#111827"/>
+  <rect x="230" y="520" width="740" height="150" rx="75" fill="none" stroke="#f4d06f" stroke-width="34"/>
+  <circle cx="320" cy="595" r="26" fill="#fff1bf"/>
+  <circle cx="450" cy="595" r="26" fill="#fff1bf"/>
+  <circle cx="600" cy="595" r="26" fill="#fff1bf"/>
+  <circle cx="750" cy="595" r="26" fill="#fff1bf"/>
+  <circle cx="880" cy="595" r="26" fill="#fff1bf"/>
+  <text x="600" y="1030" fill="#f8e7b0" font-family="Arial" font-size="72" text-anchor="middle">Imperial Tennis</text>
+</svg>

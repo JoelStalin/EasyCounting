@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <rect width="1200" height="1200" fill="#0f172a"/>
+  <path d="M420 360v180" stroke="#f4d06f" stroke-width="20" stroke-linecap="round"/>
+  <path d="M780 360v180" stroke="#f4d06f" stroke-width="20" stroke-linecap="round"/>
+  <ellipse cx="420" cy="650" rx="110" ry="140" fill="#f9f4ec" stroke="#d5c1a2" stroke-width="18"/>
+  <ellipse cx="780" cy="650" rx="110" ry="140" fill="#f9f4ec" stroke="#d5c1a2" stroke-width="18"/>
+  <circle cx="420" cy="320" r="42" fill="#f4d06f"/>
+  <circle cx="780" cy="320" r="42" fill="#f4d06f"/>
+  <text x="600" y="1030" fill="#f8e7b0" font-family="Arial" font-size="72" text-anchor="middle">Firenze Pearl</text>
+</svg>

@@ -1,8 +1,9 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Spinner } from "@getupsoft/ui";
 import { startSocialLogin, useLoginMutation, useSocialProvidersQuery } from "../api/auth";
 import { useAuth } from "../auth/use-auth";
+import { DemoStoreNav } from "../components/DemoStoreNav";
 
 const DEMO_ACCOUNTS = [
   {
@@ -27,6 +28,7 @@ export function LoginPage() {
   const { mutateAsync, isPending, isError } = useLoginMutation();
   const { isAuthenticated } = useAuth();
   const providersQuery = useSocialProvidersQuery();
+  const googleProvider = providersQuery.data?.find((provider) => provider.provider === "google") ?? null;
 
   const from = useMemo(() => {
     const state = location.state as { from?: { pathname?: string } } | undefined;
@@ -54,12 +56,19 @@ export function LoginPage() {
   };
 
   return (
-    <div className="grid min-h-screen gap-6 bg-slate-950 px-4 py-10 xl:grid-cols-[1.05fr,0.95fr]">
-      <div className="flex items-center justify-center">
+    <div className="min-h-screen bg-slate-950 text-slate-100">
+      <DemoStoreNav
+        googleEnabled={Boolean(googleProvider)}
+        onGoogleClick={googleProvider ? () => startSocialLogin(googleProvider.provider, "/dashboard") : undefined}
+      />
+      <div className="grid min-h-screen gap-6 px-4 pb-10 pt-28 xl:grid-cols-[1.05fr,0.95fr]">
+        <div className="flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-2 text-center">
-            <CardTitle>EasyCounting Cliente</CardTitle>
-            <p className="text-sm text-slate-300">Portal para emision y seguimiento de comprobantes electronicos.</p>
+            <CardTitle>Galante's Jewelry / Acceso clientes</CardTitle>
+            <p className="text-sm text-slate-300">
+              Portal de acceso para seguimiento comercial, onboarding y operaciones del cliente.
+            </p>
           </CardHeader>
           <CardContent>
             <form className="space-y-6" onSubmit={handleSubmit}>
@@ -101,26 +110,40 @@ export function LoginPage() {
                       className="w-full rounded-md border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:border-primary hover:text-primary"
                       onClick={() => startSocialLogin(provider.provider, from)}
                     >
-                      Continuar con {provider.label}
+                      {provider.provider === "google" ? "Crear cuenta o entrar con Google" : `Continuar con ${provider.label}`}
                     </button>
                   ))}
+                </div>
+              ) : null}
+              {providersQuery.isSuccess && providersQuery.data?.length === 0 ? (
+                <div className="rounded-xl border border-amber-900/60 bg-amber-950/30 p-4 text-xs text-amber-100">
+                  El acceso con Google queda disponible al activar SOCIAL_AUTH_ENABLED, SOCIAL_GOOGLE_ENABLED,
+                  SOCIAL_GOOGLE_CLIENT_ID y SOCIAL_GOOGLE_CLIENT_SECRET en el backend.
                 </div>
               ) : null}
               {isError ? <p className="text-center text-sm text-red-400">Credenciales invalidas o MFA requerido.</p> : null}
             </form>
           </CardContent>
         </Card>
-      </div>
+        </div>
 
-      <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center">
         <Card className="w-full max-w-xl">
           <CardHeader className="space-y-2">
-            <CardTitle>Modo demo para clientes</CardTitle>
+            <CardTitle>Demo comercial activa</CardTitle>
             <p className="text-sm text-slate-300">
-              Credenciales dummy para demos comerciales y recorridos guiados del producto.
+              Usa el catalogo demo y las cuentas de muestra para enseñar onboarding, cotizacion y acceso del cliente.
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Link className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-semibold text-white hover:border-primary hover:text-primary" to="/catalog">
+                Ver catalogo demo
+              </Link>
+              <Link className="rounded-xl border border-slate-700 px-4 py-3 text-sm font-semibold text-white hover:border-primary hover:text-primary" to="/checkout">
+                Ver cotizacion demo
+              </Link>
+            </div>
             {DEMO_ACCOUNTS.map((account) => (
               <div key={account.email} className="rounded-xl border border-slate-800 bg-slate-900/50 p-4">
                 <p className="font-medium text-slate-100">{account.title}</p>
@@ -143,6 +166,7 @@ export function LoginPage() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
