@@ -1,6 +1,6 @@
 # 🚀 Mailcow - Sistema de Correos Profesional Integrado
 
-**Mailcow** es una solución self-hosted completa para correos electrónicos. Es mucho mejor que SendGrid o Mailpit para DGII porque:
+**Mailcow** es la ruta de produccion recomendada para `mail.getupsoft.com.do`. La automatizacion del repositorio ahora apunta a preparar primero el host remoto por SSH y luego aplicar DNS en Cloudflare sin depender de cambios manuales dentro del repo de la app.
 
 ## ✨ Ventajas de Mailcow
 
@@ -54,38 +54,63 @@
 
 ---
 
-## 🚀 Instalación Rápida (10 minutos)
+## Flujo recomendado para GetUpSoft
 
-### Opción A: Mailcow Automático (Recomendado)
+### 1. Preparar el host remoto sin tocar servicios existentes
 
-```bash
-# 1. Clone Mailcow repository
-cd c:\Users\yoeli\Documents\dgii_encf
-git clone https://github.com/mailcow/mailcow-dockerized mailcow
+Usa el wrapper PowerShell o el script Python directo. Por defecto prepara Docker + Mailcow en modo seguro, **sin levantar contenedores** y usando puertos web alternos `8081/8443` para no chocar con routers o reverse proxy existentes.
 
-# 2. Generate config
-cd mailcow
-bash generate_config.sh
-
-# 3. Responder preguntas:
-#    - Hostname: mail.getupsoft.com.do (o tu dominio)
-#    - Timezone: America/Santo_Domingo (UTC-4)
-
-# 4. Start Mailcow
-docker-compose up -d
-
-# 5. Esperar 2-3 minutos para que todo levante
-docker-compose ps
-
-# 6. Acceder a administración
-# https://localhost (con certificado auto-firmado)
-# user: admin
-# password: moohoo (default - CAMBIAR)
+```powershell
+.\scripts\automation\prepare_getupsoft_mailcow.ps1 `
+  -SshHost getupsoft `
+  -Hostname mail.getupsoft.com.do `
+  -RemoteDir /opt/mailcow-dockerized `
+  -HttpPort 8081 `
+  -HttpsPort 8443
 ```
 
-### Opción B: Mailcow en docker-compose.yml Actual
+Salida esperada:
+- instala Docker y Compose Plugin si faltan;
+- clona o actualiza `mailcow-dockerized` en `/opt/mailcow-dockerized`;
+- genera/alinea `mailcow.conf`;
+- deja reporte remoto de listeners y posibles conflictos en `/var/tmp/mailcow-getupsoft-preflight.txt`;
+- guarda evidencia local en `artifacts_live_dns/getupsoft_mailcow_prepare.log`.
 
-Agregaremos Mailcow al docker-compose.yml existente.
+### 2. Aplicar DNS reales en Cloudflare
+
+La automatizacion de DNS usa API token. Selenium queda como apoyo opcional para abrir el dashboard con tu perfil real, pero **no reemplaza** el token.
+
+```powershell
+$env:CLOUDFLARE_API_TOKEN="tu-token"
+
+.\scripts\automation\run_real_cloudflare_mail_setup.ps1 `
+  -MailIPv4 "IP_PUBLICA_REAL" `
+  -EnableAutodiscover
+```
+
+Si quieres que tambien abra el navegador para validar visualmente:
+
+```powershell
+.\scripts\automation\run_real_cloudflare_mail_setup.ps1 `
+  -MailIPv4 "IP_PUBLICA_REAL" `
+  -EnableAutodiscover `
+  -AssistLogin
+```
+
+### 3. Levantar Mailcow cuando puertos y routing esten listos
+
+Una vez confirmados NAT, firewall y puertos publicos, repite el paso remoto con `-StartStack`. Si ya liberarás `80/443` para Mailcow en ese host, cambia esos puertos en la ejecucion:
+
+```powershell
+.\scripts\automation\prepare_getupsoft_mailcow.ps1 `
+  -SshHost getupsoft `
+  -Hostname mail.getupsoft.com.do `
+  -HttpPort 80 `
+  -HttpsPort 443 `
+  -StartStack
+```
+
+Si detecta conflictos de puertos, el script aborta antes de levantar los contenedores.
 
 ---
 
@@ -94,7 +119,8 @@ Agregaremos Mailcow al docker-compose.yml existente.
 ### 1. Crear Usuario/Dominio en Mailcow
 
 ```bash
-# Acceder a: https://localhost/admin
+# Acceder a: https://mail.getupsoft.com.do/admin
+# (o https://host:8443/admin mientras estes en modo de preparacion segura)
 # Menú: Mail Accounts → Add Mailbox
 
 # Datos:
@@ -106,19 +132,14 @@ Password: [Tu contraseña segura]
 ### 2. Configurar en .env.local
 
 ```bash
-# .env.local
-# Mailcow Configuration
+# .env.local o secretos del entorno productivo
 MAILCOW_ENABLED=true
-SMTP_HOST=mailcow-postfix  # O localhost si está en otro host
-SMTP_PORT=587              # TLS
-SMTP_USER=sistema@getupsoft.com.do
+SMTP_HOST=mail.getupsoft.com.do
+SMTP_PORT=587
+SMTP_USER=noreply@getupsoft.com.do
 SMTP_PASS=tu_contraseña_mailcow
-SMTP_FROM=sistema@getupsoft.com.do
+SMTP_FROM=noreply@getupsoft.com.do
 SMTP_SECURE=true
-
-# Alternativas (si quieres SMTP simple sin TLS)
-# SMTP_PORT=25 (sin autenticación - solo local network)
-# SMTP_PORT=465 (SMTPS - SSL obligatorio)
 ```
 
 ### 3. Prueba Rápida
@@ -127,7 +148,7 @@ SMTP_SECURE=true
 import smtplib
 from email.mime.text import MIMEText
 
-server = smtplib.SMTP('localhost', 587)
+server = smtplib.SMTP('mail.getupsoft.com.do', 587)
 server.starttls()
 server.login('sistema@getupsoft.com.do', 'tu_contraseña')
 
@@ -148,9 +169,9 @@ print("✓ Correo enviado desde Mailcow")
 
 | Función | URL | Usuario |
 |---------|-----|---------|
-| **Admin Panel** | https://localhost | admin |
-| **Webmail** | https://localhost/mail | tu@email.com |
-| **API** | https://localhost/api | admin |
+| **Admin Panel** | https://mail.getupsoft.com.do | admin |
+| **Webmail** | https://mail.getupsoft.com.do/SOGo | tu@email.com |
+| **API** | https://mail.getupsoft.com.do/api | admin |
 | **Documentación** | https://mailcow.github.io | - |
 
 ---
@@ -192,21 +213,20 @@ print("✓ Correo enviado desde Mailcow")
 
 # CAMBIO:
 # Todos los correos: FastAPI → Mailcow :587
-# SMTP_HOST cambia de "mailpit" a "mailcow-postfix"
+# SMTP_HOST cambia de "mailpit" o proveedor externo a "mail.getupsoft.com.do"
 ```
 
 ---
 
 ## 📝 Next Steps
 
-1. ✅ Clonar Mailcow
-2. ✅ Generar config
-3. ✅ Levantarlo en Docker
-4. ✅ Crear usuario sistema@getupsoft.com.do
-5. ✅ Actualizar .env.local
-6. ✅ Probar SMTP
-7. ✅ Enviar correo de DGII a joelstalin210@gmail.com
-8. ✅ Verificar en Webmail de Mailcow
+1. Preparar host remoto con `prepare_getupsoft_mailcow`
+2. Aplicar DNS con `run_real_cloudflare_mail_setup.ps1`
+3. Publicar DKIM real desde Mailcow
+4. Levantar stack cuando puertos esten libres
+5. Crear buzones reales (`info`, `ventas`, `soporte`, `noreply`, `admin`)
+6. Actualizar secretos SMTP de la app
+7. Probar SMTP/IMAP y entregabilidad
 
 ---
 

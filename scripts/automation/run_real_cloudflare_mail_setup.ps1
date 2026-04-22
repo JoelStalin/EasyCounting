@@ -1,4 +1,4 @@
-﻿param(
+param(
     [string]$Domain = "getupsoft.com.do",
     [string]$StartUrl = "https://dash.cloudflare.com/efce4179a7ee96c19b43c42bced58587/home/overview",
     [string]$ChromeUserDataDir = "$env:LOCALAPPDATA\Google\Chrome\User Data",
@@ -10,27 +10,33 @@
     [string]$DkimSelector = "",
     [string]$DkimValue = "",
     [string]$HubBaseUrl = "https://api.getupsoft.com.do",
-    [string]$InternalSecret = ""
+    [string]$InternalSecret = "",
+    [switch]$AssistLogin
 )
 
 if (-not $MailIPv4) {
     throw "Debes indicar -MailIPv4 con la IP publica real del servidor Mailcow"
 }
 
-if (-not $env:CLOUDFLARE_API_TOKEN) {
-    throw "Falta CLOUDFLARE_API_TOKEN en entorno"
-}
-
 $python = if (Test-Path ".venv\Scripts\python.exe") { ".venv\Scripts\python.exe" } else { "python" }
 
-Write-Host "[1/4] Abriendo Cloudflare Dashboard con perfil Chrome real..."
-& $python scripts/automation/assist_cloudflare_login.py `
-    --start-url "$StartUrl" `
-    --user-data-dir "$ChromeUserDataDir" `
-    --profile-directory "$ChromeProfileDirectory" `
-    --timeout-seconds 600
-if ($LASTEXITCODE -ne 0) {
-    Write-Warning "No se confirmo entrada al dashboard en tiempo esperado. Continuando con API si tienes token valido..."
+$step = 1
+if ($AssistLogin) {
+    Write-Host "[$step/4] Abriendo Cloudflare Dashboard con perfil Chrome real..."
+    & $python scripts/automation/assist_cloudflare_login.py `
+        --start-url "$StartUrl" `
+        --user-data-dir "$ChromeUserDataDir" `
+        --profile-directory "$ChromeProfileDirectory" `
+        --timeout-seconds 600
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "No se confirmo entrada al dashboard en tiempo esperado. Se intentara continuar con API si existe token."
+    }
+} else {
+    Write-Host "[$step/4] Se omite Selenium. Usando API token de Cloudflare directamente."
+}
+
+if (-not $env:CLOUDFLARE_API_TOKEN) {
+    throw "Falta CLOUDFLARE_API_TOKEN en entorno. Define el token o ejecuta con -AssistLogin solo como apoyo visual, no como sustituto del token."
 }
 
 Write-Host "[2/4] Aplicando DNS de correo en Cloudflare..."
