@@ -58,7 +58,7 @@ class Settings(BaseSettings):
     request_id_header: str = Field(default="X-Request-ID", validation_alias=AliasChoices("REQUEST_ID_HEADER"))
     metrics_enabled: bool = Field(default=True, validation_alias=AliasChoices("METRICS_ENABLED"))
     storage_bucket: str = Field(default="local", validation_alias=AliasChoices("STORAGE_BUCKET"))
-    storage_base_path: Path = Field(default=Path("/var/getupsoft/storage"), validation_alias=AliasChoices("STORAGE_BASE_PATH"))
+    storage_base_path: Path = Field(default=Path("var/getupsoft/storage"), validation_alias=AliasChoices("STORAGE_BASE_PATH"))
     psc_workflow_storage_path: Path = Field(
         default=Path("expedientes"),
         validation_alias=AliasChoices("PSC_WORKFLOW_STORAGE_PATH"),
