@@ -1,44 +1,13 @@
 name: CI
-
 on:
   push:
     branches: ["main", "develop"]
   pull_request:
-
 jobs:
-  lint-test-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install Poetry
-        run: pip install poetry==1.8.2
-
-      - name: Install dependencies
-        run: poetry install --with dev
-
-      - name: Lint (ruff)
-        run: poetry run ruff check .
-
-      - name: Type check (mypy)
-        run: poetry run mypy app
-
-      - name: Tests
-        run: poetry run pytest --maxfail=1 --disable-warnings -q
-
-      - name: Dependency scan (pip-audit)
-        run: poetry run pip-audit || true
-
-      - name: Build docker image
-        run: docker build -t dgii-ecf-api .
-
-      - name: Trivy scan
-        uses: aquasecurity/trivy-action@0.18.0
-        with:
-          image-ref: dgii-ecf-api
+  ci:
+    uses: JoelStalin/getupsoft-ops/.github/workflows/python-ci.yml@main
+  dockerr
+    needs: ci
+    uses: JoelStalin/getupsoft-ops/.github/workflows/docker-build.yml@main
+    with:
+      image-name: easycount-legacy
